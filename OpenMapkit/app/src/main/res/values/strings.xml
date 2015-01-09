@@ -2,8 +2,13 @@
 <resources>
 
     <string name="app_name">Open Mapkit</string>
-    <string name="action_settings">Settings</string>
 
+    <!--action menu-->
+    <string name="action_onlinesettings">Online Settings</string>
+    <string name="aciton_offlinesettings">Offline Settings</string>
+    <string name="action_about">About Open Mapkit</string>
+
+    <!--default tile layer-->
     <string name="defaultTileLayerPID">openstreetmap</string>
     <string name="defaultTileLayerURL">"http://tile.openstreetmap.org/{z}/{x}/{y}.png"</string>
     <string name="defaultTileLayerName">"OpenStreetMap"</string>

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
@@ -65,7 +66,25 @@ public class MapActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_onlinesettings) {
+
+            Toast toast = Toast.makeText(getApplicationContext(), "tapped option: " + R.id.action_onlinesettings, Toast.LENGTH_SHORT);
+            toast.show();
+
+            return true;
+        }
+        else if (id == R.id.aciton_offlinesettings) {
+
+            Toast toast = Toast.makeText(getApplicationContext(), "tapped option: " + R.id.aciton_offlinesettings, Toast.LENGTH_SHORT);
+            toast.show();
+
+            return true;
+        }
+        else if(id == R.id.action_about) {
+
+            Toast toast = Toast.makeText(getApplicationContext(), "tapped option: " + R.id.action_about, Toast.LENGTH_SHORT);
+            toast.show();
+
             return true;
         }
 
