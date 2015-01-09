@@ -4,4 +4,8 @@
     <string name="app_name">Open Mapkit</string>
     <string name="action_settings">Settings</string>
 
+    <string name="defaultTileLayerPID">openstreetmap</string>
+    <string name="defaultTileLayerURL">"http://tile.openstreetmap.org/{z}/{x}/{y}.png"</string>
+    <string name="defaultTileLayerName">"OpenStreetMap"</string>
+    <string name="defaultTileLayerAttribution">"© OpenStreetMap Contributors"</string>
 </resources>
