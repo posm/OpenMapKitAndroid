@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
@@ -15,16 +16,20 @@ public class MapActivity extends ActionBarActivity {
 
     private MapView mapView;
 
+    private ImageButton locationButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
         initializeMap();
+
+        initializeLocationButton();
     }
 
     /**
-     * For initializing the map with default tile layer, location, extent, and zoom level
+     * For instantiating a map and initializing the default tile layer, location, extent, and zoom level
      */
     private void initializeMap() {
 
@@ -51,6 +56,42 @@ public class MapActivity extends ActionBarActivity {
         mapView.setZoom(12);
     }
 
+    /**
+     * For instantiating the location button and setting up its tap event handler
+     */
+    private void initializeLocationButton() {
+
+        //instantiate location button
+        locationButton = (ImageButton)findViewById(R.id.locationButton);
+
+        //set tap event
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                handleLocationButtonTap();
+            }
+        });
+    }
+
+    /**
+     * For toggling a user's location on or off
+     */
+    private void handleLocationButtonTap() {
+
+        boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
+
+        if(userLocationIsEnabled) {
+
+            mapView.setUserLocationEnabled(false);
+
+        } else {
+
+            mapView.setUserLocationEnabled(true);
+            mapView.goToUserLocation(true);
+            mapView.setUserLocationRequiredZoom(15);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -68,22 +109,19 @@ public class MapActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_onlinesettings) {
 
-            Toast toast = Toast.makeText(getApplicationContext(), "tapped option: " + R.id.action_onlinesettings, Toast.LENGTH_SHORT);
-            toast.show();
+            //TODO
 
             return true;
         }
         else if (id == R.id.aciton_offlinesettings) {
 
-            Toast toast = Toast.makeText(getApplicationContext(), "tapped option: " + R.id.aciton_offlinesettings, Toast.LENGTH_SHORT);
-            toast.show();
+            //TODO
 
             return true;
         }
         else if(id == R.id.action_about) {
 
-            Toast toast = Toast.makeText(getApplicationContext(), "tapped option: " + R.id.action_about, Toast.LENGTH_SHORT);
-            toast.show();
+            //TODO
 
             return true;
         }
