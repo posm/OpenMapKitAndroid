@@ -21,17 +21,33 @@ public class MapActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //set layout
         setContentView(R.layout.activity_map);
 
-        initializeMap();
 
+        //get device connectivity status
+        boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
+
+
+        //initialize map based on device connectivity status
+        if(deviceIsConnected) {
+
+            initializeMapOnline();
+
+        } else {
+
+            //initializeOfflineMap();
+        }
+
+        //add user location toggle button
         initializeLocationButton();
     }
 
     /**
-     * For instantiating a map and initializing the default tile layer, location, extent, and zoom level
+     * For instantiating a map (when the device is online) and initializing the default tile layer, location, extent, and zoom level
      */
-    private void initializeMap() {
+    private void initializeMapOnline() {
 
         // instantiate map
         this.mapView = (MapView)findViewById(R.id.mapView);
@@ -49,6 +65,26 @@ public class MapActivity extends ActionBarActivity {
                 .setMaximumZoomLevel(18);
 
         mapView.setTileSource(ws);
+
+        // set default map extent and zoom
+        LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
+        mapView.setCenter(initialCoordinate);
+        mapView.setZoom(12);
+    }
+
+    /**
+     * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
+     */
+    private void initializeOfflineMap() {
+
+        // instantiate map
+        this.mapView = (MapView)findViewById(R.id.mapView);
+
+
+        //offline tilelayer
+        //TileLayer tileLayer = new MBTilesLayer("dhaka2015-01-02.mbtiles");
+        //mapView.setTileSource(tileLayer);
+
 
         // set default map extent and zoom
         LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
