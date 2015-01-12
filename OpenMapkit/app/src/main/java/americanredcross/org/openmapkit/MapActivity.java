@@ -11,7 +11,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 
-
 public class MapActivity extends ActionBarActivity {
 
     private MapView mapView;
@@ -33,7 +32,7 @@ public class MapActivity extends ActionBarActivity {
         //initialize map based on device connectivity status
         if(deviceIsConnected) {
 
-            initializeMapOnline();
+            initializeOnlineMap();
 
         } else {
 
@@ -42,17 +41,33 @@ public class MapActivity extends ActionBarActivity {
 
         //add user location toggle button
         initializeLocationButton();
+
+
+        //initialize map listener
+        initializeMapListener();
+    }
+
+    /**
+     * For handling map tap events
+     */
+    private void initializeMapListener() {
+
+
+        MapViewListener mapViewListener = new MapViewListener(this);
+
+        mapView.setMapViewListener(mapViewListener);
+
     }
 
     /**
      * For instantiating a map (when the device is online) and initializing the default tile layer, location, extent, and zoom level
      */
-    private void initializeMapOnline() {
+    private void initializeOnlineMap() {
 
-        // instantiate map
+        //instantiate map
         this.mapView = (MapView)findViewById(R.id.mapView);
 
-        // set the  default map tile layer (OSM)
+        //set the  default map tile layer (OSM)
         String defaultTilePID = getString(R.string.defaultTileLayerPID);
         String defaultTileURL = getString(R.string.defaultTileLayerURL);
         String defaultTileName = getString(R.string.defaultTileLayerName);
@@ -66,7 +81,7 @@ public class MapActivity extends ActionBarActivity {
 
         mapView.setTileSource(ws);
 
-        // set default map extent and zoom
+        //set default map extent and zoom
         LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
         mapView.setCenter(initialCoordinate);
         mapView.setZoom(12);
@@ -77,7 +92,7 @@ public class MapActivity extends ActionBarActivity {
      */
     private void initializeOfflineMap() {
 
-        // instantiate map
+        //instantiate map
         this.mapView = (MapView)findViewById(R.id.mapView);
 
 
@@ -86,7 +101,7 @@ public class MapActivity extends ActionBarActivity {
         //mapView.setTileSource(tileLayer);
 
 
-        // set default map extent and zoom
+        //set default map extent and zoom
         LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
         mapView.setCenter(initialCoordinate);
         mapView.setZoom(12);
@@ -128,6 +143,11 @@ public class MapActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * For creating the menu items (top right)
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -135,6 +155,11 @@ public class MapActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     * For handling when a user taps on a menu item (top right)
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
