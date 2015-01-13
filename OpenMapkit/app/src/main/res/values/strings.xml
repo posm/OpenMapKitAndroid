@@ -24,7 +24,10 @@
 
     <!-- tag creation activity -->
     <string name="title_activity_tag_creator">OSM Tag Creator</string>
-    <string name="tagNameMessage">Name of Tag</string>
+    <string name="tagNameHint">Enter Tag Name</string>
+    <string name="tagValueHint">Enter Tag Value</string>
+    <string name="cancelButtonTitle">Cancel</string>
+    <string name="saveButtonTitle">Save</string>
 
 
 </resources>
