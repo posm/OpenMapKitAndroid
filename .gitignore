@@ -8,3 +8,8 @@ OpenMapkit/.idea
 /.idea/libraries
 .DS_Store
 /build
+
+gen
+bin
+
+MapboxAndroidSDK/src/main/gen/

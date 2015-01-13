@@ -1,4 +1,4 @@
-package americanredcross.org.openmapkit;
+package org.redcross.openmapkit;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
