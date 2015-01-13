@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -39,7 +40,7 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
 
         } else {
 
-            //initializeOfflineMap();
+            initializeOfflineMap();
         }
 
         //add user location toggle button
@@ -83,19 +84,25 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
      */
     private void initializeOfflineMap() {
 
+        /*
         //instantiate map
         this.mapView = (MapView)findViewById(R.id.mapView);
 
 
         //offline tilelayer
-        //TileLayer tileLayer = new MBTilesLayer("dhaka2015-01-02.mbtiles");
-        //mapView.setTileSource(tileLayer);
+        TileLayer tileLayer = new MBTilesLayer("dhaka2015-01-02.mbtiles");
+        mapView.setTileSource(tileLayer);
 
 
         //set default map extent and zoom
         LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
         mapView.setCenter(initialCoordinate);
         mapView.setZoom(12);
+        */
+
+        //test
+        Toast toast = Toast.makeText(getApplicationContext(), "Offline - load data from external storage", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /**

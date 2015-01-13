@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 
 public class TagCreatorActivity extends ActionBarActivity {
@@ -48,9 +47,34 @@ public class TagCreatorActivity extends ActionBarActivity {
 
             public void onClick(View v) {
 
-                Toast toast = Toast.makeText(getApplicationContext(), "tapped save", Toast.LENGTH_SHORT);
-                toast.show();
+                //get device connectivity status, proceed with online or offline save workflow
+                boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
+
+                if (deviceIsConnected) {
+
+                    saveTagOnline();
+
+                } else {
+
+                    saveTagOffline();
+                }
             }
         });
+    }
+
+    /**
+     * For saving a tag when device is online/connected
+     */
+    private void saveTagOnline() {
+
+        //PLACEHOLDER - DEVICE IS ONLINE - CONTINUE WITH ONLINE SAVE WORKFLOW
+    }
+
+    /**
+     * For saving a tag when device is offline/disconnected
+     */
+    private void saveTagOffline() {
+
+        //PLACEHOLDER - DEVICE IS OFFLINE - CONTINUE WITH OFFLINE SAVE WORKFLOW
     }
 }
