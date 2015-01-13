@@ -6,7 +6,18 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="americanredcross.org.openmapkit.TagCreatorActivity">
 
-    <TextView android:text="@string/createMessage" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <TextView android:text="@string/tagNameMessage" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:id="@+id/textView" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_below="@+id/textView"
+        android:layout_alignLeft="@+id/textView"
+        android:layout_alignStart="@+id/textView" />
 
 </RelativeLayout>

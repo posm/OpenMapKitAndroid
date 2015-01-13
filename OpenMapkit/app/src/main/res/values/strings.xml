@@ -24,7 +24,7 @@
 
     <!-- tag creation activity -->
     <string name="title_activity_tag_creator">OSM Tag Creator</string>
-    <string name="createMessage">Create OSM Tag</string>
+    <string name="tagNameMessage">Name of Tag</string>
 
 
 </resources>
