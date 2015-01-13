@@ -20,8 +20,6 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
 
     private MapView mapView;
 
-    private ImageButton locationButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,34 +104,27 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
     private void initializeLocationButton() {
 
         //instantiate location button
-        locationButton = (ImageButton)findViewById(R.id.locationButton);
+        ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
 
         //set tap event
         locationButton.setOnClickListener(new View.OnClickListener() {
+
             public void onClick(View v) {
 
-                handleLocationButtonTap();
+                boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
+
+                if(userLocationIsEnabled) {
+
+                    mapView.setUserLocationEnabled(false);
+
+                } else {
+
+                    mapView.setUserLocationEnabled(true);
+                    mapView.goToUserLocation(true);
+                    mapView.setUserLocationRequiredZoom(15);
+                }
             }
         });
-    }
-
-    /**
-     * For toggling a user's location on or off
-     */
-    private void handleLocationButtonTap() {
-
-        boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
-
-        if(userLocationIsEnabled) {
-
-            mapView.setUserLocationEnabled(false);
-
-        } else {
-
-            mapView.setUserLocationEnabled(true);
-            mapView.goToUserLocation(true);
-            mapView.setUserLocationRequiredZoom(15);
-        }
     }
 
     /**
