@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toolTipTitle">Title</string>
+    <string name="toolTipDescription">Description</string>
+    <string name="toolTipAddress">Address</string>
+</resources>

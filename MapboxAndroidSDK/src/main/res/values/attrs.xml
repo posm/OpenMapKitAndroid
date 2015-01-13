@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MapView">
+        <attr name="mapid" format="string"/>
+        <attr name="centerLat" format="string"/>
+        <attr name="centerLng" format="string"/>
+        <attr name="zoomLevel" format="string"/>
+        <attr name="uiControls" format="string"/>
+    </declare-styleable>
+</resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Open Mapkit</string>
+    <string name="app_name">OpenMapKit</string>
 
     <!-- action menu -->
     <string name="action_onlinesettings">Online Settings</string>
