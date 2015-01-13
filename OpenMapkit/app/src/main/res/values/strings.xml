@@ -3,14 +3,28 @@
 
     <string name="app_name">Open Mapkit</string>
 
-    <!--action menu-->
+    <!-- action menu -->
     <string name="action_onlinesettings">Online Settings</string>
     <string name="aciton_offlinesettings">Offline Settings</string>
     <string name="action_about">About Open Mapkit</string>
+    <string name="action_settings">Settings</string>
 
-    <!--default tile layer-->
+    <!-- default tile layer -->
     <string name="defaultTileLayerPID">openstreetmap</string>
     <string name="defaultTileLayerURL">"http://tile.openstreetmap.org/{z}/{x}/{y}.png"</string>
     <string name="defaultTileLayerName">"OpenStreetMap"</string>
     <string name="defaultTileLayerAttribution">"© OpenStreetMap Contributors"</string>
+
+    <!-- map activity -->
+    <string name="tagPromptTitle">Choose Option</string>
+
+    <!-- tag editing activity -->
+    <string name="title_activity_tag_editor">OSM Tag Editor</string>
+    <string name="editMessage">Edit OSM Tags</string>
+
+    <!-- tag creation activity -->
+    <string name="title_activity_tag_creator">OSM Tag Creator</string>
+    <string name="createMessage">Create OSM Tag</string>
+
+
 </resources>

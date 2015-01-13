@@ -1,5 +1,8 @@
 package americanredcross.org.openmapkit;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -7,11 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 
-public class MapActivity extends ActionBarActivity {
+public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxsdk.views.MapViewListener {
 
     private MapView mapView;
 
@@ -30,7 +35,7 @@ public class MapActivity extends ActionBarActivity {
 
 
         //initialize map based on device connectivity status
-        if(deviceIsConnected) {
+        if (deviceIsConnected) {
 
             initializeOnlineMap();
 
@@ -43,20 +48,8 @@ public class MapActivity extends ActionBarActivity {
         initializeLocationButton();
 
 
-        //initialize map listener
-        initializeMapListener();
-    }
-
-    /**
-     * For handling map tap events
-     */
-    private void initializeMapListener() {
-
-
-        MapViewListener mapViewListener = new MapViewListener(this);
-
-        mapView.setMapViewListener(mapViewListener);
-
+        //this activity implements mapViewListener events
+        mapView.setMapViewListener(this);
     }
 
     /**
@@ -144,9 +137,76 @@ public class MapActivity extends ActionBarActivity {
     }
 
     /**
+     *  MapViewListener method
+     */
+    @Override
+    public void onTapMap(MapView mapView, ILatLng iLatLng) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.tagPromptTitle);
+
+        builder.setItems(R.array.editoptions, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+
+                switch(which) {
+                    case 0:
+
+                        Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
+                        startActivity(editTagIntent);
+                        break;
+
+                    case 1:
+
+                        Intent createTagIntent = new Intent(getApplicationContext(), TagCreatorActivity.class);
+                        startActivity(createTagIntent);
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    /**
+     *  MapViewListener method
+     */
+    @Override
+    public void onLongPressMap(MapView pMapView, ILatLng pPosition) { }
+
+    /**
+     *  MapViewListener method
+     */
+    @Override
+    public void onLongPressMarker(MapView pMapView, Marker pMarker) { }
+
+    /**
+     *  MapViewListener method
+     */
+    @Override
+    public void onShowMarker(MapView pMapView, Marker pMarker) { }
+
+    /**
+     *  MapViewListener method
+     */
+    @Override
+    public void onHideMarker(MapView pMapView, Marker pMarker) { }
+
+    /**
+     *  MapViewListener method
+     */
+    @Override
+    public void onTapMarker(MapView pMapView, Marker pMarker) { }
+
+    /**
      * For creating the menu items (top right)
-     * @param menu
-     * @return
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -157,8 +217,6 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * For handling when a user taps on a menu item (top right)
-     * @param item
-     * @return
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
