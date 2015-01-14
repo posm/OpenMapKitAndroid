@@ -4,4 +4,12 @@
         <item>Edit OSM Tag</item>
         <item>Create OSM Tag</item>
     </array>
+    <string-array name="testTags">
+        <item>average income</item>
+        <item>number of household members</item>
+        <item>income bracket</item>
+        <item>wall damage</item>
+        <item>number of toilets</item>
+        <item>year occupied</item>
+    </string-array>
 </resources>

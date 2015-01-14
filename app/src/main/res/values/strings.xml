@@ -20,7 +20,7 @@
 
     <!-- tag editing activity -->
     <string name="title_activity_tag_editor">OSM Tag Editor</string>
-    <string name="editMessage">Edit OSM Tags</string>
+    <string name="editMessage">Choose Existing OSM Tag to Edit</string>
 
     <!-- tag creation activity -->
     <string name="title_activity_tag_creator">OSM Tag Creator</string>
