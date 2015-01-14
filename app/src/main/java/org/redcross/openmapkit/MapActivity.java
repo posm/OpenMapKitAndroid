@@ -66,10 +66,7 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         String defaultTileAttribution = getString(R.string.defaultTileLayerAttribution);
 
         WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
-        ws.setName(defaultTileName)
-                .setAttribution(defaultTileAttribution)
-                .setMinimumZoomLevel(1)
-                .setMaximumZoomLevel(18);
+        ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
 
         mapView.setTileSource(ws);
 
