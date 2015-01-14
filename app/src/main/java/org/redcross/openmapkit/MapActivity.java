@@ -14,8 +14,18 @@ import android.widget.Toast;
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.overlay.Overlay;
+import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.OSMMapListener;
+import com.spatialdev.osm.OSMUtil;
+import com.spatialdev.osm.model.JTSModel;
+import com.spatialdev.osm.model.OSMDataSet;
+import com.spatialdev.osm.model.OSMXmlParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxsdk.views.MapViewListener {
 
@@ -48,7 +58,7 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
 
 
         //this activity implements mapViewListener events
-        mapView.setMapViewListener(this);
+//        mapView.setMapViewListener(this);
     }
 
     /**
@@ -71,9 +81,11 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         mapView.setTileSource(ws);
 
         //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(23.713023,90.410088);
+        LatLng initialCoordinate = new LatLng(23.707873,90.409774);
         mapView.setCenter(initialCoordinate);
-        mapView.setZoom(16);
+        mapView.setZoom(19);
+
+        initializeOsmXml();
     }
 
     /**
@@ -102,6 +114,32 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         toast.show();
     }
 
+    /**
+     * Loads OSM XML stored on the device.
+     */
+    private void initializeOsmXml() {
+        try {
+            OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
+            JTSModel jtsModel = new JTSModel(ds);
+            OSMMapListener mapListener = new OSMMapListener(mapView, jtsModel);
+            ArrayList<Object> uiObjects = OSMUtil.createUIObjectsFromDataSet(ds);
+
+            for (Object obj : uiObjects) {
+                if (obj instanceof Marker) {
+                    mapView.addMarker((Marker) obj);
+                } else if (obj instanceof PathOverlay) {
+                    List<Overlay> overlays = mapView.getOverlays();
+                    overlays.add((PathOverlay) obj);
+                }
+            }
+            if (uiObjects.size() > 0) {
+                mapView.invalidate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * For instantiating the location button and setting up its tap event handler
      */
