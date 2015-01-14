@@ -26,12 +26,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Nicolas Gramlich
  */
 public abstract class Overlay {
-
     private static AtomicInteger sOrdinal = new AtomicInteger();
 
     protected float mScale;
     private static final Rect mRect = new Rect();
     private boolean mEnabled = true;
+    private int mOverlayIndex = 3;
+
+    public static final int MAPEVENTSOVERLAY_INDEX = 0;
+    public static final int PATHOVERLAY_INDEX = 1;
+    public static final int USERLOCATIONOVERLAY_INDEX = 2;
 
     public Overlay() {
     }
@@ -45,6 +49,28 @@ public abstract class Overlay {
     public Overlay setContext(final Context ctx) {
         mScale = ctx.getResources().getDisplayMetrics().density;
         return this;
+    }
+
+    /**
+     * Sets the z position of this layer in the layer stack
+     * larger values for @param layerIndex are drawn on top.
+     *
+     * Default values are:
+     * 0 for MapEventsOverlay
+     * 1 for PathOverlay
+     * 2 for UserLocationOverlay
+     * 3 for other Overlays
+     */
+    public void setOverlayIndex(int overlayIndex) {
+        mOverlayIndex = overlayIndex;
+    }
+
+    /**
+     * Get the z position of this layer in the overlay stack
+     * @return overlay index, larger values are drawn on top
+     */
+    public int getOverlayIndex() {
+        return mOverlayIndex;
     }
 
     /**

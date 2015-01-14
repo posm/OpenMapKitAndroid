@@ -71,24 +71,11 @@ public class OverlayManager extends AbstractList<Overlay> {
         }
     }
 
-    private Integer getOverlayClassSortIndex(Overlay overlay) {
-        int result = 3;
-        if (overlay instanceof MapEventsOverlay) {
-            result = 0;
-        } else if (overlay instanceof UserLocationOverlay) {
-            result = 2;
-        } else if (overlay instanceof PathOverlay) {
-            result = 1;
-        }
-        return Integer.valueOf(result);
-    }
-
     private void sortOverlays() {
-
         Overlay[] array = mOverlayList.toArray(new Overlay[mOverlayList.size()]);
         Arrays.sort(array, new Comparator<Overlay>() {
             public int compare(Overlay lhs, Overlay rhs) {
-                return (getOverlayClassSortIndex(lhs).compareTo(getOverlayClassSortIndex(rhs)));
+                return (Integer.valueOf(lhs.getOverlayIndex()).compareTo(rhs.getOverlayIndex()));
             }
         });
         mOverlayList.clear();

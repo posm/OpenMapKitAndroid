@@ -53,6 +53,7 @@ public class PathOverlay extends Overlay {
         this.mPaint.setStrokeWidth(10.0f);
         this.mPaint.setStyle(Paint.Style.STROKE);
         this.clearPath();
+        setOverlayIndex(1);
     }
 
     public PathOverlay(final int color, final float width) {
@@ -62,6 +63,7 @@ public class PathOverlay extends Overlay {
         this.mPaint.setStyle(Paint.Style.STROKE);
 
         this.clearPath();
+        setOverlayIndex(PATHOVERLAY_INDEX);
     }
 
     public Paint getPaint() {

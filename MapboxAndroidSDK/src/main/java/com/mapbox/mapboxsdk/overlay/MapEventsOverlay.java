@@ -26,6 +26,7 @@ public class MapEventsOverlay extends Overlay {
     public MapEventsOverlay(Context ctx, MapEventsReceiver receiver) {
         super(ctx);
         mReceiver = receiver;
+        setOverlayIndex(MAPEVENTSOVERLAY_INDEX);
     }
 
     @Override

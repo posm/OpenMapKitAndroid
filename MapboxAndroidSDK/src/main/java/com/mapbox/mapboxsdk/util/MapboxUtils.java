@@ -1,7 +1,10 @@
 package com.mapbox.mapboxsdk.util;
 
 import android.text.TextUtils;
+
+import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
+import com.mapbox.mapboxsdk.constants.MathConstants;
 
 public class MapboxUtils implements MapboxConstants {
 
@@ -68,5 +71,20 @@ public class MapboxUtils implements MapboxConstants {
 
     public static String getMapTileURL(String mapID, int zoom, int x, int y, RasterImageQuality imageQuality) {
         return String.format(MAPBOX_BASE_URL + "%s/%d/%d/%d%s.%s%s", mapID, zoom, x, y, "@2x", MapboxUtils.qualityExtensionForImageQuality(imageQuality), "");
+    }
+
+    /**
+     * Build a UTFGrid string for given Coordinate and Zoom Level
+     * @param latLng Geo Coordinate
+     * @param zoom Zoom Level
+     * @return UTFGrid String (z/x/y)
+     */
+    public static String getUTFGridString(ILatLng latLng, int zoom) {
+
+        int tilesPerSide = Double.valueOf(Math.pow(2.0, zoom)).intValue();
+        int x = Double.valueOf(Math.floor(((latLng.getLongitude() + 180.0) / 360.0) * tilesPerSide)).intValue();
+        int y = Double.valueOf(Math.floor((1.0 - (Math.log(Math.tan(latLng.getLatitude() * MathConstants.PI / 180.0) + 1.0 / Math.cos(latLng.getLatitude() * MathConstants.PI / 180.0)) / MathConstants.PI)) / 2.0 * tilesPerSide)).intValue();
+
+        return String.format("%d/%d/%d", zoom, x, y);
     }
 }
