@@ -71,9 +71,9 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         mapView.setTileSource(ws);
 
         //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
+        LatLng initialCoordinate = new LatLng(23.713023,90.410088);
         mapView.setCenter(initialCoordinate);
-        mapView.setZoom(12);
+        mapView.setZoom(16);
     }
 
     /**

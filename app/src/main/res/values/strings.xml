@@ -10,9 +10,9 @@
     <string name="action_settings">Settings</string>
 
     <!-- default tile layer -->
-    <string name="defaultTileLayerPID">openstreetmap</string>
-    <string name="defaultTileLayerURL">"http://tile.openstreetmap.org/{z}/{x}/{y}.png"</string>
-    <string name="defaultTileLayerName">"OpenStreetMap"</string>
+    <string name="defaultTileLayerPID">hot</string>
+    <string name="defaultTileLayerURL">"http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"</string>
+    <string name="defaultTileLayerName">"Humanitarian OpenStreetMap"</string>
     <string name="defaultTileLayerAttribution">"© OpenStreetMap Contributors"</string>
 
     <!-- map activity -->
