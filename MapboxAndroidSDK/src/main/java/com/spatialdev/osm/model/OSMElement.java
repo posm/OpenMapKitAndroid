@@ -1,6 +1,7 @@
 package com.spatialdev.osm.model;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -10,6 +11,9 @@ import com.vividsolutions.jts.geom.Geometry;
  * nhallahan@spatialdev.com
  */
 public abstract class OSMElement {
+    
+    private static LinkedList<OSMElement> selectedElements = new LinkedList<>();
+    
     protected long id;
     protected long version;
     protected String timestamp;
@@ -23,7 +27,17 @@ public abstract class OSMElement {
     protected Object overlay;
 
     protected Map<String, String> tags = new LinkedHashMap<>();
-
+    
+    public static LinkedList<OSMElement> getSelectedElements() {
+        return selectedElements;
+    }
+    
+    public static void deselectAll() {
+        for (OSMElement el : selectedElements) {
+            el.deselect();
+        }
+    }
+    
     public OSMElement(String idStr,
                       String versionStr,
                       String timestampStr,
@@ -42,6 +56,7 @@ public abstract class OSMElement {
     public void addTag(String k, String v) {
         tags.put(k, v);
     }
+    
 
     public long getId() {
         return id;
@@ -65,10 +80,12 @@ public abstract class OSMElement {
 
     public void select() {
         selected = true;
+        selectedElements.push(this);
     }
 
     public void deselect() {
         selected = false;
+        selectedElements.remove(this);
     }
 
     /**

@@ -11,7 +11,8 @@ import java.util.List;
 
 public class Node extends OSMElement {
 
-    private LatLng latLng;
+    private double lat;
+    private double lng;
 
     private LinkedList<Relation> linkedRelations = new LinkedList<>();
 
@@ -26,21 +27,20 @@ public class Node extends OSMElement {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
 
-        double lat = Double.valueOf(latStr);
-        double lon = Double.valueOf(lonStr);
-        latLng = new LatLng(lat, lon);
+        lat = Double.valueOf(latStr);
+        lng = Double.valueOf(lonStr);
     }
 
     public LatLng getLatLng() {
-        return latLng;
+        return new LatLng(lat, lng);
     }
 
     public double getLat() {
-        return latLng.getLatitude();
+        return lat;
     }
 
     public double getLng() {
-        return latLng.getLongitude();
+        return lng;
     }
 
     public void addRelation(Relation relation) {

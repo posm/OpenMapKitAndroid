@@ -11,11 +11,14 @@ import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.spatialdev.osm.model.OSMDataSet;
 import com.spatialdev.osm.model.Node;
+import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.Way;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class OSMUtil {
@@ -66,10 +69,20 @@ public class OSMUtil {
         List<Node> standaloneNodes = ds.getStandaloneNodes();
         for (Node n : standaloneNodes) {
             LatLng latLng = n.getLatLng();
-            Marker marker = new Marker("stubTitle", "stubDesc", latLng);
+            Marker marker = new Marker(n.getClass().getSimpleName(), printTags(n), latLng);
             uiObjects.add(marker);
         }
 
         return uiObjects;
+    }
+    
+    public static String printTags(OSMElement element) {
+        Map<String, String> tags = element.getTags();
+        Set<String> keys = tags.keySet();
+        String str = "";
+        for (String k : keys) {
+            str += k + ": " + tags.get(k) + "\n";
+        }
+        return str;
     }
 }

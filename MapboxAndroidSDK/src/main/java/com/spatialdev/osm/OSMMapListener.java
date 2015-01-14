@@ -32,7 +32,6 @@ public class OSMMapListener implements MapViewListener, MapListener {
     private JTSModel jtsModel;
 
     private PathOverlay debugTapEnvelopePath;
-    private OSMElement selectedElement;
 
     public OSMMapListener(MapView mapView, JTSModel jtsModel) {
         this.mapView = mapView;
@@ -70,13 +69,10 @@ public class OSMMapListener implements MapViewListener, MapListener {
     public void onTapMap(MapView pMapView, ILatLng pPosition) {
         float zoom = pMapView.getZoomLevel();
 
-        if (selectedElement != null) {
-            selectedElement.deselect();
-        }
+        OSMElement.deselectAll();
 
         OSMElement element = jtsModel.queryFromTap(pPosition, zoom);
         if (element != null) {
-            selectedElement = element;
             element.select();
             PathOverlay path = (PathOverlay) element.getOverlay();
             List<Overlay> overlays = pMapView.getOverlays();
