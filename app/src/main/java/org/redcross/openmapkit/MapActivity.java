@@ -256,7 +256,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     @Override
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
-        tagsButton.setVisibility(View.VISIBLE);
+        if (selectedElements != null && selectedElements.size() > 0) {
+            tagsButton.setVisibility(View.VISIBLE);
+        } else {
+            tagsButton.setVisibility(View.INVISIBLE);
+        }
     }
 
 }
