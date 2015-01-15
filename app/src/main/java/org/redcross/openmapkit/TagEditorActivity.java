@@ -7,13 +7,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.spatialdev.osm.model.OSMElement;
+
+import java.util.LinkedList;
+
 
 public class TagEditorActivity extends ActionBarActivity {
+    
+    private LinkedList<OSMElement> selectedElements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        selectedElements = OSMElement.getSelectedElements();
 
         setContentView(R.layout.activity_tag_editor);
 

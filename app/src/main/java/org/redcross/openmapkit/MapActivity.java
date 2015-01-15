@@ -19,7 +19,6 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
-import com.spatialdev.osm.OSMListener;
 import com.spatialdev.osm.OSMMapListener;
 import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.model.JTSModel;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MapActivity extends ActionBarActivity implements OSMListener {
+public class MapActivity extends ActionBarActivity {
 
     private MapView mapView;
     OSMMapListener osmMapListener;
@@ -92,6 +91,7 @@ public class MapActivity extends ActionBarActivity implements OSMListener {
         mapView.setZoom(19);
 
         initializeOsmXml();
+        initializeTagsButton();
     }
 
     /**
@@ -127,7 +127,7 @@ public class MapActivity extends ActionBarActivity implements OSMListener {
         try {
             OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
             JTSModel jtsModel = new JTSModel(ds);
-            osmMapListener = new OSMMapListener(mapView, jtsModel, this);
+            osmMapListener = new OSMMapListener(mapView, jtsModel);
             ArrayList<Object> uiObjects = OSMUtil.createUIObjectsFromDataSet(ds);
 
             for (Object obj : uiObjects) {
@@ -173,6 +173,15 @@ public class MapActivity extends ActionBarActivity implements OSMListener {
                 }
             }
         });
+    }
+    
+    private void initializeTagsButton() {
+        tagsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showAlertDialog();
+            }
+        });
+        
     }
 
     public void showAlertDialog() {
@@ -244,9 +253,8 @@ public class MapActivity extends ActionBarActivity implements OSMListener {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
-        tagsButton.setVisibility(View.VISIBLE);
-    }
+//    public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
+//        tagsButton.setVisibility(View.VISIBLE);
+//    }
     
 }
