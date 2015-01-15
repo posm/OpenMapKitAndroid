@@ -8,6 +8,8 @@
     <string name="aciton_offlinesettings">Offline Settings</string>
     <string name="action_about">About Open Mapkit</string>
     <string name="action_settings">Settings</string>
+    
+    <string name="tags">Tags</string>
 
     <!-- default tile layer -->
     <string name="defaultTileLayerPID">hot</string>

@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -18,18 +19,23 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.OSMListener;
 import com.spatialdev.osm.OSMMapListener;
 import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMDataSet;
+import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlParser;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxsdk.views.MapViewListener {
+public class MapActivity extends ActionBarActivity implements OSMListener {
 
     private MapView mapView;
+    OSMMapListener osmMapListener;
+    private Button tagsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +72,8 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
      */
     private void initializeOnlineMap() {
 
-        //instantiate map
-        this.mapView = (MapView)findViewById(R.id.mapView);
+        mapView = (MapView)findViewById(R.id.mapView);
+        tagsButton = (Button) findViewById(R.id.tagsButton);
 
         //set the  default map tile layer (OSM)
         String defaultTilePID = getString(R.string.defaultTileLayerPID);
@@ -121,7 +127,7 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         try {
             OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
             JTSModel jtsModel = new JTSModel(ds);
-            OSMMapListener mapListener = new OSMMapListener(mapView, jtsModel);
+            osmMapListener = new OSMMapListener(mapView, jtsModel, this);
             ArrayList<Object> uiObjects = OSMUtil.createUIObjectsFromDataSet(ds);
 
             for (Object obj : uiObjects) {
@@ -169,11 +175,7 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         });
     }
 
-    /**
-     *  MapViewListener method
-     */
-    @Override
-    public void onTapMap(MapView mapView, ILatLng iLatLng) {
+    public void showAlertDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -208,45 +210,6 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
         dialog.show();
     }
 
-    /**
-     *  MapViewListener method
-     */
-    @Override
-    public void onLongPressMap(MapView pMapView, ILatLng pPosition) { }
-
-    /**
-     *  MapViewListener method
-     */
-    @Override
-    public void onLongPressMarker(MapView pMapView, Marker pMarker) { }
-
-    /**
-     *  MapViewListener method
-     */
-    @Override
-    public void onShowMarker(MapView pMapView, Marker pMarker) { }
-
-    /**
-     *  MapViewListener method
-     */
-    @Override
-    public void onHideMarker(MapView pMapView, Marker pMarker) { }
-
-    /**
-     *  MapViewListener method
-     */
-    @Override
-    public void onTapMarker(MapView pMapView, Marker pMarker) { }
-
-    /**
-     * For creating the menu items (top right)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_map, menu);
-        return true;
-    }
 
     /**
      * For handling when a user taps on a menu item (top right)
@@ -280,4 +243,10 @@ public class MapActivity extends ActionBarActivity implements com.mapbox.mapboxs
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
+        tagsButton.setVisibility(View.VISIBLE);
+    }
+    
 }
