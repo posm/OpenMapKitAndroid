@@ -13,6 +13,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public abstract class OSMElement {
     
     private static LinkedList<OSMElement> selectedElements = new LinkedList<>();
+    private static boolean selectedElementsChanged = false;
     
     protected long id;
     protected long version;
@@ -32,8 +33,17 @@ public abstract class OSMElement {
         return selectedElements;
     }
     
+    public static boolean hasSelectedElementsChanged() {
+        if (selectedElementsChanged) {
+            selectedElementsChanged = false;
+            return true;
+        }
+        return false;
+    }
+    
     public static void deselectAll() {
         for (OSMElement el : selectedElements) {
+            selectedElementsChanged = true;
             el.deselect();
         }
     }
@@ -79,11 +89,13 @@ public abstract class OSMElement {
     }
 
     public void select() {
+        selectedElementsChanged = true;
         selected = true;
         selectedElements.push(this);
     }
 
     public void deselect() {
+        selectedElementsChanged = true;
         selected = false;
         selectedElements.remove(this);
     }

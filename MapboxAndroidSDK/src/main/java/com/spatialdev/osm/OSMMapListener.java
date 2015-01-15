@@ -17,6 +17,7 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
+import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMElement;
 import com.vividsolutions.jts.geom.Envelope;
@@ -30,9 +31,15 @@ public class OSMMapListener implements MapViewListener, MapListener {
 
     private MapView mapView;
     private JTSModel jtsModel;
+    private OSMSelectionListener selectionListener;
 
     private PathOverlay debugTapEnvelopePath;
 
+    public OSMMapListener(MapView mapView, JTSModel jtsModel, OSMSelectionListener selectionListener) {
+        this(mapView, jtsModel);
+        this.selectionListener = selectionListener;
+    }
+    
     public OSMMapListener(MapView mapView, JTSModel jtsModel) {
         this.mapView = mapView;
         this.jtsModel = jtsModel;
@@ -41,6 +48,10 @@ public class OSMMapListener implements MapViewListener, MapListener {
         mapView.addListener(this);
     }
 
+    public void setSelectionListener(OSMSelectionListener selectionListener) {
+        this.selectionListener = selectionListener;
+    }
+    
     /**
      * MapViewListener Methods
      */
@@ -85,6 +96,12 @@ public class OSMMapListener implements MapViewListener, MapListener {
         }
 
         mapView.invalidate();
+        
+        // check to see if the selected elements has changed and
+        // notify selection listeners if they exist
+        if (OSMElement.hasSelectedElementsChanged() && selectionListener != null) {
+            selectionListener.selectedElementsChanged(OSMElement.getSelectedElements());
+        }
     }
 
     private void drawDebugTapEnvelope(MapView pMapView, ILatLng pPosition, float zoom) {
