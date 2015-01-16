@@ -5,18 +5,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMapListener;
@@ -27,6 +26,7 @@ import com.spatialdev.osm.model.OSMDataSet;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,6 +93,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         initializeOsmXml();
         initializeTagsButton();
+
     }
 
     /**
@@ -101,24 +102,85 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void initializeOfflineMap() {
 
         /*
-        //instantiate map
-        this.mapView = (MapView)findViewById(R.id.mapView);
+        if(ExternalStorage.isReadable()) {
+
+            Toast toast1 = Toast.makeText(getApplicationContext(), "isReadable", Toast.LENGTH_SHORT);
+            toast1.show();
+
+            if(ExternalStorage.isWritable()) {
+
+                Toast toast2 = Toast.makeText(getApplicationContext(), "isWritable", Toast.LENGTH_SHORT);
+                toast2.show();
+
+                String envPath = Environment.getExternalStorageDirectory().getPath();
+
+                Toast envToast = Toast.makeText(getApplicationContext(), envPath, Toast.LENGTH_SHORT);
+                envToast.show();
+
+                File folder = new File(Environment.getExternalStorageDirectory() + "/openmapkit");
+                boolean success = true;
+                if (!folder.exists()) {
+                    success = folder.mkdir();
+                }
+                if (success) {
+                    // Do something on success
+                    Toast tst1 = Toast.makeText(getApplicationContext(), "do something on success", Toast.LENGTH_SHORT);
+                    tst1.show();
+                } else {
+                    // Do something else on failure
+                    Toast tst2 = Toast.makeText(getApplicationContext(), "do something on failure", Toast.LENGTH_SHORT);
+                    tst2.show();
+                }
+            }
+        }
+        */
 
 
-        //offline tilelayer
-        TileLayer tileLayer = new MBTilesLayer("dhaka2015-01-02.mbtiles");
-        mapView.setTileSource(tileLayer);
+        /*
+        //add mbtiles from assets folder ...
+        mapView = (MapView)findViewById(R.id.mapView);
 
+        mapView.setTileSource(new MBTilesLayer(this, "dhaka2015-01-02.mbtiles")); //works - note, some issues when in subfolder so now at root of assets
 
-        //set default map extent and zoom
         LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
         mapView.setCenter(initialCoordinate);
         mapView.setZoom(12);
+
+        Toast toast1 = Toast.makeText(getApplicationContext(), "one", Toast.LENGTH_SHORT);
+        toast1.show();
         */
 
-        //test
-        Toast toast = Toast.makeText(getApplicationContext(), "Offline - load data from external storage", Toast.LENGTH_SHORT);
-        toast.show();
+
+
+
+        mapView = (MapView)findViewById(R.id.mapView);
+
+        File f = null;
+        try {
+
+            // create new file
+            f = new File("dhaka2015-01-02.mbtiles");
+
+            // true if the file is executable
+            //boolean bool = f.canExecute();
+
+            // find the absolute path
+            String a = f.getAbsolutePath();
+            Toast path = Toast.makeText(getApplicationContext(), a, Toast.LENGTH_SHORT);
+            path.show();
+
+        } catch(Exception e){
+            // if any I/O error occurs
+            e.printStackTrace();
+        }
+
+        mapView.setTileSource(new MBTilesLayer(f));
+
+        LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
+        mapView.setCenter(initialCoordinate);
+        mapView.setZoom(12);
+        
+
     }
 
     /**
