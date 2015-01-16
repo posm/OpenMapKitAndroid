@@ -4,6 +4,8 @@
  */
 package com.spatialdev.osm.model;
 
+import org.xmlpull.v1.XmlSerializer;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,11 @@ public class Relation extends OSMElement {
                      String userStr ) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+    }
+
+    @Override
+    public void xml(XmlSerializer xmlSerializer) {
+
     }
 
     public void addNodeRef(long id) {

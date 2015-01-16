@@ -1,4 +1,4 @@
-#Open Mapkit
+#OpenMapKit
 
 ***
 

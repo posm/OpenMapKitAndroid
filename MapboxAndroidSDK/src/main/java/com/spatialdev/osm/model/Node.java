@@ -6,6 +6,8 @@ package com.spatialdev.osm.model;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.xmlpull.v1.XmlSerializer;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,6 +51,11 @@ public class Node extends OSMElement {
 
     public List<Relation> getRelations() {
         return linkedRelations;
+    }
+
+    @Override
+    public void xml(XmlSerializer xmlSerializer) {
+
     }
 
     @Override

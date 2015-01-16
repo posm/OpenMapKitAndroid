@@ -9,6 +9,8 @@ import android.graphics.Paint;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 
+import org.xmlpull.v1.XmlSerializer;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +46,11 @@ public class Way extends OSMElement {
                 String userStr ) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+    }
+
+    @Override
+    public void xml(XmlSerializer xmlSerializer) {
+
     }
 
     public void addNodeRef(long id) {
