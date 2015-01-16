@@ -4,9 +4,11 @@
  */
 package com.spatialdev.osm.model;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -87,7 +89,26 @@ public abstract class OSMElement {
         user = userStr;
     }
 
-    public abstract void xml(XmlSerializer xmlSerializer);
+    public void xml(XmlSerializer xmlSerializer) throws IOException {
+        // set the tags for the element (all element types can have tags)
+        Set<String> tagKeys = tags.keySet();
+        for (String tagKey : tagKeys) {
+            xmlSerializer.startTag(null, "tag");
+            xmlSerializer.attribute(null, "k", tagKey);
+            xmlSerializer.attribute(null, "v", tags.get(tagKey));
+            xmlSerializer.endTag(null, "tag");
+        }
+    };
+    
+    protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer) throws IOException {
+        xmlSerializer.attribute(null, "id", String.valueOf(id));
+        if (modified) {
+            xmlSerializer.attribute(null, "action", "modify");
+        }
+        xmlSerializer.attribute(null, "version", String.valueOf(version));
+        xmlSerializer.attribute(null, "changeset", String.valueOf(changeset));
+        xmlSerializer.attribute(null, "timestamp", timestamp);
+    }
     
     /**
      * If a tag is edited or added, this should be called by the application.* 

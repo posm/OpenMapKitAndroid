@@ -11,6 +11,7 @@ import com.mapbox.mapboxsdk.overlay.PathOverlay;
 
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,10 +50,24 @@ public class Way extends OSMElement {
     }
 
     @Override
-    public void xml(XmlSerializer xmlSerializer) {
-
+    public void xml(XmlSerializer xmlSerializer) throws IOException {
+        xmlSerializer.startTag(null, "way");
+        setOsmElementXmlAttributes(xmlSerializer);
+        // generate nds
+        setWayXmlNds(xmlSerializer);
+        // generate tags
+        super.xml(xmlSerializer); 
+        xmlSerializer.endTag(null, "way");
     }
 
+    private void setWayXmlNds(XmlSerializer xmlSerializer) throws IOException {
+        for (Long ref : nodeRefs) {
+            xmlSerializer.startTag(null, "tag");
+            xmlSerializer.attribute(null, "ref", String.valueOf(ref));
+            xmlSerializer.endTag(null, "tag");
+        }
+    }
+    
     public void addNodeRef(long id) {
         nodeRefs.add(id);
     }

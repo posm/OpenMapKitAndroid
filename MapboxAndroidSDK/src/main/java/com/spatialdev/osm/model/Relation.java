@@ -6,6 +6,7 @@ package com.spatialdev.osm.model;
 
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,23 @@ public class Relation extends OSMElement {
     }
 
     @Override
-    public void xml(XmlSerializer xmlSerializer) {
-
+    public void xml(XmlSerializer xmlSerializer) throws IOException {
+        xmlSerializer.startTag(null, "relation");
+        setOsmElementXmlAttributes(xmlSerializer);
+        // generate members
+        
+        // generate tags
+        super.xml(xmlSerializer);
+        xmlSerializer.endTag(null, "relation");
+    }
+    
+    private void setRelationXmlMembers(XmlSerializer xmlSerializer) throws IOException {
+        for (Long wayRef : wayRefs) {
+            
+        }
+        for (Long nodeRef : nodeRefs) {
+            
+        }
     }
 
     public void addNodeRef(long id) {

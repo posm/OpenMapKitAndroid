@@ -8,6 +8,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,8 +55,13 @@ public class Node extends OSMElement {
     }
 
     @Override
-    public void xml(XmlSerializer xmlSerializer) {
-
+    public void xml(XmlSerializer xmlSerializer) throws IOException {
+        xmlSerializer.startTag(null, "node");
+        setOsmElementXmlAttributes(xmlSerializer);
+        xmlSerializer.attribute(null, "lat", String.valueOf(lat));
+        xmlSerializer.attribute(null, "lon", String.valueOf(lng));
+        super.xml(xmlSerializer); // generates tags
+        xmlSerializer.endTag(null, "node");
     }
 
     @Override
