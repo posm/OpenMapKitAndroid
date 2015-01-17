@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
@@ -30,6 +29,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -39,43 +39,46 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         //set layout
         setContentView(R.layout.activity_map);
 
+        //get map from layout
+        mapView = (MapView)findViewById(R.id.mapView);
 
-        //get device connectivity status
+        //add map data based on connectivity status
         boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
 
-
-        //initialize map based on device connectivity status
         if (deviceIsConnected) {
 
-            initializeOnlineMap();
+            addOnlineDataSources();
 
         } else {
 
-            initializeOfflineMap();
+            addOfflineDataSources();
         }
 
         //add user location toggle button
         initializeLocationButton();
 
+        //add tags button
+        tagsButton = (Button) findViewById(R.id.tagsButton);
+        initializeTagsButton();
 
-        //this activity implements mapViewListener events
-//        mapView.setMapViewListener(this);
+        //set default map extent and zoom
+        LatLng initialCoordinate = new LatLng(23.707873, 90.409774);
+        mapView.setCenter(initialCoordinate);
+        mapView.setZoom(19);
     }
 
     /**
-     * For instantiating a map (when the device is online) and initializing the default tile layer, location, extent, and zoom level
+     * For adding data to map when online
      */
-    private void initializeOnlineMap() {
+    private void addOnlineDataSources() {
 
-        mapView = (MapView)findViewById(R.id.mapView);
-        tagsButton = (Button) findViewById(R.id.tagsButton);
-
-        //set the  default map tile layer (OSM)
+        //create OSM tile layer
         String defaultTilePID = getString(R.string.defaultTileLayerPID);
         String defaultTileURL = getString(R.string.defaultTileLayerURL);
         String defaultTileName = getString(R.string.defaultTileLayerName);
@@ -84,103 +87,38 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
         ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
 
+        //add OSM tile layer to map
         mapView.setTileSource(ws);
 
-        //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(23.707873,90.409774);
-        mapView.setCenter(initialCoordinate);
-        mapView.setZoom(19);
-
+        //add osm xml from assets //TODO - this is a placeholder - fetch from Open MapkitServer over network
         initializeOsmXml();
-        initializeTagsButton();
-
     }
 
     /**
      * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
      */
-    private void initializeOfflineMap() {
+    private void addOfflineDataSources() {
 
-        /*
+        //add offline tiles
+        String mbtilesFileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
+
         if(ExternalStorage.isReadable()) {
 
-            Toast toast1 = Toast.makeText(getApplicationContext(), "isReadable", Toast.LENGTH_SHORT);
-            toast1.show();
+            //create file path and name for mbtiles
+            Map<String, File> externalLocations = ExternalStorage.getAllStorageLocations();
+            File sdCard = externalLocations.get(ExternalStorage.SD_CARD);
+            String sdCardPath = sdCard.getAbsolutePath();
+            String filePathAndName = sdCardPath + "/openmapkit/mbtiles/" + mbtilesFileName;
 
-            if(ExternalStorage.isWritable()) {
+            //fetch mbtiles file from storage
+            File targetMBTiles = ExternalStorage.fetchFileFromStorage(filePathAndName);
 
-                Toast toast2 = Toast.makeText(getApplicationContext(), "isWritable", Toast.LENGTH_SHORT);
-                toast2.show();
-
-                String envPath = Environment.getExternalStorageDirectory().getPath();
-
-                Toast envToast = Toast.makeText(getApplicationContext(), envPath, Toast.LENGTH_SHORT);
-                envToast.show();
-
-                File folder = new File(Environment.getExternalStorageDirectory() + "/openmapkit");
-                boolean success = true;
-                if (!folder.exists()) {
-                    success = folder.mkdir();
-                }
-                if (success) {
-                    // Do something on success
-                    Toast tst1 = Toast.makeText(getApplicationContext(), "do something on success", Toast.LENGTH_SHORT);
-                    tst1.show();
-                } else {
-                    // Do something else on failure
-                    Toast tst2 = Toast.makeText(getApplicationContext(), "do something on failure", Toast.LENGTH_SHORT);
-                    tst2.show();
-                }
-            }
-        }
-        */
-
-
-        /*
-        //add mbtiles from assets folder ...
-        mapView = (MapView)findViewById(R.id.mapView);
-
-        mapView.setTileSource(new MBTilesLayer(this, "dhaka2015-01-02.mbtiles")); //works - note, some issues when in subfolder so now at root of assets
-
-        LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
-        mapView.setCenter(initialCoordinate);
-        mapView.setZoom(12);
-
-        Toast toast1 = Toast.makeText(getApplicationContext(), "one", Toast.LENGTH_SHORT);
-        toast1.show();
-        */
-
-
-
-
-        mapView = (MapView)findViewById(R.id.mapView);
-
-        File f = null;
-        try {
-
-            // create new file
-            f = new File("dhaka2015-01-02.mbtiles");
-
-            // true if the file is executable
-            //boolean bool = f.canExecute();
-
-            // find the absolute path
-            String a = f.getAbsolutePath();
-            Toast path = Toast.makeText(getApplicationContext(), a, Toast.LENGTH_SHORT);
-            path.show();
-
-        } catch(Exception e){
-            // if any I/O error occurs
-            e.printStackTrace();
+            //add mbtiles layer to map
+            mapView.setTileSource(new MBTilesLayer(targetMBTiles));
         }
 
-        mapView.setTileSource(new MBTilesLayer(f));
-
-        LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
-        mapView.setCenter(initialCoordinate);
-        mapView.setZoom(12);
-        
-
+        //add osm xml from assets //TODO - this is a placeholder - fetch from OSM XML from SD Card too
+        initializeOsmXml();
     }
 
     /**
