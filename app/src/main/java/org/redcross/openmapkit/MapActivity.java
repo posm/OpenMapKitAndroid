@@ -5,18 +5,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMapListener;
@@ -27,9 +25,11 @@ import com.spatialdev.osm.model.OSMDataSet;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -39,43 +39,46 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         //set layout
         setContentView(R.layout.activity_map);
 
+        //get map from layout
+        mapView = (MapView)findViewById(R.id.mapView);
 
-        //get device connectivity status
+        //add map data based on connectivity status
         boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
 
-
-        //initialize map based on device connectivity status
         if (deviceIsConnected) {
 
-            initializeOnlineMap();
+            addOnlineDataSources();
 
         } else {
 
-            initializeOfflineMap();
+            addOfflineDataSources();
         }
 
         //add user location toggle button
         initializeLocationButton();
 
+        //add tags button
+        tagsButton = (Button) findViewById(R.id.tagsButton);
+        initializeTagsButton();
 
-        //this activity implements mapViewListener events
-//        mapView.setMapViewListener(this);
+        //set default map extent and zoom
+        LatLng initialCoordinate = new LatLng(23.707873, 90.409774);
+        mapView.setCenter(initialCoordinate);
+        mapView.setZoom(19);
     }
 
     /**
-     * For instantiating a map (when the device is online) and initializing the default tile layer, location, extent, and zoom level
+     * For adding data to map when online
      */
-    private void initializeOnlineMap() {
+    private void addOnlineDataSources() {
 
-        mapView = (MapView)findViewById(R.id.mapView);
-        tagsButton = (Button) findViewById(R.id.tagsButton);
-
-        //set the  default map tile layer (OSM)
+        //create OSM tile layer
         String defaultTilePID = getString(R.string.defaultTileLayerPID);
         String defaultTileURL = getString(R.string.defaultTileLayerURL);
         String defaultTileName = getString(R.string.defaultTileLayerName);
@@ -84,41 +87,38 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
         ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
 
+        //add OSM tile layer to map
         mapView.setTileSource(ws);
 
-        //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(23.707873,90.409774);
-        mapView.setCenter(initialCoordinate);
-        mapView.setZoom(19);
-
+        //add osm xml from assets //TODO - this is a placeholder - fetch from Open MapkitServer over network
         initializeOsmXml();
-        initializeTagsButton();
     }
 
     /**
      * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
      */
-    private void initializeOfflineMap() {
+    private void addOfflineDataSources() {
 
-        /*
-        //instantiate map
-        this.mapView = (MapView)findViewById(R.id.mapView);
+        //add offline tiles
+        String mbtilesFileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
 
+        if(ExternalStorage.isReadable()) {
 
-        //offline tilelayer
-        TileLayer tileLayer = new MBTilesLayer("dhaka2015-01-02.mbtiles");
-        mapView.setTileSource(tileLayer);
+            //create file path and name for mbtiles
+            Map<String, File> externalLocations = ExternalStorage.getAllStorageLocations();
+            File sdCard = externalLocations.get(ExternalStorage.SD_CARD);
+            String sdCardPath = sdCard.getAbsolutePath();
+            String filePathAndName = sdCardPath + "/openmapkit/mbtiles/" + mbtilesFileName;
 
+            //fetch mbtiles file from storage
+            File targetMBTiles = ExternalStorage.fetchFileFromStorage(filePathAndName);
 
-        //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(23.728791, 90.409412);
-        mapView.setCenter(initialCoordinate);
-        mapView.setZoom(12);
-        */
+            //add mbtiles layer to map
+            mapView.setTileSource(new MBTilesLayer(targetMBTiles));
+        }
 
-        //test
-        Toast toast = Toast.makeText(getApplicationContext(), "Offline - load data from external storage", Toast.LENGTH_SHORT);
-        toast.show();
+        //add osm xml from assets //TODO - this is a placeholder - fetch from OSM XML from SD Card too
+        initializeOsmXml();
     }
 
     /**
