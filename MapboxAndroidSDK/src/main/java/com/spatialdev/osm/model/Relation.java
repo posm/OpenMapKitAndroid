@@ -52,20 +52,31 @@ public class Relation extends OSMElement {
         xmlSerializer.startTag(null, "relation");
         setOsmElementXmlAttributes(xmlSerializer);
         // generate members
-        
+        setRelationXmlMembers(xmlSerializer);
         // generate tags
         super.xml(xmlSerializer);
         xmlSerializer.endTag(null, "relation");
     }
     
-//    private void setRelationXmlMembers(XmlSerializer xmlSerializer) throws IOException {
-//        for (Long wayRef : wayMembers) {
-//            
-//        }
-//        for (Long nodeRef : nodeMembers) {
-//            
-//        }
-//    }
+    private void setRelationXmlMembers(XmlSerializer xmlSerializer) throws IOException {
+        for (RelationMember mem: nodeMembers) {
+            writeXmlMember(mem, xmlSerializer);
+        }
+        for (RelationMember mem: wayMembers) {
+            writeXmlMember(mem, xmlSerializer);
+        }
+        for (RelationMember mem: relationMembers) {
+            writeXmlMember(mem, xmlSerializer);
+        }
+    }
+    
+    private void writeXmlMember(RelationMember mem, XmlSerializer xmlSerializer) throws IOException {
+        xmlSerializer.startTag(null, "member");
+        xmlSerializer.attribute(null, "type", mem.type);
+        xmlSerializer.attribute(null, "ref", String.valueOf(mem.ref));
+        xmlSerializer.attribute(null, "ref", mem.role);
+        xmlSerializer.endTag(null, "member");
+    }
 
     public void addNodeRef(long id, String role) {
         nodeMembers.add(new RelationMember(id, "node", role));
