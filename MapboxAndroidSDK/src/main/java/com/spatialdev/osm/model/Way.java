@@ -64,9 +64,9 @@ public class Way extends OSMElement {
     }
 
     private void setWayXmlNds(XmlSerializer xmlSerializer) throws IOException {
-        for (Long ref : nodeRefs) {
+        for (Node node : linkedNodes) {
             xmlSerializer.startTag(null, "nd");
-            xmlSerializer.attribute(null, "ref", String.valueOf(ref));
+            xmlSerializer.attribute(null, "ref", String.valueOf(node.getId()));
             xmlSerializer.endTag(null, "nd");
         }
     }

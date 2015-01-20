@@ -53,7 +53,7 @@ public class OSMXmlWriter {
 
     private void start(String osmUser) throws IOException {
         xmlSerializer.setOutput(stringWriter);
-        xmlSerializer.startDocument("UTF-8", true);
+        xmlSerializer.startDocument("UTF-8", null);
         xmlSerializer.startTag(ns, "osm");
         xmlSerializer.attribute(ns, "version", OSM_API_VERSION);
         xmlSerializer.attribute(ns, "generator", GENERATOR);

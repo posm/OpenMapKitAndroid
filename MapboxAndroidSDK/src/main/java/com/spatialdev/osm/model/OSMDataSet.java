@@ -170,9 +170,18 @@ public class OSMDataSet {
     }
 
     /**
+     * Returns all nodes in the data set, including those that are in and not
+     * in ways.
+     *
+     * @return all nodes
+     */
+    public Map<Long, Node> getNodes() {
+        return nodes;
+    }
+    /**
      * Returns only the nodes that are not part of ways / relations.
      *
-     * @return
+     * @return standalone nodes
      */
     public List<Node> getStandaloneNodes() {
         return standaloneNodes;
