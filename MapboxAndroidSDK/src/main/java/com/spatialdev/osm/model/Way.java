@@ -50,7 +50,7 @@ public class Way extends OSMElement {
     }
 
     @Override
-    public void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, "way");
         setOsmElementXmlAttributes(xmlSerializer);
         // generate nds

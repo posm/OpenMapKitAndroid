@@ -66,7 +66,7 @@ public class OSMXmlWriter {
         return stringWriter.toString();
     }
     
-    private void iterateElements(LinkedList<OSMElement> elements) {
+    private void iterateElements(LinkedList<OSMElement> elements) throws IOException {
         for (OSMElement element : elements) {
             element.xml(xmlSerializer);
         }

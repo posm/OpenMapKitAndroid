@@ -55,7 +55,7 @@ public class Node extends OSMElement {
     }
 
     @Override
-    public void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, "node");
         setOsmElementXmlAttributes(xmlSerializer);
         xmlSerializer.attribute(null, "lat", String.valueOf(lat));

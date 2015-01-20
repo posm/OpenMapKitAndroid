@@ -89,7 +89,7 @@ public abstract class OSMElement {
         user = userStr;
     }
 
-    public void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer) throws IOException {
         // set the tags for the element (all element types can have tags)
         Set<String> tagKeys = tags.keySet();
         for (String tagKey : tagKeys) {
@@ -98,7 +98,7 @@ public abstract class OSMElement {
             xmlSerializer.attribute(null, "v", tags.get(tagKey));
             xmlSerializer.endTag(null, "tag");
         }
-    };
+    }
     
     protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.attribute(null, "id", String.valueOf(id));
