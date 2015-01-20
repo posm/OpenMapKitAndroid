@@ -50,6 +50,9 @@ public class Relation extends OSMElement {
     @Override
     void xml(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, "relation");
+        if (isModified()) {
+            xmlSerializer.attribute(null, "action", "modify");
+        }
         setOsmElementXmlAttributes(xmlSerializer);
         // generate members
         setRelationXmlMembers(xmlSerializer);
@@ -74,7 +77,7 @@ public class Relation extends OSMElement {
         xmlSerializer.startTag(null, "member");
         xmlSerializer.attribute(null, "type", mem.type);
         xmlSerializer.attribute(null, "ref", String.valueOf(mem.ref));
-        xmlSerializer.attribute(null, "ref", mem.role);
+        xmlSerializer.attribute(null, "role", mem.role);
         xmlSerializer.endTag(null, "member");
     }
 
