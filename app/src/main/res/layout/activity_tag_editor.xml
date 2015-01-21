@@ -66,6 +66,7 @@
         android:id="@+id/buttonSave"
         android:layout_alignTop="@+id/buttonCancel"
         android:layout_toRightOf="@+id/buttonCancel"
-        android:layout_toEndOf="@+id/buttonCancel" />
+        android:layout_toEndOf="@+id/buttonCancel"
+        android:enabled="false" />
 
 </RelativeLayout>
