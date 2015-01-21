@@ -13,7 +13,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMXmlWriter;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -117,6 +119,17 @@ public class TagEditorActivity extends ActionBarActivity {
         for (String k : editedTagKeys) {
             String v = editedTags.get(k);
             osmElement.addOrEditTag(k, v);
+        }
+        editsToXml();
+    }
+    
+    private void editsToXml() {
+        LinkedList<OSMElement> els = OSMElement.getModifiedElements();
+        String xml = null; // TODO: Need to specify OSM User
+        try {
+            xml = OSMXmlWriter.elementsToString(els, "theoutpost");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     
