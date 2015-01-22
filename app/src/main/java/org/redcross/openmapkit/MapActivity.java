@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -100,20 +100,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void addOfflineDataSources() {
 
         //add offline tiles
-        String mbtilesFileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
+        String fileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
+
+        String filePath = Environment.getExternalStorageDirectory() + "/openmapkit/mbtiles/";
 
         if(ExternalStorage.isReadable()) {
 
-            //create file path and name for mbtiles
-            Map<String, File> externalLocations = ExternalStorage.getAllStorageLocations();
-            File sdCard = externalLocations.get(ExternalStorage.SD_CARD);
-            String sdCardPath = sdCard.getAbsolutePath();
-            String filePathAndName = sdCardPath + "/openmapkit/mbtiles/" + mbtilesFileName;
+            File targetMBTiles = ExternalStorage.fetchFileFromExternalStorage(filePath + fileName);
 
-            //fetch mbtiles file from storage
-            File targetMBTiles = ExternalStorage.fetchFileFromStorage(filePathAndName);
-
-            //add mbtiles layer to map
             mapView.setTileSource(new MBTilesLayer(targetMBTiles));
         }
 
