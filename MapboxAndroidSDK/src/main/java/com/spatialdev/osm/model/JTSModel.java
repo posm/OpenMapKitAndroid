@@ -74,7 +74,6 @@ public class JTSModel {
         Coordinate coord = new Coordinate(lng, lat);
         Envelope envelope = createTapEnvelope(coord, lat, lng, zoom);
 
-        List<OSMElement> matches = new ArrayList<>();
         List results = rtree.query(envelope);
 
         int len = results.size();
@@ -174,6 +173,7 @@ public class JTSModel {
         return coords;
     }
 
+    // NH TODO
     private void addOSMStandaloneNodes(OSMDataSet ds) {
         List<Node> standaloneNodes = ds.getStandaloneNodes();
         for (Node n : standaloneNodes) {

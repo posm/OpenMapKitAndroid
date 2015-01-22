@@ -159,14 +159,10 @@ public class OverlayManager extends AbstractList<Overlay> {
         for (final Overlay overlay : mOverlayList) {
             if (overlay.isEnabled()) {
                 overlay.draw(c, pMapView, true);
-            }
-        }
-
-        for (final Overlay overlay : mOverlayList) {
-            if (overlay.isEnabled()) {
                 overlay.draw(c, pMapView, false);
             }
         }
+
     }
 
     public void onDetach(final MapView pMapView) {
