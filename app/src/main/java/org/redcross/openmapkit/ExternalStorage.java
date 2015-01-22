@@ -59,5 +59,28 @@ public class ExternalStorage {
 
         return targetFile;
     }
+
+    /**
+     * For creating the application directory structure for Open Mapkit
+     */
+    public static void createAppFolders() {
+
+        String appFolderName = "openmapkit";
+        String mbtilesFolderName = "mbtiles";
+
+        File appFolder = new File(Environment.getExternalStorageDirectory(), appFolderName);
+
+        if(!appFolder.exists()) {
+
+            appFolder.mkdirs();
+        }
+
+        File mbtilesSubfolder = new File(Environment.getExternalStorageDirectory() + "/" + appFolderName, mbtilesFolderName);
+
+        if(!mbtilesSubfolder.exists()) {
+
+            mbtilesSubfolder.mkdirs();
+        }
+    }
 }
 
