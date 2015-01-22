@@ -90,7 +90,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //add OSM tile layer to map
         mapView.setTileSource(ws);
 
-        //add osm xml from assets //TODO - this is a placeholder - fetch from Open MapkitServer over network
+        //add osm xml from assets //TODO - this is a placeholder - fetch from Open Mapkit Server over network
         initializeOsmXml();
     }
 
@@ -99,19 +99,39 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void addOfflineDataSources() {
 
-        //add offline tiles
         String fileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
 
-        String filePath = Environment.getExternalStorageDirectory() + "/openmapkit/mbtiles/";
+        String filePath = Environment.getExternalStorageDirectory() + "/" + getString(R.string.appFolderName) + "/" + getString(R.string.mbtilesFolderName) + "/";
 
         if(ExternalStorage.isReadable()) {
 
+            //fetch mbtiles from application folder (e.g. openmapkit/mbtiles)
             File targetMBTiles = ExternalStorage.fetchFileFromExternalStorage(filePath + fileName);
 
-            mapView.setTileSource(new MBTilesLayer(targetMBTiles));
+            if(!targetMBTiles.exists()) {
+
+                //inform user if no mbtiles was found
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Device is Offline");
+                builder.setMessage("Please add mbtiles to ExternalStorage" + "/" + getString(R.string.appFolderName) + "/" + getString(R.string.mbtilesFolderName) + "/");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //placeholder
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            } else {
+
+                //add mbtiles to map
+                mapView.setTileSource(new MBTilesLayer(targetMBTiles));
+            }
+
         }
 
-        //add osm xml from assets //TODO - this is a placeholder - fetch from OSM XML from SD Card too
+        //add osm xml from assets //TODO - this is a placeholder - fetch from OSM XML from External storage too
         initializeOsmXml();
     }
 

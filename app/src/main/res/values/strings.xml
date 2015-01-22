@@ -31,4 +31,7 @@
     <string name="cancelButtonTitle">Cancel</string>
     <string name="saveButtonTitle">Save</string>
 
+    <!-- external storage -->
+    <string name="appFolderName">"openmapkit"</string>
+    <string name="mbtilesFolderName">"mbtiles"</string>
 </resources>
