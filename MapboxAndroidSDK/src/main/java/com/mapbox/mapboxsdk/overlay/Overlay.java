@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Nicolas Gramlich
  */
-public abstract class Overlay {
+public abstract class Overlay extends AsyncTask<Boolean, Void, Boolean> {
     private static AtomicInteger sOrdinal = new AtomicInteger();
 
     protected float mScale;
@@ -295,4 +296,28 @@ public abstract class Overlay {
          */
         boolean onSnapToItem(int x, int y, Point snapPoint, MapView mapView);
     }
+
+    /**
+     * Introducing threading to overlays. All overlays except PathOverlay
+     * do not use this yet, so we just give it an empty implementation
+     * in this abstract class so it can be ignored.
+     * * * * *
+     * @param params
+     * @return
+     */
+    @Override
+    protected Boolean doInBackground(Boolean... params) {
+        return Boolean.FALSE;
+    }
+
+    /**
+     * Subclasses should do that final call to draw on canvas in here.
+     * * *
+     * @param shouldDraw
+     */
+    @Override
+    protected void onPostExecute(Boolean shouldDraw) {
+        // Nothing.
+    }
+    
 }

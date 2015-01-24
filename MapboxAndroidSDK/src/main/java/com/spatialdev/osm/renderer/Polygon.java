@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Nicholas Hallahan on 1/22/15.
  * nhallahan@spatialdev.com 
  */
-public class Polygon extends Path {
+public class Polygon extends OSMPath {
 
     public Polygon(List<Node> nodes, MapView mapView) {
         super(nodes, mapView);

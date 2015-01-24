@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.AsyncTask;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.Projection;
@@ -46,6 +48,13 @@ public class PathOverlay extends Overlay {
     // bounding rectangle for the current line segment.
     private final Rect mLineBounds = new Rect();
 
+    /**
+     * These are provided as parameters in the draw method.
+     */
+    protected MapView mapView;
+    protected Canvas canvas;
+
+    
     public PathOverlay() {
         super();
         this.mPaint.setColor(Color.BLUE);
@@ -109,17 +118,22 @@ public class PathOverlay extends Overlay {
     }
 
     /**
-     * This method draws the line. Note - highly optimized to handle long paths, proceed with care.
-     * Should be fine up to 10K points.
+     * This is where the paths are set up to do the draw.
+     * This needs to be redone. optimizePath does not work
+     * right, the projection is broken, and this can be
+     * done much more efficiently - needs a Spatial Index!!!
+     * * * * * * *
+     * @param params
+     * @return
      */
     @Override
-    protected void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
-
+    protected Boolean doInBackground(Boolean... params) {
+        boolean shadow = params[0];
         final int size = this.mPoints.size();
 
         // nothing to paint
         if (shadow || size < 2) {
-            return;
+            return false;
         }
 
         final Projection pj = mapView.getProjection();
@@ -189,13 +203,39 @@ public class PathOverlay extends Overlay {
         if (!mOptimizePath) {
             needsDrawing = Rect.intersects(clipBounds, mLineBounds);
         }
+        return needsDrawing;
+    }
 
+    @Override
+    protected void onPostExecute(Boolean needsDrawing) {
         if (needsDrawing) {
-            final float realWidth = this.mPaint.getStrokeWidth();
-            this.mPaint.setStrokeWidth(realWidth / mapView.getScale());
-            canvas.drawPath(mPath, this.mPaint);
-            this.mPaint.setStrokeWidth(realWidth);
+            final float realWidth = mPaint.getStrokeWidth();
+            mPaint.setStrokeWidth(realWidth / mapView.getScale());
+            canvas.drawPath(mPath, mPaint);
+            mPaint.setStrokeWidth(realWidth);
         }
+    }
+    
+    /**
+     * This method draws the line.
+     */
+    @Override
+    protected void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+        this.mapView = mapView;
+        this.canvas = canvas;
+
+        /**
+         * You can uncomment this to test drawing without threads (identical to the old way).
+         * * *
+         */
+        Boolean needsDrawing = doInBackground(shadow);
+        onPostExecute(needsDrawing);
+        
+//        Status status = getStatus();
+//        if (status == Status.RUNNING) {
+//            cancel(true);
+//            execute(shadow);
+//        }
     }
 
     /**
