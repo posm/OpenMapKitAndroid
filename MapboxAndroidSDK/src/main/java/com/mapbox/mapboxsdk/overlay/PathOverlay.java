@@ -128,6 +128,12 @@ public class PathOverlay extends Overlay {
      */
     @Override
     protected Boolean doInBackground(Boolean... params) {
+        
+        // break out if thread canceled
+        if (isCancelled()) {
+            return false;
+        }
+        
         boolean shadow = params[0];
         final int size = this.mPoints.size();
 
@@ -159,6 +165,12 @@ public class PathOverlay extends Overlay {
                 (int) projectedPoint0.y);
 
         for (int i = size - 2; i >= 0; i--) {
+            
+            // break out if thread canceled
+            if (isCancelled()) {
+                return false;
+            }
+            
             // compute next points
             projectedPoint1 = this.mPoints.get(i);
 
@@ -216,26 +228,39 @@ public class PathOverlay extends Overlay {
         }
     }
     
+    @Override
+    protected void onCancelled(Boolean needsDrawing) {
+        execute(false);
+    }
+    
     /**
      * This method draws the line.
      */
     @Override
     protected void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+        if (shadow) {
+            return;
+        }
+        
         this.mapView = mapView;
         this.canvas = canvas;
-
+        
         /**
          * You can uncomment this to test drawing without threads (identical to the old way).
-         * * *
+         * Then, you want to comment back in the block below with cancel & execute
          */
-        Boolean needsDrawing = doInBackground(shadow);
-        onPostExecute(needsDrawing);
+//        Boolean needsDrawing = doInBackground(false);
+//        onPostExecute(needsDrawing);
         
-//        Status status = getStatus();
-//        if (status == Status.RUNNING) {
-//            cancel(true);
-//            execute(shadow);
-//        }
+        // If the execution is currently running, we want to cancel it.
+        Status status = getStatus();
+        if (status != Status.PENDING) {
+            // If a cancellation is made, execute is fired in onCanceled
+            cancel(true);
+        } else {
+            execute(false); // no shadow ever for paths
+        }
+        
     }
 
     /**
