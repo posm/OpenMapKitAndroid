@@ -126,7 +126,7 @@ public class Way extends OSMElement {
      *
      * @return closed
      */
-    boolean isClosed() {
+    public boolean isClosed() {
         if (closed) {
             return true;
         }

@@ -56,18 +56,11 @@ public class JTSModel {
         return createTapEnvelope(coord, lat, lng, zoom);
     }
 
-    private Envelope createTapEnvelope(Coordinate coord, double lat, double lng, float zoom) {
-        Envelope envelope = new Envelope(coord);
-
-        // Creating a reasonably sized envelope around the tap location.
-        // Tweak the TAP_PIXEL_TOLERANCE to get a better sized box for your needs.
-        double degreesLngPerPixel = degreesLngPerPixel(zoom);
-        double deltaX = degreesLngPerPixel * TAP_PIXEL_TOLERANCE;
-        double deltaY = scaledLatDeltaForMercator(deltaX, lat);
-        envelope.expandBy(deltaX, deltaY);
-        return envelope;
+    public List<OSMElement> queryFromEnvelope(Envelope envelope) {
+        List<OSMElement> results = rtree.query(envelope);
+        return results;
     }
-
+    
     public OSMElement queryFromTap(ILatLng latLng, float zoom) {
         double lat = latLng.getLatitude();
         double lng = latLng.getLongitude();
@@ -78,7 +71,7 @@ public class JTSModel {
 
         int len = results.size();
         if (len == 0 ) {
-           return null;
+            return null;
         }
         if (len == 1) {
             return (OSMElement) results.get(0);
@@ -113,8 +106,20 @@ public class JTSModel {
 
         }
 
-        Log.i("queryFromTap closestElement", closestElement.toString());
+//        Log.i("queryFromTap closestElement", closestElement.toString());
         return closestElement;
+    }
+    
+    private Envelope createTapEnvelope(Coordinate coord, double lat, double lng, float zoom) {
+        Envelope envelope = new Envelope(coord);
+
+        // Creating a reasonably sized envelope around the tap location.
+        // Tweak the TAP_PIXEL_TOLERANCE to get a better sized box for your needs.
+        double degreesLngPerPixel = degreesLngPerPixel(zoom);
+        double deltaX = degreesLngPerPixel * TAP_PIXEL_TOLERANCE;
+        double deltaY = scaledLatDeltaForMercator(deltaX, lat);
+        envelope.expandBy(deltaX, deltaY);
+        return envelope;
     }
 
     /**
