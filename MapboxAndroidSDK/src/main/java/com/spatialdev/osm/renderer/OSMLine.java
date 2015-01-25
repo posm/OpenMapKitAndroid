@@ -17,19 +17,19 @@ public class OSMLine extends OSMPath {
 
     /**
      * This should only be constructed by
-     * OSMPath.createOSMPathFromOSMElement
+     * OSMPath.createOSMPath
      * * * *
      * @param w
      */
-    protected OSMLine(Way w) {
-        this(w, Color.BLUE, 10.0f);
+    protected OSMLine(Way w, MapView mv) {
+        this(w, mv, Color.BLUE, 10.0f);
     }
 
-    public OSMLine(Way w, int color, float width) {
-        super(w);
+    protected OSMLine(Way w, MapView mv, int color, float width) {
+        super(w, mv);
         paint.setColor(color);
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(width);
+        setStrokeWidth(width);
         paint.setStyle(Paint.Style.STROKE);
 
     }

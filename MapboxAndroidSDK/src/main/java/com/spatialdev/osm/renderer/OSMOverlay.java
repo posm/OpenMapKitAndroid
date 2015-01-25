@@ -70,12 +70,12 @@ public class OSMOverlay extends Overlay {
         
         // Draw polygons
         for (Way w : polys) {
-            w.getOSMPath().draw(c, mapView);
+            w.getOSMPath(mapView).draw(c);
         }
         
         // Draw lines
         for (Way w : lines) {
-            w.getOSMPath().draw(c, mapView);
+            w.getOSMPath(mapView).draw(c);
         }
     }
     

@@ -4,10 +4,7 @@
  */
 package com.spatialdev.osm.model;
 
-import android.graphics.Paint;
-
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.renderer.OSMPath;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -161,10 +158,10 @@ public class Way extends OSMElement {
 
 
     
-    public OSMPath getOSMPath() {
+    public OSMPath getOSMPath(MapView mv) {
         // if there is no overlay, make it for this element
         if (osmPath == null) {
-            osmPath = OSMPath.createOSMPathFromOSMElement(this);
+            osmPath = OSMPath.createOSMPath(this, mv);
         }
         return osmPath;
     }
