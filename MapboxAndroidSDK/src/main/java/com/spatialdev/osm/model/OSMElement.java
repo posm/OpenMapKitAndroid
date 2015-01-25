@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import com.spatialdev.osm.renderer.OSMPath;
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -35,8 +36,6 @@ public abstract class OSMElement {
 
     protected Geometry jtsGeom;
 
-    protected Object overlay;
-
     /**
      * These tags get modified by the application
      */
@@ -46,6 +45,11 @@ public abstract class OSMElement {
      * These tags are the original tags in the data set. This SHOULD NOT BE MODIFIED. 
      */
     protected Map<String, String> originalTags = new LinkedHashMap<>();
+
+    /**
+     * This is the object that actually gets drawn by OSMOverlay. 
+     */
+    protected OSMPath osmPath;
 
     /**
      * Elements that have been put in a select state* 
@@ -180,27 +184,18 @@ public abstract class OSMElement {
         selectedElementsChanged = true;
         selected = true;
         selectedElements.push(this);
+        if (osmPath != null) {
+            osmPath.select();
+        }
     }
 
     public void deselect() {
         selectedElementsChanged = true;
         selected = false;
         selectedElements.remove(this);
-    }
-
-    /**
-     * If you set an overlay object for this element, it will
-     * not try to create it's own overlay for itself. It will
-     * return the overlay that you gave it.
-     *
-     * You are responsible for adding this object's geometry
-     * to the overlay layer.
-     *
-     * @param overlay
-     */
-    public Object setOverlay(Object overlay) {
-        this.overlay = overlay;
-        return overlay;
+        if (osmPath != null) {
+            osmPath.deselect();
+        }
     }
 
     /**
@@ -212,7 +207,7 @@ public abstract class OSMElement {
      *
      * @return a Marker or PathOverlay object
      */
-    public abstract Object getOverlay();
+    public abstract Object getOSMPath();
 
     public void toggle() {
         if (selected) {

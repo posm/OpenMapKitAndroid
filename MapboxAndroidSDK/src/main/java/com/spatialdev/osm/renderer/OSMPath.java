@@ -10,6 +10,8 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.Projection;
 import com.spatialdev.osm.model.Node;
+import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.Way;
 
 import java.util.List;
 
@@ -19,9 +21,6 @@ import java.util.List;
  */
 public abstract class OSMPath extends Overlay {
 
-    private static final int DEFAULT_OVERLAY_INDEX = 1;
-    private int overlayIndex = DEFAULT_OVERLAY_INDEX;
-
     protected Paint paint = new Paint();
     protected final Path path = new Path();
 
@@ -29,40 +28,44 @@ public abstract class OSMPath extends Overlay {
     // pixel space of the entire earth.
     protected PointF[] projectedPoints;
 
-    protected Projection pj;
+    public static OSMPath createOSMPathFromOSMElement(OSMElement element) {
+        if (element instanceof Way) {
+            Way w = (Way) element;
+            // polygon
+            if (w.isClosed()) {
+                return new OSMPolygon(w);
+            }
+            // line
+            return new OSMLine(w);
+        }
+        
+        // TODO Point
+        return null;
+    }
 
-    public OSMPath(List<Node> nodes, MapView mapView) {
-        projectNodes(nodes, mapView);
-        pj = mapView.getProjection();
+    /**
+     * We only want to construct subclasses. This is ultimately created via
+     * OSMPath.createOSMPathFromOSMElement
+     * * * *
+     * @param w
+     */
+    protected OSMPath(Way w) {
+        List<Node> nodes = w.getNodes();
+        projectNodes(nodes);
     }
 
     /**
      * Do the expensive projection straight up upon construction rather than draw.
      *
      * @param nodes
-     * @param mapView
      */
-    private void projectNodes(List<Node> nodes, MapView mapView) {
+    private void projectNodes(List<Node> nodes) {
         projectedPoints = new PointF[nodes.size()];
-        final Projection pj = mapView.getProjection();
         int i = 0;
         for (Node n : nodes) {
-            projectedPoints[i++] = pj.toMapPixelsProjected(n.getLng(), n.getLat(), null);
+            // Note: PathOverlay calls this static method from an instance variable. Doesn't matter though...
+            projectedPoints[i++] = Projection.toMapPixelsProjected(n.getLng(), n.getLat(), null);
         }
-    }
-
-    /**
-     * Sets the z position of this layer in the layer stack
-     * larger values for @param layerIndex are drawn on top.
-     *
-     * Default values are:
-     * 0 for MapEventsOverlay
-     * 1 for PathOverlay
-     * 2 for UserLocationOverlay
-     * 3 for other Overlays
-     */
-    public void setOverlayIndex(int overlayIndex) {
-        this.overlayIndex = overlayIndex;
     }
 
     public Paint getPaint() {
@@ -72,6 +75,16 @@ public abstract class OSMPath extends Overlay {
     public OSMPath setPaint(final Paint pPaint) {
         paint = pPaint;
         return this;
+    }
+    
+    public void select() {
+        
+        
+    }
+    
+    public void deselect() {
+        
+        
     }
 
     @Override

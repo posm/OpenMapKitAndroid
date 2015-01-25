@@ -159,7 +159,7 @@ public class Relation extends OSMElement {
     }
 
     @Override
-    public Object getOverlay() {
+    public Object getOSMPath() {
         return null;
     }
 

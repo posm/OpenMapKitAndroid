@@ -89,9 +89,6 @@ public class OSMMap implements MapViewListener, MapListener {
         OSMElement element = jtsModel.queryFromTap(pPosition, zoom);
         if (element != null) {
             element.select();
-            PathOverlay path = (PathOverlay) element.getOverlay();
-            List<Overlay> overlays = pMapView.getOverlays();
-            overlays.add(path);
         }
 
         // DEBUG MODE - SHOW ENVELOPE AROUND TAP ON MAP

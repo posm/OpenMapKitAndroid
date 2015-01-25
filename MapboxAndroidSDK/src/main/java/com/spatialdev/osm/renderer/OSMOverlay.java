@@ -21,12 +21,14 @@ import java.util.List;
 
 public class OSMOverlay extends Overlay {
 
+    private static final int DEFAULT_OVERLAY_INDEX = 1;
+    
     private JTSModel model;
     private Envelope envelope;
     
     public OSMOverlay(JTSModel model) {
         this.model = model;
-        
+        setOverlayIndex(DEFAULT_OVERLAY_INDEX);
     }
     
     public void updateBoundingBox(BoundingBox bbox) {

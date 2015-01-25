@@ -68,7 +68,7 @@ public class Node extends OSMElement {
     }
 
     @Override
-    public Object getOverlay() {
+    public Object getOSMPath() {
         return null;
     }
 
