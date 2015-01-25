@@ -18,7 +18,7 @@ import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
-import com.spatialdev.osm.OSMMapListener;
+import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.JTSModel;
@@ -34,7 +34,7 @@ import java.util.List;
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
     private MapView mapView;
-    OSMMapListener osmMapListener;
+    OSMMap osmMap;
     private Button tagsButton;
 
     @Override
@@ -142,7 +142,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         try {
             OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
             JTSModel jtsModel = new JTSModel(ds);
-            osmMapListener = new OSMMapListener(mapView, jtsModel, this);
+            osmMap = new OSMMap(mapView, jtsModel, this);
             ArrayList<Object> uiObjects = OSMUtil.createUIObjectsFromDataSet(ds);
 
             for (Object obj : uiObjects) {

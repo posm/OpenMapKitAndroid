@@ -12,6 +12,7 @@ import com.mapbox.mapboxsdk.events.MapListener;
 import com.mapbox.mapboxsdk.events.RotateEvent;
 import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
+import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
@@ -20,11 +21,12 @@ import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.renderer.OSMOverlay;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.util.List;
 
-public class OSMMapListener implements MapViewListener, MapListener {
+public class OSMMap implements MapViewListener, MapListener {
 
     // DEBUG MODE - SHOW ENVELOPE AROUND TAP ON MAP
     private static final boolean DEBUG = true;
@@ -32,20 +34,22 @@ public class OSMMapListener implements MapViewListener, MapListener {
     private MapView mapView;
     private JTSModel jtsModel;
     private OSMSelectionListener selectionListener;
+    private OSMOverlay osmOverlay;
 
     private PathOverlay debugTapEnvelopePath;
 
-    public OSMMapListener(MapView mapView, JTSModel jtsModel, OSMSelectionListener selectionListener) {
+    public OSMMap(MapView mapView, JTSModel jtsModel, OSMSelectionListener selectionListener) {
         this(mapView, jtsModel);
         this.selectionListener = selectionListener;
     }
     
-    public OSMMapListener(MapView mapView, JTSModel jtsModel) {
+    public OSMMap(MapView mapView, JTSModel jtsModel) {
         this.mapView = mapView;
         this.jtsModel = jtsModel;
-
+        osmOverlay = new OSMOverlay(jtsModel);
         mapView.setMapViewListener(this);
         mapView.addListener(this);
+        mapView.getOverlays().add(osmOverlay);
     }
 
     public void setSelectionListener(OSMSelectionListener selectionListener) {
@@ -141,16 +145,25 @@ public class OSMMapListener implements MapViewListener, MapListener {
 
     @Override
     public void onScroll(ScrollEvent event) {
-
+        BoundingBox bbox = mapView.getBoundingBox();
+        if (bbox != null) {
+            osmOverlay.updateBoundingBox(bbox);
+        }
     }
 
     @Override
     public void onZoom(ZoomEvent event) {
-
+        BoundingBox bbox = mapView.getBoundingBox();
+        if (bbox != null) {
+            osmOverlay.updateBoundingBox(bbox);
+        }
     }
 
     @Override
     public void onRotate(RotateEvent event) {
-
+        BoundingBox bbox = mapView.getBoundingBox();
+        if (bbox != null) {
+            osmOverlay.updateBoundingBox(bbox);
+        }
     }
 }
