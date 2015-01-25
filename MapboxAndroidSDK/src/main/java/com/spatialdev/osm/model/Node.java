@@ -5,6 +5,7 @@
 package com.spatialdev.osm.model;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.spatialdev.osm.renderer.OSMPath;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -65,11 +66,6 @@ public class Node extends OSMElement {
         xmlSerializer.attribute(null, "lon", String.valueOf(lng));
         super.xml(xmlSerializer); // generates tags
         xmlSerializer.endTag(null, "node");
-    }
-
-    @Override
-    public Object getOSMPath() {
-        return null;
     }
 
 }

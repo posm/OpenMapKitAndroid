@@ -160,8 +160,8 @@ public class Way extends OSMElement {
     }
 
 
-
-    public Object getOSMPath() {
+    
+    public OSMPath getOSMPath() {
         // if there is no overlay, make it for this element
         if (osmPath == null) {
             osmPath = OSMPath.createOSMPathFromOSMElement(this);

@@ -198,17 +198,6 @@ public abstract class OSMElement {
         }
     }
 
-    /**
-     * Returns a object that can draw as
-     * an overlay or marker in the Mapbox Android SDK.
-     *
-     * If an overlay has not been set, this element should
-     * create an overlay that represents itself.
-     *
-     * @return a Marker or PathOverlay object
-     */
-    public abstract Object getOSMPath();
-
     public void toggle() {
         if (selected) {
             deselect();

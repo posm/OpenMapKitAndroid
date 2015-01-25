@@ -68,8 +68,15 @@ public class OSMOverlay extends Overlay {
             points.add((Node)el);
         }
         
+        // Draw polygons
+        for (Way w : polys) {
+            w.getOSMPath().draw(c, mapView);
+        }
         
-        
+        // Draw lines
+        for (Way w : lines) {
+            w.getOSMPath().draw(c, mapView);
+        }
     }
     
 }

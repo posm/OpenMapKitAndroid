@@ -4,6 +4,8 @@
  */
 package com.spatialdev.osm.model;
 
+import com.spatialdev.osm.renderer.OSMPath;
+
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -156,11 +158,6 @@ public class Relation extends OSMElement {
 
     public int getUnlinkedMemberCount() {
         return unlinkedMembersCount;
-    }
-
-    @Override
-    public Object getOSMPath() {
-        return null;
     }
 
 }

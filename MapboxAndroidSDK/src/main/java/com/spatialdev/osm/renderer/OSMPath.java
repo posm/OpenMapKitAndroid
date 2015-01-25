@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Nicholas Hallahan on 1/22/15.
  * nhallahan@spatialdev.com 
  */
-public abstract class OSMPath extends Overlay {
+public abstract class OSMPath {
 
     protected Paint paint = new Paint();
     protected final Path path = new Path();
@@ -87,12 +87,11 @@ public abstract class OSMPath extends Overlay {
         
     }
 
-    @Override
-    protected void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+    public void draw(final Canvas canvas, final MapView mapView) {
         int size = projectedPoints.length;
 
         // nothing to paint
-        if (shadow || size < 2) {
+        if (size < 2) {
             return;
         }
 
