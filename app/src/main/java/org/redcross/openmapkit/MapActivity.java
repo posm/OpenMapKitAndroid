@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
@@ -41,6 +42,38 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        //get intent that started this activity
+        Intent intent = getIntent();
+
+        //for handling if this activity was launched by an intent that sent it data (e.g. form id, tag collection, etc.)
+        if(intent.getAction() == "android.intent.action.SEND") {
+
+            if (intent.getType().equals("text/plain")) {
+
+                Bundle extras = getIntent().getExtras();
+
+                if(extras != null) {
+
+                    //for fetching the tag id
+                    String formId = extras.getString("FORM_ID");
+                    String instanceId = extras.getString("INSTANCE_ID");
+                    ArrayList tagsToEdit = intent.getStringArrayListExtra("TAGS_TO_EDIT");
+
+                    if(intent.getType().equals("text/plain")) {
+
+                        Toast tst = Toast.makeText(getApplicationContext(), "form id: " + formId, Toast.LENGTH_LONG);
+                        tst.show();
+
+                        Toast tst1 = Toast.makeText(getApplicationContext(), "instance id: " + instanceId, Toast.LENGTH_LONG);
+                        tst1.show();
+
+                        Toast tst2 = Toast.makeText(getApplicationContext(), "tags to edit: " + tagsToEdit, Toast.LENGTH_LONG);
+                        tst2.show();
+                    }
+                }
+            }
+        }
 
         //set layout
         setContentView(R.layout.activity_map);
