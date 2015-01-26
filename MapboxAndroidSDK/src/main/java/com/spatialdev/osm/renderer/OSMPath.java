@@ -34,12 +34,12 @@ public abstract class OSMPath {
      * that the returned Point is not constantly reallocated.
      * * * 
      */
-    protected final PointF tempPoint0 = new PointF();
-    protected final PointF tempPoint1 = new PointF();
+    protected final double[] tempPoint0 = new double[2];
+    protected final double[] tempPoint1 = new double[2];
 
     // These are the points for a path converted to an "intermediate"
     // pixel space of the entire earth.
-    protected PointF[] projectedPoints;
+    protected double[][] projectedPoints;
     
     protected MapView mapView;
 
@@ -77,11 +77,10 @@ public abstract class OSMPath {
      * @param nodes
      */
     private void projectNodes(List<Node> nodes) {
-        projectedPoints = new PointF[nodes.size()];
+        projectedPoints = new double[nodes.size()][2];
         int i = 0;
         for (Node n : nodes) {
-            // Note: PathOverlay calls this static method from an instance variable. Doesn't matter though...
-            projectedPoints[i++] = Projection.toMapPixelsProjected(n.getLat(), n.getLng(), null);
+            projectedPoints[i++] = Projection.latLongToPixelXY(n.getLat(), n.getLng());
         }
     }
 
@@ -121,26 +120,25 @@ public abstract class OSMPath {
         }
 
         final Projection pj = mapView.getProjection();
-        
-        PointF screenPoint0; // points on screen
-        PointF screenPoint1;
-        PointF projectedPoint0; // points from the points list
-        PointF projectedPoint1;
+
+        double[] screenPoint0; // points on screen
+        double[] screenPoint1;
+        double[] projectedPoint0; // points from the points list
+        double[] projectedPoint1;
 
         path.rewind();
         projectedPoint0 = projectedPoints[size - 1];
         screenPoint0 = pj.toMapPixelsTranslated(projectedPoint0, tempPoint0);
-        // We want to dereference this object as little as possible.
-        float screenPoint0_x = screenPoint0.x; 
-        float screenPoint0_y = screenPoint0.y;
-        
+        float screenPoint0_x = (float) screenPoint0[0];
+        float screenPoint0_y = (float) screenPoint0[1];
+
         path.moveTo(screenPoint0_x, screenPoint0_y);
-        
+
         for (int i = size - 2; i >= 0; --i) {
             projectedPoint1 = projectedPoints[i];
             screenPoint1 = pj.toMapPixelsTranslated(projectedPoint1, tempPoint1);
-            float screenPoint1_x = screenPoint1.x;
-            float screenPoint1_y = screenPoint1.y;
+            float screenPoint1_x = (float) screenPoint1[0];
+            float screenPoint1_y = (float) screenPoint1[1];
 
             // skip this point, too close to previous point
             // NH TODO: determine if this is necessary
@@ -148,14 +146,14 @@ public abstract class OSMPath {
 //                    screenPoint1.y - screenPoint0.y) <= 1) {
 //                continue;
 //            }
-            
+
             path.lineTo(screenPoint1_x, screenPoint1_y);
-            
+
             // Update comparison points to next position.
-            screenPoint0_x = screenPoint1_x;
-            screenPoint0_y = screenPoint1_y;
+//            screenPoint0_x = screenPoint1_x;
+//            screenPoint0_y = screenPoint1_y;
         }
-        
+
         paint.setStrokeWidth(strokeWidth / mapView.getScale());
         c.drawPath(path, paint);
     }

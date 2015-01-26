@@ -191,6 +191,10 @@ public class GeometryMath {
         return (float) (value / Math.pow(2, multiplier));
     }
 
+    public static double rightShift(final double value, final float multiplier) {
+        return value / Math.pow(2, multiplier);
+    }
+
     public static Rect viewPortRect(final float zoomLevel, final Projection projection,
             final Rect reuse) {
         final Rect out = GeometryMath.reusable(reuse);

@@ -283,6 +283,13 @@ public class Projection implements GeoConstants {
         return out;
     }
 
+    public double[] toMapPixelsTranslated(final double[] in, final double[] out) {
+        final float zoomDifference = TileLayerConstants.MAXIMUM_ZOOMLEVEL - getZoomLevel();
+        out[0] = GeometryMath.rightShift(in[0], zoomDifference) + offsetX;
+        out[1] = GeometryMath.rightShift(in[1], zoomDifference) + offsetY;
+        return out;
+    }
+
     /**
      * Translates a rectangle from <I>screen coordinates</I> to <I>intermediate coordinates</I>.
      *
@@ -398,6 +405,24 @@ public class Projection implements GeoConstants {
         final float mapSize = mapSize(levelOfDetail);
         out.x = (float) clip(x * mapSize, 0, mapSize - 1);
         out.y = (float) clip(y * mapSize, 0, mapSize - 1);
+        return out;
+    }
+    
+    public static double[] latLongToPixelXY(double latitude, double longitude) {
+        latitude = wrap(latitude, -90, 90, 180);
+        longitude = wrap(longitude, -180, 180, 360);
+
+        latitude = clip(latitude, MIN_LATITUDE, MAX_LATITUDE);
+        longitude = clip(longitude, MIN_LONGITUDE, MAX_LONGITUDE);
+
+        final double x = (longitude + 180) / 360;
+        final double sinLatitude = Math.sin(latitude * Math.PI / 180);
+        final double y = 0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
+
+        final float mapSize = mapSize(TileLayerConstants.MAXIMUM_ZOOMLEVEL);
+        double outX = clip(x * mapSize, 0, mapSize - 1);
+        double outY = clip(y * mapSize, 0, mapSize - 1);
+        double[] out = {outX, outY};
         return out;
     }
 
