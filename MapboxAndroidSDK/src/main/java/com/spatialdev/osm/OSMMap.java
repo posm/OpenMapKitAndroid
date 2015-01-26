@@ -50,6 +50,7 @@ public class OSMMap implements MapViewListener, MapListener {
         mapView.setMapViewListener(this);
         mapView.addListener(this);
         mapView.getOverlays().add(osmOverlay);
+        mapView.invalidate();
     }
 
     public void setSelectionListener(OSMSelectionListener selectionListener) {

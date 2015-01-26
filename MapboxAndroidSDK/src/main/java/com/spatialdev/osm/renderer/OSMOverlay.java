@@ -21,7 +21,7 @@ import java.util.List;
 
 public class OSMOverlay extends Overlay {
 
-    private static final int DEFAULT_OVERLAY_INDEX = 1;
+    private static final int DEFAULT_OVERLAY_INDEX = 4;
     
     private JTSModel model;
     private Envelope envelope;

@@ -1,12 +1,10 @@
 package com.spatialdev.osm.renderer;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 
-import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.Projection;
 import com.spatialdev.osm.model.Node;
@@ -44,7 +42,6 @@ public abstract class OSMPath {
     protected PointF[] projectedPoints;
     
     protected MapView mapView;
-    protected Projection pj;
 
     public static OSMPath createOSMPath(OSMElement element, MapView mv) {
         if (element instanceof Way) {
@@ -71,7 +68,6 @@ public abstract class OSMPath {
         List<Node> nodes = w.getNodes();
         projectNodes(nodes);
         mapView = mv;
-        pj = mv.getProjection();
     }
 
     /**
@@ -85,7 +81,7 @@ public abstract class OSMPath {
         int i = 0;
         for (Node n : nodes) {
             // Note: PathOverlay calls this static method from an instance variable. Doesn't matter though...
-            projectedPoints[i++] = Projection.toMapPixelsProjected(n.getLng(), n.getLat(), null);
+            projectedPoints[i++] = Projection.toMapPixelsProjected(n.getLat(), n.getLng(), null);
         }
     }
 
@@ -124,6 +120,8 @@ public abstract class OSMPath {
             return;
         }
 
+        final Projection pj = mapView.getProjection();
+        
         PointF screenPoint0; // points on screen
         PointF screenPoint1;
         PointF projectedPoint0; // points from the points list
@@ -143,12 +141,13 @@ public abstract class OSMPath {
             screenPoint1 = pj.toMapPixelsTranslated(projectedPoint1, tempPoint1);
             float screenPoint1_x = screenPoint1.x;
             float screenPoint1_y = screenPoint1.y;
-            
-            // Skip if the next point isn't a pixel away
-            if (Math.abs(screenPoint1_x - screenPoint0_x) < 1 
-                    || Math.abs(screenPoint1_y - screenPoint0_y) < 1) {
-                continue;
-            }
+
+            // skip this point, too close to previous point
+            // NH TODO: determine if this is necessary
+//            if (Math.abs(screenPoint1.x - screenPoint0.x) + Math.abs(
+//                    screenPoint1.y - screenPoint0.y) <= 1) {
+//                continue;
+//            }
             
             path.lineTo(screenPoint1_x, screenPoint1_y);
             
