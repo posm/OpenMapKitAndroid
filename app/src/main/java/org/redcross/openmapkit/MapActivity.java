@@ -1,5 +1,6 @@
 package org.redcross.openmapkit;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,19 +35,23 @@ import java.util.List;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
-    private MapView mapView;
+    MapView mapView;
     OSMMap osmMap;
-    private Button tagsButton;
+    Button tagsButton;
+
+    /**
+     * intent request codes
+     */
+    static final int CREATE_TAG_REQUESTCODE = 1201;
+    static final int EDIT_TAG_REQUESTCODE = 1202;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        //get intent that started this activity
+        //get intent that started this activity, handle if this activity was launched by an intent that sent it data (e.g. form id, tag collection, etc.)
         Intent intent = getIntent();
-
-        //for handling if this activity was launched by an intent that sent it data (e.g. form id, tag collection, etc.)
         if(intent.getAction() == "android.intent.action.SEND") {
 
             if (intent.getType().equals("text/plain")) {
@@ -62,13 +67,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
                     if(intent.getType().equals("text/plain")) {
 
-                        Toast tst = Toast.makeText(getApplicationContext(), "form id: " + formId, Toast.LENGTH_LONG);
+                        Toast tst = Toast.makeText(getApplicationContext(), "form id: " + formId, Toast.LENGTH_SHORT);
                         tst.show();
 
-                        Toast tst1 = Toast.makeText(getApplicationContext(), "instance id: " + instanceId, Toast.LENGTH_LONG);
+                        Toast tst1 = Toast.makeText(getApplicationContext(), "instance id: " + instanceId, Toast.LENGTH_SHORT);
                         tst1.show();
 
-                        Toast tst2 = Toast.makeText(getApplicationContext(), "tags to edit: " + tagsToEdit, Toast.LENGTH_LONG);
+                        Toast tst2 = Toast.makeText(getApplicationContext(), "tags to edit: " + tagsToEdit, Toast.LENGTH_SHORT);
                         tst2.show();
                     }
                 }
@@ -246,13 +251,15 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     case 0:
 
                         Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
-                        startActivity(editTagIntent);
+                        //startActivity(editTagIntent);
+                        startActivityForResult(editTagIntent, EDIT_TAG_REQUESTCODE);
                         break;
 
                     case 1:
 
                         Intent createTagIntent = new Intent(getApplicationContext(), TagCreatorActivity.class);
-                        startActivity(createTagIntent);
+                        //startActivity(createTagIntent);
+                        startActivityForResult(createTagIntent, CREATE_TAG_REQUESTCODE);
                         break;
 
                     default:
@@ -310,4 +317,34 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         }
     }
 
+
+    /**
+     * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == CREATE_TAG_REQUESTCODE) {
+
+            if(resultCode == RESULT_OK) {
+
+                Bundle extras = data.getExtras();
+                String tagKey = extras.getString("TAG_KEY");
+                String tagValue = extras.getString("TAG_VALUE");
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("TAG_KEY", tagKey);
+                resultIntent.putExtra("TAG_VALUE", tagValue);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
+            }
+
+        } else if (requestCode == EDIT_TAG_REQUESTCODE) {
+
+            //TODO - handle results from edit tag activity
+        }
+    }
 }

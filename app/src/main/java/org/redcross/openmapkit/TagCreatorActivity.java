@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 
 public class TagCreatorActivity extends ActionBarActivity {
+
+    EditText tagKeyEditText;
+    EditText tagValueEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +37,6 @@ public class TagCreatorActivity extends ActionBarActivity {
 
             public void onClick(View v) {
 
-                //send data back to parent
-                Intent result = new Intent();
-                result.putExtra("test", "test");
-
-                setResult(Activity.RESULT_OK, result);
-
-                /*
-                setResult(Activity.RESULT_OK);
-                */
-
                 //finish activity
                 finish();
             }
@@ -60,34 +54,15 @@ public class TagCreatorActivity extends ActionBarActivity {
 
             public void onClick(View v) {
 
-                //get device connectivity status, proceed with online or offline save workflow
-                boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
+                tagKeyEditText = (EditText)findViewById(R.id.editTextTagName);
+                tagValueEditText = (EditText)findViewById(R.id.editTextTagValue);
 
-                if (deviceIsConnected) {
-
-                    saveTagOnline();
-
-                } else {
-
-                    saveTagOffline();
-                }
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("TAG_KEY", tagKeyEditText.getText().toString());
+                resultIntent.putExtra("TAG_VALUE", tagValueEditText.getText().toString());
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
             }
         });
-    }
-
-    /**
-     * For saving a tag when device is online/connected
-     */
-    private void saveTagOnline() {
-
-        //PLACEHOLDER - DEVICE IS ONLINE - CONTINUE WITH ONLINE SAVE WORKFLOW
-    }
-
-    /**
-     * For saving a tag when device is offline/disconnected
-     */
-    private void saveTagOffline() {
-
-        //PLACEHOLDER - DEVICE IS OFFLINE - CONTINUE WITH OFFLINE SAVE WORKFLOW
     }
 }

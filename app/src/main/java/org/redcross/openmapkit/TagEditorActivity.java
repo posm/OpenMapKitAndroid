@@ -1,5 +1,7 @@
 package org.redcross.openmapkit;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
@@ -105,6 +108,14 @@ public class TagEditorActivity extends ActionBarActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 saveToModel();
+
+                Toast tst = Toast.makeText(getApplicationContext(), "SAVE", Toast.LENGTH_LONG);
+                tst.show();
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("TEST_RESULT", "TestSentFromOpenMapKit");
+                setResult(Activity.RESULT_OK, resultIntent);
+
                 finish();
             }
         });
