@@ -2,6 +2,7 @@ package com.spatialdev.osm.renderer;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.model.Way;
@@ -36,4 +37,9 @@ public class OSMPolygon extends OSMPath {
 //        paint.setStyle(Paint.Style.FILL);
 //        paint.setColor(color);
 //    }
+
+    @Override
+    void clipOrDrawPath(Path path, double[] projectedPoint1, double[] screenPoint1) {
+
+    }
 }
