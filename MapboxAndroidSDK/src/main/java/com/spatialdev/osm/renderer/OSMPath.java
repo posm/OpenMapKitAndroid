@@ -3,7 +3,6 @@ package com.spatialdev.osm.renderer;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.Rect;
 
 import com.mapbox.mapboxsdk.views.MapView;
@@ -35,8 +34,7 @@ public abstract class OSMPath {
      * that the returned Point is not constantly reallocated.
      * * * 
      */
-    protected final double[] tempPoint0 = new double[2];
-    protected final double[] tempPoint1 = new double[2];
+    protected final double[] tempPoint = new double[2];
 
     // These are the points for a path converted to an "intermediate"
     // pixel space of the entire earth.
@@ -46,8 +44,14 @@ public abstract class OSMPath {
     
     // gets set in draw, the bounds of the viewport in Mercator Projected Pixels
     protected Rect viewPortBounds;
-    
-    protected boolean pathMoveToPlaced = false;
+
+    /**
+     * When drawing, this gets set to true when 
+     * we know that we wan to call path.lineTo next.
+     * * * * 
+     */
+    protected boolean pathLineToReady = false;
+
 
     public static OSMPath createOSMPath(OSMElement element, MapView mv) {
         if (element instanceof Way) {
@@ -128,29 +132,26 @@ public abstract class OSMPath {
         final Projection pj = mapView.getProjection();
         viewPortBounds = pj.fromPixelsToProjected(pj.getScreenRect());
 
-        double[] screenPoint0; // points on screen
-        double[] screenPoint1;
-        double[] projectedPoint0; // points from the points list
-        double[] projectedPoint1;
+        double[] screenPoint; // points on screen
+        double[] projectedPoint; // points from the points list
 
         path.rewind();
-        projectedPoint0 = projectedPoints[size - 1];
-        screenPoint0 = pj.toMapPixelsTranslated(projectedPoint0, tempPoint0);
-        
-        clipOrDrawPath(path, projectedPoint0, screenPoint0);
 
-        for (int i = size - 2; i >= 0; --i) {
-            projectedPoint1 = projectedPoints[i];
-            screenPoint1 = pj.toMapPixelsTranslated(projectedPoint1, tempPoint1);
-
-            clipOrDrawPath(path, projectedPoint1, screenPoint1);
-
+        for (int i = size - 1; i > 0; --i) { // every one but the 0th
+            projectedPoint = projectedPoints[i];
+            screenPoint = pj.toMapPixelsTranslated(projectedPoint, tempPoint);
+            clipOrDrawPath(path, projectedPoint, projectedPoints[i-1], screenPoint);
         }
-        pathMoveToPlaced = false;
+        // that 0th projected point has no next projected point...
+        projectedPoint = projectedPoints[0];
+        screenPoint = pj.toMapPixelsTranslated(projectedPoint, tempPoint);
+        clipOrDrawPath(path, projectedPoint, null, screenPoint);
+        
+        pathLineToReady = false;
         paint.setStrokeWidth(strokeWidth / mapView.getScale());
         c.drawPath(path, paint);
     }
 
-    abstract void clipOrDrawPath(Path path, double[] projectedPoint1, double[] screenPoint1);
+    abstract void clipOrDrawPath(Path path, double[] projectedPoint, double[] nextProjectedPoint, double[] screenPoint1);
     
 }

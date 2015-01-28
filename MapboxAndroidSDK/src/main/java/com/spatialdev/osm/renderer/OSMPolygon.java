@@ -39,7 +39,7 @@ public class OSMPolygon extends OSMPath {
 //    }
 
     @Override
-    void clipOrDrawPath(Path path, double[] projectedPoint1, double[] screenPoint1) {
+    void clipOrDrawPath(Path path, double[] projectedPoint, double[] nextProjectedPoint, double[] screenPoint1) {
 
     }
 }
