@@ -83,7 +83,6 @@ public abstract class OSMPath {
     /**
      * Do the expensive projection straight up upon construction rather than draw.
      *
-     * TODO: LOOK INTO HAVING THESE POINTS NOT BE FLOAT!!!!
      * @param nodes
      */
     private void projectNodes(List<Node> nodes) {
@@ -137,6 +136,7 @@ public abstract class OSMPath {
 
         path.rewind();
 
+        // Looping downward is the fastest loop you can do in Dalvik.
         for (int i = size - 1; i > 0; --i) { // every one but the 0th
             projectedPoint = projectedPoints[i];
             screenPoint = pj.toMapPixelsTranslated(projectedPoint, tempPoint);
