@@ -14,12 +14,14 @@ import com.spatialdev.osm.model.Way;
 public class OSMLine extends OSMPath {
 
     private static final float DEFAULT_WIDTH = 13.0f;
+    // OSM GREEN
     private static final int DEFAULT_A = 125;
     private static final int DEFAULT_R = 126;
     private static final int DEFAULT_G = 188;
     private static final int DEFAULT_B = 111;
     
     private static final float DEFAULT_SELECTED_WIDTH = 15.0f;
+    // GOLD
     private static final int DEFAULT_SELECTED_A = 180;
     private static final int DEFAULT_SELECTED_R = 255;
     private static final int DEFAULT_SELECTED_G = 140;
@@ -48,9 +50,9 @@ public class OSMLine extends OSMPath {
         this.r = r;
         this.g = g;
         this.b = b;
+        paint.setStyle(Paint.Style.STROKE);
         paint.setARGB(a, r, g, b);
         setStrokeWidth(width);
-        paint.setStyle(Paint.Style.STROKE);
     }
 
     @Override

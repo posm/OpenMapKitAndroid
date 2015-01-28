@@ -15,11 +15,23 @@ import java.util.List;
  */
 public class OSMPolygon extends OSMPath {
 
+    // OSM LAVENDER
     private static final int DEFAULT_A = 50;
     private static final int DEFAULT_R = 62;
     private static final int DEFAULT_G = 107;
     private static final int DEFAULT_B = 255;
+    
+    // GOLD
+    private static final int DEFAULT_SELECTED_A = 180;
+    private static final int DEFAULT_SELECTED_R = 255;
+    private static final int DEFAULT_SELECTED_G = 140;
+    private static final int DEFAULT_SELECTED_B = 0;
 
+    private int a;
+    private int r;
+    private int g;
+    private int b;
+    
     /**
      * This should only be constructed by
      * OSMPath.createOSMPath
@@ -32,30 +44,20 @@ public class OSMPolygon extends OSMPath {
 
     @Override
     public void select() {
-
+        paint.setARGB(DEFAULT_SELECTED_A, DEFAULT_SELECTED_R, DEFAULT_SELECTED_G, DEFAULT_SELECTED_B);
     }
 
     @Override
     public void deselect() {
-
-    }
-
-    // no border stroke
-    protected OSMPolygon(Way w, MapView mv, int color) {
-        super(w, mv);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(color);
-    }
-
-    protected OSMPolygon(Way w, MapView mv, int color, float width) {
-        super(w, mv);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        paint.setColor(color);
-        setStrokeWidth(width);
+        paint.setARGB(a, r, g, b);
     }
 
     protected OSMPolygon(Way w, MapView mv, int a, int r, int g, int b) {
         super(w, mv);
+        this.a = a;
+        this.r = r;
+        this.g = g;
+        this.b = b;
         paint.setStyle(Paint.Style.FILL);
         paint.setARGB(a, r, g, b);
     }
