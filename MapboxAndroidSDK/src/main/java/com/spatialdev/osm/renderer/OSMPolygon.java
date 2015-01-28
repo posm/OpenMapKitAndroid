@@ -4,9 +4,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 
 import com.mapbox.mapboxsdk.views.MapView;
-import com.spatialdev.osm.model.Way;
-
-import java.util.List;
+import com.spatialdev.osm.model.OSMWay;
 
 /**
  * Created by Nicholas Hallahan on 1/22/15.
@@ -37,7 +35,7 @@ public class OSMPolygon extends OSMPath {
      * * * *
      * @param w
      */
-    protected OSMPolygon(Way w, MapView mv) {
+    protected OSMPolygon(OSMWay w, MapView mv) {
         this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B);
     }
 
@@ -51,7 +49,7 @@ public class OSMPolygon extends OSMPath {
         paint.setARGB(a, r, g, b);
     }
 
-    protected OSMPolygon(Way w, MapView mv, int a, int r, int g, int b) {
+    protected OSMPolygon(OSMWay w, MapView mv, int a, int r, int g, int b) {
         super(w, mv);
         this.a = a;
         this.r = r;

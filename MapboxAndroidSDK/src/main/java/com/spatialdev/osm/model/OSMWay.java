@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Way extends OSMElement {
+public class OSMWay extends OSMElement {
 
     /**
      * As the XML document is being parsed, ways have references to nodes' IDs.
@@ -25,12 +25,12 @@ public class Way extends OSMElement {
      */
     private LinkedList<Long> nodeRefs = new LinkedList<>();
 
-    private LinkedList<Node> linkedNodes = new LinkedList<>();
+    private LinkedList<OSMNode> linkedNodes = new LinkedList<>();
 
     /**
      * If a way is in a relation, it's relation is added to this list.
      */
-    private LinkedList<Relation> linkedRelations = new LinkedList<>();
+    private LinkedList<OSMRelation> linkedRelations = new LinkedList<>();
 
     /**
      * isClosed checks to see if this way is closed and sets it to true if so.
@@ -38,12 +38,12 @@ public class Way extends OSMElement {
     private boolean closed = false;
 
     
-    public Way( String idStr,
-                String versionStr,
-                String timestampStr,
-                String changesetStr,
-                String uidStr,
-                String userStr ) {
+    public OSMWay(String idStr,
+                  String versionStr,
+                  String timestampStr,
+                  String changesetStr,
+                  String uidStr,
+                  String userStr) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
     }
@@ -63,7 +63,7 @@ public class Way extends OSMElement {
     }
 
     private void setWayXmlNds(XmlSerializer xmlSerializer) throws IOException {
-        for (Node node : linkedNodes) {
+        for (OSMNode node : linkedNodes) {
             xmlSerializer.startTag(null, "nd");
             xmlSerializer.attribute(null, "ref", String.valueOf(node.getId()));
             xmlSerializer.endTag(null, "nd");
@@ -83,13 +83,13 @@ public class Way extends OSMElement {
      * @param nodes
      * @return the number of node references NOT linked.
      */
-    int linkNodes(Map<Long, Node> nodes, Set<Long> wayNodes) {
+    int linkNodes(Map<Long, OSMNode> nodes, Set<Long> wayNodes) {
         // first check if the way is closed before doing this processing...
         checkIfClosed();
         LinkedList<Long> unlinkedRefs = new LinkedList<>();
         while (nodeRefs.size() > 0) {
             Long refId = nodeRefs.pop();
-            Node node = nodes.get(refId);
+            OSMNode node = nodes.get(refId);
             wayNodes.add(refId);
             if (node == null) {
                 unlinkedRefs.push(refId);
@@ -136,11 +136,11 @@ public class Way extends OSMElement {
      * This allows you to iterate through the nodes. This is great if you
      * want to give a renderer all of the lat longs to paint a line...
      */
-    public Iterator<Node> getNodeIterator() {
+    public Iterator<OSMNode> getNodeIterator() {
         return linkedNodes.listIterator();
     }
 
-    public List<Node> getNodes() {
+    public List<OSMNode> getNodes() {
         return linkedNodes;
     }
 
@@ -148,11 +148,11 @@ public class Way extends OSMElement {
      * If this is in a relation, it's parent relation is added to an internal linked list.
      * @param relation
      */
-    public void addRelation(Relation relation) {
+    public void addRelation(OSMRelation relation) {
         linkedRelations.push(relation);
     }
 
-    public List<Relation> getRelations() {
+    public List<OSMRelation> getRelations() {
         return linkedRelations;
     }
 

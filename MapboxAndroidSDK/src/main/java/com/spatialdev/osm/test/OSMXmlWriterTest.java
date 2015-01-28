@@ -2,13 +2,13 @@ package com.spatialdev.osm.test;
 
 import android.test.InstrumentationTestCase;
 
-import com.spatialdev.osm.model.Node;
+import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMDataSet;
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMRelation;
+import com.spatialdev.osm.model.OSMWay;
 import com.spatialdev.osm.model.OSMXmlParser;
 import com.spatialdev.osm.model.OSMXmlWriter;
-import com.spatialdev.osm.model.Relation;
-import com.spatialdev.osm.model.Way;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -45,9 +45,9 @@ public class OSMXmlWriterTest extends InstrumentationTestCase {
     public void testReadAndWriteBallardWays() throws Exception {
         InputStream in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/ballard_relation.osm");
         OSMDataSet ds = OSMXmlParser.parseFromInputStream(in);
-        Collection<Way> ways = ds.getWays().values();
+        Collection<OSMWay> ways = ds.getWays().values();
         LinkedList<OSMElement> waysList = new LinkedList<>();
-        for (Way w : ways) {
+        for (OSMWay w : ways) {
             waysList.add(w);
         }
         String waysXml = OSMXmlWriter.elementsToString(waysList, USER);
@@ -57,9 +57,9 @@ public class OSMXmlWriterTest extends InstrumentationTestCase {
     public void testReadAndWriteBallardNodes() throws Exception {
         InputStream in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/ballard_relation.osm");
         OSMDataSet ds = OSMXmlParser.parseFromInputStream(in);
-        Collection<Node> nodes = ds.getNodes().values();
+        Collection<OSMNode> nodes = ds.getNodes().values();
         LinkedList<OSMElement> nodesList = new LinkedList<>();
-        for (Node n : nodes) {
+        for (OSMNode n : nodes) {
             nodesList.add(n);
         }
         String nodesXml = OSMXmlWriter.elementsToString(nodesList, USER);
@@ -69,9 +69,9 @@ public class OSMXmlWriterTest extends InstrumentationTestCase {
     public void testReadAndWriteBallardRelations() throws Exception {
         InputStream in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/ballard_relation.osm");
         OSMDataSet ds = OSMXmlParser.parseFromInputStream(in);
-        Collection<Relation> relations = ds.getRelations().values();
+        Collection<OSMRelation> relations = ds.getRelations().values();
         LinkedList<OSMElement> relationsList = new LinkedList<>();
-        for (Relation r : relations) {
+        for (OSMRelation r : relations) {
             relationsList.add(r);
         }
         String relationsXml = OSMXmlWriter.elementsToString(relationsList, USER);
@@ -82,8 +82,8 @@ public class OSMXmlWriterTest extends InstrumentationTestCase {
         InputStream in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/ballard_relation.osm");
         OSMDataSet ds = OSMXmlParser.parseFromInputStream(in);
 
-        Map<Long, Way> wayMap = ds.getWays();
-        Way fourBs = wayMap.get((long)234714287);
+        Map<Long, OSMWay> wayMap = ds.getWays();
+        OSMWay fourBs = wayMap.get((long)234714287);
         fourBs.addOrEditTag("testKey", "testValue");
         fourBs.addOrEditTag("amenity", "bar");
         fourBs.deleteTag("source");
@@ -96,8 +96,8 @@ public class OSMXmlWriterTest extends InstrumentationTestCase {
         InputStream in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/spatialdev_small.osm");
         OSMDataSet ds = OSMXmlParser.parseFromInputStream(in);
 
-        Map<Long, Node> nodeMap = ds.getNodes();
-        Node spdv = nodeMap.get(Long.valueOf("3203542408"));
+        Map<Long, OSMNode> nodeMap = ds.getNodes();
+        OSMNode spdv = nodeMap.get(Long.valueOf("3203542408"));
         spdv.addOrEditTag("testKey", "testValue");
         spdv.addOrEditTag("amenity", "this is some amenity");
         spdv.deleteTag("addr:housenumber");

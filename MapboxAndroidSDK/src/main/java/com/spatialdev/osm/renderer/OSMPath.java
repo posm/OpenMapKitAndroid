@@ -7,9 +7,9 @@ import android.graphics.Rect;
 
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.Projection;
-import com.spatialdev.osm.model.Node;
+import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.Way;
+import com.spatialdev.osm.model.OSMWay;
 
 import java.util.List;
 
@@ -54,8 +54,8 @@ public abstract class OSMPath {
 
 
     public static OSMPath createOSMPath(OSMElement element, MapView mv) {
-        if (element instanceof Way) {
-            Way w = (Way) element;
+        if (element instanceof OSMWay) {
+            OSMWay w = (OSMWay) element;
             // polygon
             if (w.isClosed()) {
                 return new OSMPolygon(w, mv);
@@ -74,8 +74,8 @@ public abstract class OSMPath {
      * * * *
      * @param w Way, MapView mv
      */
-    protected OSMPath(Way w, MapView mv) {
-        List<Node> nodes = w.getNodes();
+    protected OSMPath(OSMWay w, MapView mv) {
+        List<OSMNode> nodes = w.getNodes();
         projectNodes(nodes);
         mapView = mv;
         paint.setAntiAlias(true);
@@ -86,10 +86,10 @@ public abstract class OSMPath {
      *
      * @param nodes
      */
-    private void projectNodes(List<Node> nodes) {
+    private void projectNodes(List<OSMNode> nodes) {
         projectedPoints = new double[nodes.size()][2];
         int i = 0;
-        for (Node n : nodes) {
+        for (OSMNode n : nodes) {
             projectedPoints[i++] = Projection.latLongToPixelXY(n.getLat(), n.getLng());
         }
     }

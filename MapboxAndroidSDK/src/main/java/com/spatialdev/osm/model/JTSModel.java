@@ -5,8 +5,6 @@
 
 package com.spatialdev.osm.model;
 
-import android.util.Log;
-
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -129,23 +127,23 @@ public class JTSModel {
      * @return the priority OSMElement type
      */
     private OSMElement prioritizeElementByType(OSMElement el1, OSMElement el2) {
-        if (el1 instanceof Node) {
+        if (el1 instanceof OSMNode) {
             return el1;
         }
-        if (el2 instanceof Node) {
+        if (el2 instanceof OSMNode) {
             return el2;
         }
         // It's gotta be a Way at this point...
-        if ( ! ((Way)el1).isClosed() ) {
+        if ( ! ((OSMWay)el1).isClosed() ) {
             return el1;
         }
         return el2;
     }
 
     private void addOSMClosedWays(OSMDataSet ds) {
-        List<Way> closedWays = ds.getClosedWays();
-        for (Way closedWay : closedWays) {
-            List<Node> nodes = closedWay.getNodes();
+        List<OSMWay> closedWays = ds.getClosedWays();
+        for (OSMWay closedWay : closedWays) {
+            List<OSMNode> nodes = closedWay.getNodes();
             Coordinate[] coords = coordArrayFromNodeList(nodes);
             Polygon poly = geometryFactory.createPolygon(coords);
             closedWay.setJTSGeom(poly);
@@ -155,9 +153,9 @@ public class JTSModel {
     }
 
     private void addOSMOpenWays(OSMDataSet ds) {
-        List<Way> openWays = ds.getOpenWays();
-        for (Way w : openWays) {
-            List<Node> nodes = w.getNodes();
+        List<OSMWay> openWays = ds.getOpenWays();
+        for (OSMWay w : openWays) {
+            List<OSMNode> nodes = w.getNodes();
             Coordinate[] coords = coordArrayFromNodeList(nodes);
             LineString line = geometryFactory.createLineString(coords);
             w.setJTSGeom(line);
@@ -166,10 +164,10 @@ public class JTSModel {
         }
     }
 
-    private Coordinate[] coordArrayFromNodeList(List<Node> nodes) {
+    private Coordinate[] coordArrayFromNodeList(List<OSMNode> nodes) {
         Coordinate[] coords = new Coordinate[nodes.size()];
         int i = 0;
-        for (Node node : nodes) {
+        for (OSMNode node : nodes) {
             double lat = node.getLat();
             double lng = node.getLng();
             Coordinate coord = new Coordinate(lng, lat);
@@ -180,8 +178,8 @@ public class JTSModel {
 
     // NH TODO
     private void addOSMStandaloneNodes(OSMDataSet ds) {
-        List<Node> standaloneNodes = ds.getStandaloneNodes();
-        for (Node n : standaloneNodes) {
+        List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
+        for (OSMNode n : standaloneNodes) {
 
         }
     }

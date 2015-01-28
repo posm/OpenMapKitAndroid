@@ -22,14 +22,14 @@ public class OSMDataSet {
     /**
      * We assume there will only be one meta tag.
      */
-    private Meta meta;
+    private OSMMeta meta;
 
     /**
      * Hash tables to look up Nodes, Ways, Relations by their IDs.
      */
-    private LinkedHashMap<Long, Node>     nodes     = new LinkedHashMap<>();
-    private LinkedHashMap<Long, Way>      ways      = new LinkedHashMap<>();
-    private LinkedHashMap<Long, Relation> relations = new LinkedHashMap<>();
+    private LinkedHashMap<Long, OSMNode>     nodes     = new LinkedHashMap<>();
+    private LinkedHashMap<Long, OSMWay>      ways      = new LinkedHashMap<>();
+    private LinkedHashMap<Long, OSMRelation> relations = new LinkedHashMap<>();
 
     /**
      * Gets filled with ids of nodes that are in a way. This is
@@ -41,18 +41,18 @@ public class OSMDataSet {
      * When the post-processing is done, the nodes that are not
      * in a way are put here.
      */
-    private List<Node> standaloneNodes = new ArrayList<>();
+    private List<OSMNode> standaloneNodes = new ArrayList<>();
 
     /**
      * Post-processing find all of the ways that are closed,
      *      ie: same first and last node
      */
-    private List<Way> closedWays = new ArrayList<>();
+    private List<OSMWay> closedWays = new ArrayList<>();
 
     /**
      * If its not a closed way, then it is an open way.
      */
-    private List<Way> openWays = new ArrayList<>();
+    private List<OSMWay> openWays = new ArrayList<>();
 
 
     public OSMDataSet() {}
@@ -62,10 +62,10 @@ public class OSMDataSet {
     }
 
     public void createMeta(String osmBase) {
-        meta = new Meta(osmBase);
+        meta = new OSMMeta(osmBase);
     }
 
-    public Node createNode(String idStr,
+    public OSMNode createNode(String idStr,
                            String latStr,
                            String lonStr,
                            String versionStr,
@@ -74,33 +74,33 @@ public class OSMDataSet {
                            String uidStr,
                            String userStr) {
 
-        Node n = new Node(  idStr, latStr, lonStr, versionStr, timestampStr,
+        OSMNode n = new OSMNode(  idStr, latStr, lonStr, versionStr, timestampStr,
                             changesetStr, uidStr, userStr );
 
         nodes.put(n.getId(), n);
         return n;
     }
 
-    public Way createWay( String idStr,
+    public OSMWay createWay( String idStr,
                           String versionStr,
                           String timestampStr,
                           String changesetStr,
                           String uidStr,
                           String userStr ) {
 
-        Way w = new Way(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        OSMWay w = new OSMWay(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
         ways.put(w.getId(), w);
         return w;
     }
 
-    public Relation createRelation( String idStr,
+    public OSMRelation createRelation( String idStr,
                                     String versionStr,
                                     String timestampStr,
                                     String changesetStr,
                                     String uidStr,
                                     String userStr ) {
 
-        Relation r = new Relation(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        OSMRelation r = new OSMRelation(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
         relations.put(r.getId(), r);
         return r;
     }
@@ -116,7 +116,7 @@ public class OSMDataSet {
              * Link node references to the actual nodes
              * in the Way objects.
              */
-            Way w = ways.get(key);
+            OSMWay w = ways.get(key);
             w.linkNodes(nodes, wayNodeIds);
 
             /**
@@ -137,14 +137,14 @@ public class OSMDataSet {
              * put that node in standaloneNodes.
              */
             if ( ! wayNodeIds.contains(key) ) {
-                Node n = nodes.get(key);
+                OSMNode n = nodes.get(key);
                 standaloneNodes.add(n);
             }
         }
 
         Set<Long> relationKeys = relations.keySet();
         for (Long key : relationKeys) {
-            Relation r = relations.get(key);
+            OSMRelation r = relations.get(key);
             r.link(nodes, ways, relations);
         }
     }
@@ -165,7 +165,7 @@ public class OSMDataSet {
         return notes;
     }
 
-    public Meta getMeta() {
+    public OSMMeta getMeta() {
         return meta;
     }
 
@@ -175,7 +175,7 @@ public class OSMDataSet {
      *
      * @return all nodes
      */
-    public Map<Long, Node> getNodes() {
+    public Map<Long, OSMNode> getNodes() {
         return nodes;
     }
     /**
@@ -183,7 +183,7 @@ public class OSMDataSet {
      *
      * @return standalone nodes
      */
-    public List<Node> getStandaloneNodes() {
+    public List<OSMNode> getStandaloneNodes() {
         return standaloneNodes;
     }
 
@@ -191,11 +191,11 @@ public class OSMDataSet {
         return standaloneNodes.size();
     }
 
-    public Map<Long, Way> getWays() {
+    public Map<Long, OSMWay> getWays() {
         return ways;
     }
 
-    public List<Way> getClosedWays() {
+    public List<OSMWay> getClosedWays() {
         return closedWays;
     }
 
@@ -203,7 +203,7 @@ public class OSMDataSet {
         return closedWays.size();
     }
 
-    public List<Way> getOpenWays() {
+    public List<OSMWay> getOpenWays() {
         return openWays;
     }
 
@@ -211,7 +211,7 @@ public class OSMDataSet {
         return openWays.size();
     }
 
-    public Map<Long, Relation> getRelations() {
+    public Map<Long, OSMRelation> getRelations() {
         return relations;
     }
 

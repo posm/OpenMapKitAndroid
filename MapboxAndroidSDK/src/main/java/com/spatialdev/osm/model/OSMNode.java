@@ -5,7 +5,6 @@
 package com.spatialdev.osm.model;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.spatialdev.osm.renderer.OSMPath;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -13,21 +12,21 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Node extends OSMElement {
+public class OSMNode extends OSMElement {
 
     private double lat;
     private double lng;
 
-    private LinkedList<Relation> linkedRelations = new LinkedList<>();
+    private LinkedList<OSMRelation> linkedRelations = new LinkedList<>();
 
-    public Node( String idStr,
-                 String latStr,
-                 String lonStr,
-                 String versionStr,
-                 String timestampStr,
-                 String changesetStr,
-                 String uidStr,
-                 String userStr ) {
+    public OSMNode(String idStr,
+                   String latStr,
+                   String lonStr,
+                   String versionStr,
+                   String timestampStr,
+                   String changesetStr,
+                   String uidStr,
+                   String userStr) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
 
@@ -47,11 +46,11 @@ public class Node extends OSMElement {
         return lng;
     }
 
-    public void addRelation(Relation relation) {
+    public void addRelation(OSMRelation relation) {
         linkedRelations.push(relation);
     }
 
-    public List<Relation> getRelations() {
+    public List<OSMRelation> getRelations() {
         return linkedRelations;
     }
 

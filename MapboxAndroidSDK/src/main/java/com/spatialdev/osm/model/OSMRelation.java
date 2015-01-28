@@ -4,8 +4,6 @@
  */
 package com.spatialdev.osm.model;
 
-import com.spatialdev.osm.renderer.OSMPath;
-
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -13,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class Relation extends OSMElement {
+public class OSMRelation extends OSMElement {
 
     // These are the members that refer to another OSM Element.
     private class RelationMember {
@@ -33,18 +31,18 @@ public class Relation extends OSMElement {
     private LinkedList<RelationMember> wayMembers = new LinkedList<>();
     private LinkedList<RelationMember> relationMembers = new LinkedList<>();
 
-    private LinkedList<Node> linkedNodes = new LinkedList<>();
-    private LinkedList<Way> linkedWays = new LinkedList<>();
-    private LinkedList<Relation> linkedRelations = new LinkedList<>();
+    private LinkedList<OSMNode> linkedNodes = new LinkedList<>();
+    private LinkedList<OSMWay> linkedWays = new LinkedList<>();
+    private LinkedList<OSMRelation> linkedRelations = new LinkedList<>();
     
     private int unlinkedMembersCount = 0;
 
-    public Relation( String idStr,
-                     String versionStr,
-                     String timestampStr,
-                     String changesetStr,
-                     String uidStr,
-                     String userStr ) {
+    public OSMRelation(String idStr,
+                       String versionStr,
+                       String timestampStr,
+                       String changesetStr,
+                       String uidStr,
+                       String userStr) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
     }
@@ -95,7 +93,7 @@ public class Relation extends OSMElement {
         relationMembers.add(new RelationMember(id, "relation", role));
     }
 
-    int link(Map<Long, Node> nodes, Map<Long, Way> ways, Map<Long, Relation> relations) {
+    int link(Map<Long, OSMNode> nodes, Map<Long, OSMWay> ways, Map<Long, OSMRelation> relations) {
         int unlinkedNodes = linkNodes(nodes);
         int unlinkedWays = linkWays(ways);
         int unlinkedRelations = linkRelations(relations);
@@ -103,10 +101,10 @@ public class Relation extends OSMElement {
         return unlinkedMembersCount;
     }
 
-    private int linkNodes(Map<Long, Node> nodes) {
+    private int linkNodes(Map<Long, OSMNode> nodes) {
         int unlinkedCount = 0;
         for (RelationMember mem : nodeMembers) {
-            Node node = nodes.get(mem.ref);
+            OSMNode node = nodes.get(mem.ref);
             if (node == null) {
                 ++unlinkedCount;
             } else {
@@ -118,10 +116,10 @@ public class Relation extends OSMElement {
         return unlinkedCount;
     }
 
-    private int linkWays(Map<Long, Way> ways) {
+    private int linkWays(Map<Long, OSMWay> ways) {
         int unlinkedCount = 0;
         for (RelationMember mem : wayMembers) {
-            Way way = ways.get(mem.ref);
+            OSMWay way = ways.get(mem.ref);
             if (way == null) {
                 ++unlinkedCount;
             } else {
@@ -133,10 +131,10 @@ public class Relation extends OSMElement {
         return unlinkedCount;
     }
 
-    private int linkRelations(Map<Long, Relation> relations) {
+    private int linkRelations(Map<Long, OSMRelation> relations) {
         int unlinkedCount = 0;
         for (RelationMember mem: relationMembers) {
-            Relation rel = relations.get(mem.ref);
+            OSMRelation rel = relations.get(mem.ref);
             if (rel == null) {
                 ++unlinkedCount;
             } else {
@@ -148,11 +146,11 @@ public class Relation extends OSMElement {
         return unlinkedCount;
     }
 
-    public void addRelation(Relation relation) {
+    public void addRelation(OSMRelation relation) {
         linkedRelations.push(relation);
     }
 
-    public List<Relation> getRelations() {
+    public List<OSMRelation> getRelations() {
         return linkedRelations;
     }
 

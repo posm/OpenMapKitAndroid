@@ -4,10 +4,10 @@
  */
 package com.spatialdev.osm.model;
 
-public class Meta {
+public class OSMMeta {
     private String osmBase = null;
 
-    public Meta(String osmBase) {
+    public OSMMeta(String osmBase) {
         this.osmBase = osmBase;
     }
 

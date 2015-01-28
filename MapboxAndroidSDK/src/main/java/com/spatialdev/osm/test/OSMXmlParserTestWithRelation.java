@@ -3,9 +3,9 @@ package com.spatialdev.osm.test;
 import android.test.InstrumentationTestCase;
 
 import com.spatialdev.osm.model.OSMDataSet;
+import com.spatialdev.osm.model.OSMRelation;
+import com.spatialdev.osm.model.OSMWay;
 import com.spatialdev.osm.model.OSMXmlParser;
-import com.spatialdev.osm.model.Relation;
-import com.spatialdev.osm.model.Way;
 
 import java.io.InputStream;
 import java.util.List;
@@ -37,27 +37,27 @@ public class OSMXmlParserTestWithRelation extends InstrumentationTestCase {
     }
 
     public void testNumberUnlinkedNodes() throws Exception {
-        Way w = ds.getWays().get((long)234714287);
+        OSMWay w = ds.getWays().get((long)234714287);
         int count = w.getUnlinkedNodesCount();
         assertEquals(0, count);
     }
 
     public void testNumberLinkedNodes() throws Exception {
-        Way w = ds.getWays().get((long)234714287);
+        OSMWay w = ds.getWays().get((long)234714287);
         int count = w.getLinkedNodesCount();
         assertEquals(12, count);
     }
 
     public void testBurkGilmanWayRelationCount() throws Exception {
-        Way w = ds.getWays().get((long)305197030);
-        List<Relation> rels = w.getRelations();
+        OSMWay w = ds.getWays().get((long)305197030);
+        List<OSMRelation> rels = w.getRelations();
         assertEquals(1, rels.size());
     }
 
     public void testBurkGilmanWayLinkedToRelation() throws Exception {
-        Way w = ds.getWays().get((long)305197030);
-        List<Relation> rels = w.getRelations();
-        Relation r = rels.get(0);
+        OSMWay w = ds.getWays().get((long)305197030);
+        List<OSMRelation> rels = w.getRelations();
+        OSMRelation r = rels.get(0);
         String relName = r.getTags().get("name");
         assertEquals("Burke-Gilman Trail", relName);
     }
@@ -79,13 +79,13 @@ public class OSMXmlParserTestWithRelation extends InstrumentationTestCase {
     }
 
     public void testNumberOfBurkeGilmanRelationUnlinkedMembers() throws Exception {
-        Relation r = ds.getRelations().get((long)2183654);
+        OSMRelation r = ds.getRelations().get((long)2183654);
         int unlinkedCount = r.getUnlinkedMemberCount();
         assertEquals(78, unlinkedCount);
     }
 
     public void testNumberOfBurkeGilmanRelationTags() throws Exception {
-        Relation r = ds.getRelations().get((long)2183654);
+        OSMRelation r = ds.getRelations().get((long)2183654);
         int tagCount = r.getTagCount();
         assertEquals(5, tagCount);
     }

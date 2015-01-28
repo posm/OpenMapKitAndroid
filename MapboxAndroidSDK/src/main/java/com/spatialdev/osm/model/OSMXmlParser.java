@@ -122,7 +122,7 @@ public class OSMXmlParser {
         String uidStr       = parser.getAttributeValue(ns, "uid");
         String userStr      = parser.getAttributeValue(ns, "user");
 
-        Node node = ds.createNode(  idStr, latStr, lonStr, versionStr, timestampStr,
+        OSMNode node = ds.createNode(  idStr, latStr, lonStr, versionStr, timestampStr,
                                     changesetStr, uidStr, userStr   );
 
         // If the next thing is not an END_TAG, we have some tag elements in the node...
@@ -139,7 +139,7 @@ public class OSMXmlParser {
         String uidStr       = parser.getAttributeValue(ns, "uid");
         String userStr      = parser.getAttributeValue(ns, "user");
 
-        Way way = ds.createWay(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        OSMWay way = ds.createWay(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
 
         if (parser.nextTag() != XmlPullParser.END_TAG) {
             if (parser.getName().equals("nd")) {
@@ -160,7 +160,7 @@ public class OSMXmlParser {
         String uidStr       = parser.getAttributeValue(ns, "uid");
         String userStr      = parser.getAttributeValue(ns, "user");
 
-        Relation relation = ds.createRelation(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        OSMRelation relation = ds.createRelation(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
 
         if (parser.nextTag() != XmlPullParser.END_TAG) {
             if (parser.getName().equals("member")) {
@@ -184,13 +184,13 @@ public class OSMXmlParser {
         if (parser.getName().equals("tag")){
             readTags(el);
         } else if (parser.getName().equals("nd")) {
-            readNds((Way)el);
+            readNds((OSMWay)el);
         } else if (parser.getName().equals("member")) {
-            readMembers((Relation)el);
+            readMembers((OSMRelation)el);
         }
     }
 
-    private void readNds(Way way)  throws XmlPullParserException, IOException {
+    private void readNds(OSMWay way)  throws XmlPullParserException, IOException {
         String ref = parser.getAttributeValue(ns, "ref");
         long id = Long.valueOf(ref);
         way.addNodeRef(id);
@@ -205,7 +205,7 @@ public class OSMXmlParser {
         }
     }
 
-    private void readMembers(Relation relation) throws XmlPullParserException, IOException {
+    private void readMembers(OSMRelation relation) throws XmlPullParserException, IOException {
         String type = parser.getAttributeValue(ns, "type");
         String ref = parser.getAttributeValue(ns, "ref");
         String role = parser.getAttributeValue(ns, "role");

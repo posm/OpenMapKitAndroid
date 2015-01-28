@@ -11,9 +11,9 @@ import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.model.JTSModel;
-import com.spatialdev.osm.model.Node;
+import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.Way;
+import com.spatialdev.osm.model.OSMWay;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.util.ArrayList;
@@ -46,17 +46,17 @@ public class OSMOverlay extends Overlay {
             return;
         }
 
-        List<Way> polys = new ArrayList<>();
-        List<Way> lines = new ArrayList<>();
-        List<Node> points = new ArrayList<>();
+        List<OSMWay> polys = new ArrayList<>();
+        List<OSMWay> lines = new ArrayList<>();
+        List<OSMNode> points = new ArrayList<>();
         
         List<OSMElement> viewPortElements = model.queryFromEnvelope(envelope);
         
         // Sort the elements into their geom types so we can draw 
         // points on top of lines on top of polys.
         for (OSMElement el : viewPortElements) {
-            if (el instanceof Way) {
-                Way w = (Way) el;
+            if (el instanceof OSMWay) {
+                OSMWay w = (OSMWay) el;
                 if (w.isClosed()) {
                     polys.add(w);
                 } else {
@@ -65,16 +65,16 @@ public class OSMOverlay extends Overlay {
                 continue;
             }
             // if it isn't a Way, it's a Node.
-            points.add((Node)el);
+            points.add((OSMNode)el);
         }
         
         // Draw polygons
-        for (Way w : polys) {
+        for (OSMWay w : polys) {
             w.getOSMPath(mapView).draw(c);
         }
         
         // Draw lines
-        for (Way w : lines) {
+        for (OSMWay w : lines) {
             w.getOSMPath(mapView).draw(c);
         }
     }

@@ -4,7 +4,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 
 import com.mapbox.mapboxsdk.views.MapView;
-import com.spatialdev.osm.model.Way;
+import com.spatialdev.osm.model.OSMWay;
 
 /**
  * Created by Nicholas Hallahan on 1/22/15.
@@ -38,11 +38,11 @@ public class OSMLine extends OSMPath {
      * * * *
      * @param w
      */
-    protected OSMLine(Way w, MapView mv) {
+    protected OSMLine(OSMWay w, MapView mv) {
         this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B, DEFAULT_WIDTH);
     }
     
-    protected OSMLine(Way w, MapView mv, int a, int r, int g, int b, float width) {
+    protected OSMLine(OSMWay w, MapView mv, int a, int r, int g, int b, float width) {
         super(w, mv);
         this.width = width;
         this.a = a;

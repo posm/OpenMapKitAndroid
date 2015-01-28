@@ -10,9 +10,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.spatialdev.osm.model.OSMDataSet;
-import com.spatialdev.osm.model.Node;
+import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.Way;
+import com.spatialdev.osm.model.OSMWay;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,16 +29,16 @@ public class OSMUtil {
         /**
          * POLYGONS
          */
-        List<Way> closedWays = ds.getClosedWays();
-        for (Way w : closedWays) {
-            Iterator<Node> nodeIterator = w.getNodeIterator();
+        List<OSMWay> closedWays = ds.getClosedWays();
+        for (OSMWay w : closedWays) {
+            Iterator<OSMNode> nodeIterator = w.getNodeIterator();
             PathOverlay path = new PathOverlay();
             path.setOptimizePath(false); // optimizePath does not work for polys
             Paint paint = path.getPaint();
             paint.setStyle(Paint.Style.FILL);
             paint.setARGB(85, 95, 237, 140);
             while (nodeIterator.hasNext()) {
-                Node n = nodeIterator.next();
+                OSMNode n = nodeIterator.next();
                 LatLng latLng = n.getLatLng();
                 path.addPoint(latLng);
             }
@@ -49,13 +49,13 @@ public class OSMUtil {
         /**
          * LINES
          */
-        List<Way> openWays = ds.getOpenWays();
-        for (Way w : openWays) {
-            Iterator<Node> nodeIterator = w.getNodeIterator();
+        List<OSMWay> openWays = ds.getOpenWays();
+        for (OSMWay w : openWays) {
+            Iterator<OSMNode> nodeIterator = w.getNodeIterator();
             PathOverlay path = new PathOverlay();
             path.getPaint().setARGB(200, 209, 29, 119);
             while (nodeIterator.hasNext()) {
-                Node n = nodeIterator.next();
+                OSMNode n = nodeIterator.next();
                 LatLng latLng = n.getLatLng();
                 path.addPoint(latLng);
             }
@@ -66,8 +66,8 @@ public class OSMUtil {
         /**
          * POINTS
          */
-        List<Node> standaloneNodes = ds.getStandaloneNodes();
-        for (Node n : standaloneNodes) {
+        List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
+        for (OSMNode n : standaloneNodes) {
             LatLng latLng = n.getLatLng();
             Marker marker = new Marker(n.getClass().getSimpleName(), printTags(n), latLng);
             uiObjects.add(marker);
