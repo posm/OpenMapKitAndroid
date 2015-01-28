@@ -78,6 +78,7 @@ public abstract class OSMPath {
         List<Node> nodes = w.getNodes();
         projectNodes(nodes);
         mapView = mv;
+        paint.setAntiAlias(true);
     }
 
     /**

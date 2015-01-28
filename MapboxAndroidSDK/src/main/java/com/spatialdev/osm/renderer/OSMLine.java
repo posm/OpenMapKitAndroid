@@ -13,6 +13,12 @@ import com.spatialdev.osm.model.Way;
  */
 public class OSMLine extends OSMPath {
 
+    private static final int DEFAULT_A = 125;
+    private static final int DEFAULT_R = 126;
+    private static final int DEFAULT_G = 188;
+    private static final int DEFAULT_B = 111;
+    private static final float DEFAULT_WIDTH = 13.0f;
+    
     /**
      * This should only be constructed by
      * OSMPath.createOSMPath
@@ -20,13 +26,19 @@ public class OSMLine extends OSMPath {
      * @param w
      */
     protected OSMLine(Way w, MapView mv) {
-        this(w, mv, Color.BLUE, 10.0f);
+        this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B, DEFAULT_WIDTH);
     }
 
     protected OSMLine(Way w, MapView mv, int color, float width) {
         super(w, mv);
         paint.setColor(color);
-        paint.setAntiAlias(true);
+        setStrokeWidth(width);
+        paint.setStyle(Paint.Style.STROKE);
+    }
+    
+    protected OSMLine(Way w, MapView mv, int a, int r, int g, int b, float width) {
+        super(w, mv);
+        paint.setARGB(a, r, g, b);
         setStrokeWidth(width);
         paint.setStyle(Paint.Style.STROKE);
     }

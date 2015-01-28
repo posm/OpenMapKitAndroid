@@ -15,6 +15,11 @@ import java.util.List;
  */
 public class OSMPolygon extends OSMPath {
 
+    private static final int DEFAULT_A = 50;
+    private static final int DEFAULT_R = 62;
+    private static final int DEFAULT_G = 107;
+    private static final int DEFAULT_B = 255;
+
     /**
      * This should only be constructed by
      * OSMPath.createOSMPath
@@ -22,7 +27,7 @@ public class OSMPolygon extends OSMPath {
      * @param w
      */
     protected OSMPolygon(Way w, MapView mv) {
-        this(w, mv, Color.GREEN);
+        this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B);
     }
     
     // no border stroke
@@ -31,12 +36,20 @@ public class OSMPolygon extends OSMPath {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(color);
     }
-    
-    // border stroke
-//    protected OSMPolygon(Way w, MapView mv, int color, float width) {
-//        paint.setStyle(Paint.Style.FILL);
-//        paint.setColor(color);
-//    }
+
+    protected OSMPolygon(Way w, MapView mv, int color, float width) {
+        super(w, mv);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setColor(color);
+        setStrokeWidth(width);
+    }
+
+    protected OSMPolygon(Way w, MapView mv, int a, int r, int g, int b) {
+        super(w, mv);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setARGB(a, r, g, b);
+    }
+
 
     /**
      * For now, we are drawing all of the polygons, even those outside of the canvas.
