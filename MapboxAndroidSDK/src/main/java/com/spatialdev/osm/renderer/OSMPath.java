@@ -111,15 +111,9 @@ public abstract class OSMPath {
         return strokeWidth;
     }
     
-    public void select() {
-        
-        
-    }
+    public abstract void select();
     
-    public void deselect() {
-        
-        
-    }
+    public abstract void deselect();
 
     public void draw(final Canvas c) {
         int size = projectedPoints.length;

@@ -13,11 +13,23 @@ import com.spatialdev.osm.model.Way;
  */
 public class OSMLine extends OSMPath {
 
+    private static final float DEFAULT_WIDTH = 13.0f;
     private static final int DEFAULT_A = 125;
     private static final int DEFAULT_R = 126;
     private static final int DEFAULT_G = 188;
     private static final int DEFAULT_B = 111;
-    private static final float DEFAULT_WIDTH = 13.0f;
+    
+    private static final float DEFAULT_SELECTED_WIDTH = 15.0f;
+    private static final int DEFAULT_SELECTED_A = 180;
+    private static final int DEFAULT_SELECTED_R = 255;
+    private static final int DEFAULT_SELECTED_G = 140;
+    private static final int DEFAULT_SELECTED_B = 0;
+    
+    private float width;
+    private int a;
+    private int r;
+    private int g;
+    private int b;
     
     /**
      * This should only be constructed by
@@ -28,19 +40,29 @@ public class OSMLine extends OSMPath {
     protected OSMLine(Way w, MapView mv) {
         this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B, DEFAULT_WIDTH);
     }
-
-    protected OSMLine(Way w, MapView mv, int color, float width) {
-        super(w, mv);
-        paint.setColor(color);
-        setStrokeWidth(width);
-        paint.setStyle(Paint.Style.STROKE);
-    }
     
     protected OSMLine(Way w, MapView mv, int a, int r, int g, int b, float width) {
         super(w, mv);
+        this.width = width;
+        this.a = a;
+        this.r = r;
+        this.g = g;
+        this.b = b;
         paint.setARGB(a, r, g, b);
         setStrokeWidth(width);
         paint.setStyle(Paint.Style.STROKE);
+    }
+
+    @Override
+    public void select() {
+        paint.setARGB(DEFAULT_SELECTED_A, DEFAULT_SELECTED_R, DEFAULT_SELECTED_G, DEFAULT_SELECTED_B);
+        setStrokeWidth(DEFAULT_SELECTED_WIDTH);
+    }
+
+    @Override
+    public void deselect() {
+        paint.setARGB(a, r, g, b);
+        setStrokeWidth(width);
     }
 
     /**

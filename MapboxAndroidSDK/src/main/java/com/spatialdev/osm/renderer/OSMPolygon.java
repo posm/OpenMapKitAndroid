@@ -29,7 +29,17 @@ public class OSMPolygon extends OSMPath {
     protected OSMPolygon(Way w, MapView mv) {
         this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B);
     }
-    
+
+    @Override
+    public void select() {
+
+    }
+
+    @Override
+    public void deselect() {
+
+    }
+
     // no border stroke
     protected OSMPolygon(Way w, MapView mv, int color) {
         super(w, mv);
