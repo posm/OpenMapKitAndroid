@@ -34,4 +34,6 @@
     <!-- external storage -->
     <string name="appFolderName">"openmapkit"</string>
     <string name="mbtilesFolderName">"mbtiles"</string>
+    <string name="osmFolderName">"osm"</string>
+    <string name="editsFolderName">"edits"</string>
 </resources>

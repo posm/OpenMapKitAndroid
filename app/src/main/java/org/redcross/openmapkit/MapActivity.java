@@ -12,14 +12,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.overlay.Marker;
-import com.mapbox.mapboxsdk.overlay.Overlay;
-import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMap;
-import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMDataSet;
@@ -27,9 +23,7 @@ import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlParser;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -141,6 +135,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void initializeOsmXml() {
         try {
+            OSMMapBuilder.buildMapFromExternalStorage(this);
+            
             OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
             JTSModel jtsModel = new JTSModel(ds);
             osmMap = new OSMMap(mapView, jtsModel, this);
@@ -282,4 +278,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         }
     }
 
+    public MapView getMapView() {
+        return mapView;
+    }
+    
 }
