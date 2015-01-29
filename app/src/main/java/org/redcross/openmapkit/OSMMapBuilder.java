@@ -10,6 +10,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+
+import com.google.common.io.CountingInputStream;
+import com.spatialdev.osm.model.OSMDataSet;
+import com.spatialdev.osm.model.OSMXmlParser;
 
 /**
  * Created by Nicholas Hallahan on 1/28/15.
@@ -51,9 +56,14 @@ public class OSMMapBuilder extends AsyncTask<File, Integer, JTSModel> {
     @Override
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
+        long fileSize = f.length();
         try {
-            FileInputStream fis = new FileInputStream(f);
+            InputStream is = new FileInputStream(f);
+            CountingInputStream cis = new CountingInputStream(is);
+            OSMDataSet ds = OSMXmlParser.parseFromInputStream(cis);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

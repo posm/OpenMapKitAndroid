@@ -137,9 +137,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         try {
             OSMMapBuilder.buildMapFromExternalStorage(this);
             
-            OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
-            JTSModel jtsModel = new JTSModel(ds);
-            osmMap = new OSMMap(mapView, jtsModel, this);
+//            OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_tiny.osm");
+//            JTSModel jtsModel = new JTSModel(ds);
+//            osmMap = new OSMMap(mapView, jtsModel, this);
             
             // Uncomment this block to test drawing things 
             // using the highly problematic but simple PathOverlay.
