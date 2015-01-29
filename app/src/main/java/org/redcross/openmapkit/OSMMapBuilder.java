@@ -3,6 +3,7 @@ package org.redcross.openmapkit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import com.spatialdev.osm.model.JTSModel;
 
@@ -20,10 +21,13 @@ import com.spatialdev.osm.model.OSMXmlParser;
  * Created by Nicholas Hallahan on 1/28/15.
  * nhallahan@spatialdev.com* 
  */
-public class OSMMapBuilder extends AsyncTask<File, Integer, JTSModel> {
+public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
     private static int remainingFiles = -1;
     public static boolean running = false;
+    
+    private CountingInputStream countingInputStream;
+    private long fileSize = -1;
     
     public static void buildMapFromExternalStorage(MapActivity mapActivity) throws IOException {
         if (running) {
@@ -35,7 +39,7 @@ public class OSMMapBuilder extends AsyncTask<File, Integer, JTSModel> {
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
             OSMMapBuilder builder = new OSMMapBuilder();
-            // Reading all of the files in parallel.
+            Log.i("PARSING", "PARSING: " + xmlFile.getName());
             builder.execute(xmlFile);
         }
         
@@ -56,11 +60,11 @@ public class OSMMapBuilder extends AsyncTask<File, Integer, JTSModel> {
     @Override
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
-        long fileSize = f.length();
+        fileSize = f.length();
         try {
             InputStream is = new FileInputStream(f);
-            CountingInputStream cis = new CountingInputStream(is);
-            OSMDataSet ds = OSMXmlParser.parseFromInputStream(cis);
+            countingInputStream = new CountingInputStream(is);
+            OSMDataSet ds = OSMXmlParserInOSMMapBuilder.parseFromInputStream(countingInputStream, this);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -70,13 +74,31 @@ public class OSMMapBuilder extends AsyncTask<File, Integer, JTSModel> {
     }
 
     @Override
-    protected void onProgressUpdate(Integer... progress) {
-        
+    protected void onProgressUpdate(Long... progress) {
+        long percent = progress[0];
+        long elementsRead = progress[1];
+        long nodesRead = progress[2];
+        long waysRead = progress[3];
+        long relationsRead = progress[4];
+        Log.i("PARSER_PROGRESS", 
+                "percent=" + percent + ", " +
+                "elementsRead=" + elementsRead + ", " +
+                "nodesRead=" + nodesRead + ", " +
+                "waysRead=" + waysRead + ", " +
+                "relationsRead=" + relationsRead);
     }
 
     @Override
     protected void onPostExecute(JTSModel model) {
         
+    }
+    
+    public void updateFromParser(long elementsRead, 
+                                 long nodesRead, 
+                                 long waysRead, 
+                                 long relationsRead) {
+        long percent = (long)(((float)countingInputStream.getCount() / (float)fileSize) * 100);
+        publishProgress(percent, elementsRead, nodesRead, waysRead, relationsRead);
     }
     
 }

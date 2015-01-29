@@ -50,7 +50,7 @@ public class OSMXmlParser {
         return osmXmlParser.getDataSet();
     }
 
-    private OSMXmlParser() {
+    protected OSMXmlParser() {
         ds = new OSMDataSet();
     }
 
@@ -58,7 +58,13 @@ public class OSMXmlParser {
         return ds;
     }
 
-    private void parse(InputStream in) throws XmlPullParserException, IOException {
+    /**
+     * Should only be called by static method parseFromInputStream
+     * @param in
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
+    public void parse(InputStream in) throws XmlPullParserException, IOException {
         try {
             parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -97,9 +103,19 @@ public class OSMXmlParser {
             else {
                 skip();
             }
+            elementRead(name);
         }
     }
 
+    /**
+     * Override this in a subclass if you want to notify a progress bar that
+     * an element has been read.
+     * * * * 
+     * @param elementName
+     */
+    protected void elementRead(String elementName) {}
+    
+    
     private void readNote() throws XmlPullParserException, IOException {
         String note = readText();
         ds.createNote(note);
