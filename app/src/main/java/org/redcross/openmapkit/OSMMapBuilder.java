@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.model.JTSModel;
 
 import java.io.File;
@@ -22,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
-import com.spatialdev.osm.model.OSMXmlParser;
 
 /**
  * Created by Nicholas Hallahan on 1/28/15.
@@ -32,16 +32,20 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
     private static int remainingFiles = -1;
     public static boolean running = false;
+    private static MapActivity staticMapActivity; // only supporting one per app for now
     
     private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
+
+    private JTSModel jtsModel = new JTSModel();
     
     public static void buildMapFromExternalStorage(MapActivity mapActivity) throws IOException {
         if (running) {
             throw new IOException("MAP BUILDER CURRENTLY LOADING!");
         }
         running = true;
+        staticMapActivity = mapActivity;
         File[] xmlFiles = fetchOsmXmlFiles(mapActivity);
         remainingFiles = xmlFiles.length;
         for (int i = 0; i < xmlFiles.length; i++) {
@@ -76,12 +80,13 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             InputStream is = new FileInputStream(f);
             countingInputStream = new CountingInputStream(is);
             OSMDataSet ds = OSMXmlParserInOSMMapBuilder.parseFromInputStream(countingInputStream, this);
+            jtsModel.addOSMDataSet(ds);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return jtsModel;
     }
 
     @Override
@@ -102,7 +107,12 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 
     @Override
     protected void onPostExecute(JTSModel model) {
-        
+        --remainingFiles;
+        // do this when everything is done loading
+        if (remainingFiles == 0) {
+            new OSMMap(staticMapActivity.getMapView(), jtsModel, staticMapActivity);
+            running = false;
+        }
     }
     
     public void updateFromParser(long elementReadCount, 
@@ -127,6 +137,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 
     /**
      *  CUSTOM THREAD POOL THAT HAS A LARGER STACK SIZE TO HANDLE LARGER OSM XML FILES
+     *  Sometimes the tags parsing recurses deeply... 
      *  http://stackoverflow.com/questions/27277861/increase-asynctask-stack-size
      */
 
