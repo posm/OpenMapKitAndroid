@@ -23,6 +23,13 @@ public class OSMXmlParser {
 
     // This is the data set that gets populated from the XML.
     private OSMDataSet ds;
+    
+    // Count of elements that have been read so far
+    protected long elementReadCount = 0;
+    protected long nodeReadCount = 0;
+    protected long wayReadCount = 0;
+    protected long relationReadCount = 0;
+    protected long tagReadCount = 0;
 
     /**
      * Access the parser through public static methods which function
@@ -103,17 +110,20 @@ public class OSMXmlParser {
             else {
                 skip();
             }
-            elementRead(name);
+            
+            ++elementReadCount;
+            if (elementReadCount % 500 == 0) {
+                notifyProgress(); // broadcasting read updates every 500 elements
+            }
         }
     }
 
     /**
      * Override this in a subclass if you want to notify a progress bar that
-     * an element has been read.
+     * an element(s) have been read.
      * * * * 
-     * @param elementName
      */
-    protected void elementRead(String elementName) {}
+    protected void notifyProgress() {}
     
     
     private void readNote() throws XmlPullParserException, IOException {
@@ -145,6 +155,7 @@ public class OSMXmlParser {
         if (parser.nextTag() != XmlPullParser.END_TAG && parser.getName().equals("tag")) {
             readTags(node);
         }
+        ++nodeReadCount;
     }
 
     private void readWay() throws XmlPullParserException, IOException {
@@ -166,6 +177,7 @@ public class OSMXmlParser {
                 skip();
             }
         }
+        ++wayReadCount;
     }
 
     private void readRelation() throws XmlPullParserException, IOException {
@@ -187,6 +199,7 @@ public class OSMXmlParser {
                 skip();
             }
         }
+        ++relationReadCount;
     }
 
     private void readTags(OSMElement el) throws XmlPullParserException, IOException {
@@ -204,6 +217,7 @@ public class OSMXmlParser {
         } else if (parser.getName().equals("member")) {
             readMembers((OSMRelation)el);
         }
+        ++tagReadCount;
     }
 
     private void readNds(OSMWay way)  throws XmlPullParserException, IOException {
