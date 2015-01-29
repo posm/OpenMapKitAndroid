@@ -26,6 +26,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static int remainingFiles = -1;
     public static boolean running = false;
     
+    private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
     
@@ -38,8 +39,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         remainingFiles = xmlFiles.length;
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
+            String fileName = xmlFile.getName();
             OSMMapBuilder builder = new OSMMapBuilder();
-            Log.i("PARSING", "PARSING: " + xmlFile.getName());
+            Log.i("BEGIN_PARSING", "PARSING: " + fileName);
             builder.execute(xmlFile);
         }
         
@@ -60,6 +62,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     @Override
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
+        fileName = f.getName();
         fileSize = f.length();
         try {
             InputStream is = new FileInputStream(f);
@@ -81,6 +84,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         long waysRead = progress[3];
         long relationsRead = progress[4];
         Log.i("PARSER_PROGRESS", 
+                "fileName=" + fileName + ", " +
                 "percent=" + percent + ", " +
                 "elementsRead=" + elementsRead + ", " +
                 "nodesRead=" + nodesRead + ", " +
