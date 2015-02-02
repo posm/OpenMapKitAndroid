@@ -176,11 +176,16 @@ public class JTSModel {
         return coords;
     }
 
-    // NH TODO
     private void addOSMStandaloneNodes(OSMDataSet ds) {
         List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
         for (OSMNode n : standaloneNodes) {
-
+            double lat = n.getLat();
+            double lng = n.getLng();
+            Coordinate coord = new Coordinate(lng, lat);
+            Point point = geometryFactory.createPoint(coord);
+            n.setJTSGeom(point);
+            Envelope envelope = point.getEnvelopeInternal();
+            rtree.insert(envelope, n);
         }
     }
 
