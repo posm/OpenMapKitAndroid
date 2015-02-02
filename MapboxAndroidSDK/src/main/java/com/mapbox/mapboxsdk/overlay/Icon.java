@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.util.Log;
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
 import com.mapbox.mapboxsdk.util.BitmapUtils;
+import com.mapbox.mapboxsdk.util.MapboxUtils;
 import com.mapbox.mapboxsdk.util.NetworkUtils;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import java.io.File;
@@ -94,19 +95,15 @@ public class Icon implements MapboxConstants {
     /**
      * Initialize an icon with size, symbol, and color, and start a
      * download process to load it from the API.
-     *
      * @param context Android context - Used for proper Bitmap Density generation
      * @param size    Size of Icon
      * @param symbol  Maki Symbol
      * @param aColor  Color of Icon
      */
     public Icon(Context context, Size size, String symbol, String aColor) {
-        String url = MAPBOX_BASE_URL + "marker/pin-" + size.getApiString();
-        if (!symbol.equals("")) {
-            url += "-" + symbol + "+" + aColor.replace("#", "") + "@2x.png";
-        } else {
-            url += "+" + aColor.replace("#", "") + "@2x.png";
-        }
+
+        String url = MapboxUtils.markerIconURL(context, size.apiString, symbol, aColor);
+
         downloadBitmap(context, url);
     }
 
@@ -133,6 +130,7 @@ public class Icon implements MapboxConstants {
     }
 
     private void downloadBitmap(Context context, String url) {
+        Log.d(TAG, String.format("downloadBitmap() with url = '%s'", url));
         CacheableBitmapDrawable bitmap = getCache(context).getFromMemoryCache(url);
 
         // Cache hit! We're done..

@@ -22,7 +22,7 @@ public class InfoWindow {
      */
     private MapView mMapView;
     private boolean mIsVisible;
-    private View mView;
+    protected View mView;
 
     static int mTitleId = 0;
     static int mDescriptionId = 0;
@@ -43,7 +43,7 @@ public class InfoWindow {
         }
 
         // default behavior: close it when clicking on the tooltip:
-        mView.setOnTouchListener(new View.OnTouchListener() {
+        setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent e) {
                 if (e.getAction() == MotionEvent.ACTION_UP) {
@@ -64,7 +64,7 @@ public class InfoWindow {
         mView = view;
 
         // default behavior: close it when clicking on the tooltip:
-        mView.setOnTouchListener(new View.OnTouchListener() {
+        setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent e) {
                 if (e.getAction() == MotionEvent.ACTION_UP) {
@@ -177,5 +177,13 @@ public class InfoWindow {
         mSubDescriptionId = context.getResources()
                 .getIdentifier("id/tooltip_subdescription", null, packageName);
         mImageId = context.getResources().getIdentifier("id/tooltip_image", null, packageName);
+    }
+
+    /**
+     * Use to override default touch events handling on InfoWindow (ie, close automatically)
+     * @param listener New View.OnTouchListener to use
+     */
+    public void setOnTouchListener(View.OnTouchListener listener) {
+        mView.setOnTouchListener(listener);
     }
 }

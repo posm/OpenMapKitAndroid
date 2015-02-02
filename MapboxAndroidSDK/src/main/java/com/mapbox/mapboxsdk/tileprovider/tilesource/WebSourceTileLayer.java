@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.mapbox.mapboxsdk.constants.MapboxConstants;
 import com.mapbox.mapboxsdk.tileprovider.MapTile;
 import com.mapbox.mapboxsdk.tileprovider.MapTileCache;
 import com.mapbox.mapboxsdk.tileprovider.modules.MapTileDownloader;
@@ -20,7 +22,7 @@ import uk.co.senab.bitmapcache.CacheableBitmapDrawable;
 /**
  * An implementation of {@link TileLayer} that pulls tiles from the internet.
  */
-public class WebSourceTileLayer extends TileLayer {
+public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
     private static final String TAG = "WebSourceTileLayer";
 
     // Tracks the number of threads active in the getBitmapFromURL method.
@@ -42,9 +44,9 @@ public class WebSourceTileLayer extends TileLayer {
 
     @Override
     public TileLayer setURL(final String aUrl) {
-        if (aUrl.contains(String.format("http%s://", (mEnableSSL ? "" : "s")))) {
-            super.setURL(aUrl.replace(String.format("http%s://", (mEnableSSL ? "" : "s")),
-                    String.format("http%s://", (mEnableSSL ? "s" : ""))));
+        if (aUrl.contains(String.format(MAPBOX_LOCALE, "http%s://", (mEnableSSL ? "" : "s")))) {
+            super.setURL(aUrl.replace(String.format(MAPBOX_LOCALE, "http%s://", (mEnableSSL ? "" : "s")),
+                    String.format(MAPBOX_LOCALE, "http%s://", (mEnableSSL ? "s" : ""))));
         } else {
             super.setURL(aUrl);
         }

@@ -82,7 +82,7 @@ public class OfflineMapDatabase implements MapboxConstants {
         String maximumZ = sqliteMetadataForName("maximumZ");
 
         if (TextUtils.isEmpty(uniqueID)) {
-            uniqueID = String.format("%s-%s-%s-%s-%s-%s-%s-%d", mapID, region_latitude, region_longitude, region_latitude_delta, region_longitude_delta, minimumZ, maximumZ, new Date().getTime() / 1000L);
+            uniqueID = String.format(MAPBOX_LOCALE, "%s-%s-%s-%s-%s-%s-%s-%d", mapID, region_latitude, region_longitude, region_latitude_delta, region_longitude_delta, minimumZ, maximumZ, new Date().getTime() / 1000L);
         }
 
         if (!TextUtils.isEmpty(mapID) && !TextUtils.isEmpty(includesMetadata) && !TextUtils.isEmpty(includesMarkers) && !TextUtils.isEmpty(imageQuality)

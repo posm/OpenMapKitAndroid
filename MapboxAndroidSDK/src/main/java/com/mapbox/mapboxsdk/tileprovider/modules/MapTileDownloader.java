@@ -1,7 +1,6 @@
 package com.mapbox.mapboxsdk.tileprovider.modules;
 
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -10,6 +9,7 @@ import com.mapbox.mapboxsdk.tileprovider.MapTileCache;
 import com.mapbox.mapboxsdk.tileprovider.MapTileRequestState;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.ITileLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.TileLayer;
+import com.mapbox.mapboxsdk.util.AppUtils;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.TileLoadedListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
@@ -35,8 +35,8 @@ public class MapTileDownloader extends MapTileModuleLayerBase {
         this.mapView = mapView;
         this.mTileCache.set(pTileCache);
 
-        hdpi = mapView.getContext().getResources().getDisplayMetrics().densityDpi
-                > DisplayMetrics.DENSITY_HIGH;
+        hdpi = AppUtils.isRunningOn2xOrGreaterScreen(mapView.getContext());
+        Log.d(TAG, String.format("Going to use @2x tiles? '%b'", hdpi));
 
         mNetworkAvailabilityCheck = pNetworkAvailabilityCheck;
         setTileSource(pTileSource);

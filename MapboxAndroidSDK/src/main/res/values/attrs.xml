@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="MapView">
         <attr name="mapid" format="string"/>
+        <attr name="accessToken" format="string"/>
         <attr name="centerLat" format="string"/>
         <attr name="centerLng" format="string"/>
         <attr name="zoomLevel" format="string"/>

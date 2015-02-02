@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+
+import com.mapbox.mapboxsdk.constants.MapboxConstants;
 import com.mapbox.mapboxsdk.exceptions.OfflineDatabaseException;
 import com.mapbox.mapboxsdk.offline.OfflineMapDatabase;
 import com.mapbox.mapboxsdk.tileprovider.MapTile;
@@ -11,7 +13,7 @@ import com.mapbox.mapboxsdk.tileprovider.MapTileLayerBase;
 import com.mapbox.mapboxsdk.util.MapboxUtils;
 import java.io.ByteArrayInputStream;
 
-public class OfflineMapTileProvider extends MapTileLayerBase {
+public class OfflineMapTileProvider extends MapTileLayerBase implements MapboxConstants {
 
     private static final String TAG = "OfflineMapTileProvider";
 
@@ -24,10 +26,10 @@ public class OfflineMapTileProvider extends MapTileLayerBase {
 
     @Override
     public Drawable getMapTile(MapTile pTile, boolean allowRemote) {
-        Log.d(TAG, String.format("getMapTile() with maptile path = '%s'", pTile.getPath()));
+        Log.d(TAG, String.format(MAPBOX_LOCALE, "getMapTile() with maptile path = '%s'", pTile.getPath()));
         try {
             // Build URL to match url in database
-            String url = MapboxUtils.getMapTileURL(offlineMapDatabase.getMapID(), pTile.getZ(), pTile.getX(), pTile.getY(), offlineMapDatabase.getImageQuality());
+            String url = MapboxUtils.getMapTileURL(context, offlineMapDatabase.getMapID(), pTile.getZ(), pTile.getX(), pTile.getY(), offlineMapDatabase.getImageQuality());
             byte[] data = offlineMapDatabase.dataForURL(url);
 
             if (data == null || data.length == 0) {
