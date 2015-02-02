@@ -3,7 +3,7 @@
  * nhallahan@spatialdev.com
  */
 
-package com.spatialdev.osm.test;
+package com.spatialdev.osm.model;
 
 import android.test.InstrumentationTestCase;
 
