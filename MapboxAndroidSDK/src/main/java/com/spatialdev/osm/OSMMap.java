@@ -47,6 +47,7 @@ public class OSMMap implements MapViewListener, MapListener {
         this.mapView = mapView;
         this.jtsModel = jtsModel;
         osmOverlay = new OSMOverlay(jtsModel);
+        updateBoundingBox();
         mapView.setMapViewListener(this);
         mapView.addListener(this);
         mapView.getOverlays().add(osmOverlay);
@@ -143,25 +144,24 @@ public class OSMMap implements MapViewListener, MapListener {
 
     @Override
     public void onScroll(ScrollEvent event) {
-        BoundingBox bbox = mapView.getBoundingBox();
-        if (bbox != null) {
-            osmOverlay.updateBoundingBox(bbox);
-        }
+        updateBoundingBox();
     }
 
     @Override
     public void onZoom(ZoomEvent event) {
-        BoundingBox bbox = mapView.getBoundingBox();
-        if (bbox != null) {
-            osmOverlay.updateBoundingBox(bbox);
-        }
+        updateBoundingBox();
     }
 
     @Override
     public void onRotate(RotateEvent event) {
+        updateBoundingBox();;
+    }
+    
+    private void updateBoundingBox() {
         BoundingBox bbox = mapView.getBoundingBox();
         if (bbox != null) {
             osmOverlay.updateBoundingBox(bbox);
         }
     }
+    
 }
