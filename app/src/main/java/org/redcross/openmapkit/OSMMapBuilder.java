@@ -30,6 +30,8 @@ import com.spatialdev.osm.model.OSMDataSet;
  */
 public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
+    private static final float MIN_VECTOR_RENDER_ZOOM = 19;
+    
     private static int remainingFiles = -1;
     public static boolean running = false;
     private static MapActivity staticMapActivity; // only supporting one per app for now
@@ -110,7 +112,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         --remainingFiles;
         // do this when everything is done loading
         if (remainingFiles == 0) {
-            new OSMMap(staticMapActivity.getMapView(), jtsModel, staticMapActivity);
+            new OSMMap(staticMapActivity.getMapView(), jtsModel, staticMapActivity, MIN_VECTOR_RENDER_ZOOM);
             running = false;
         }
     }

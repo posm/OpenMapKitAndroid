@@ -26,9 +26,28 @@ public class OSMOverlay extends Overlay {
     private JTSModel model;
     private Envelope envelope;
     
+    private float minVectorRenderZoom = 0;
+    private float zoom = 0; // current zoom of map
+
+    /**
+     * This should only be created by OSMMap.
+     * * *
+     * @param model
+     */
     public OSMOverlay(JTSModel model) {
         this.model = model;
         setOverlayIndex(DEFAULT_OVERLAY_INDEX);
+    }
+
+    /**
+     * This should only be created by OSMMap.
+     * * *
+     * @param model
+     * @param minVectorRenderZoom
+     */
+    public OSMOverlay(JTSModel model, float minVectorRenderZoom) {
+        this(model);
+        this.minVectorRenderZoom = minVectorRenderZoom;
     }
     
     public void updateBoundingBox(BoundingBox bbox) {
@@ -38,11 +57,20 @@ public class OSMOverlay extends Overlay {
         double y2 = bbox.getLatNorth();
         envelope = new Envelope(x1, x2, y1, y2);
     }
+
+    /**
+     * Have the map set the current zoom.
+     * * 
+     * @param zoom
+     */
+    public void updateZoom(float zoom) {
+        this.zoom = zoom;
+    }
     
     @Override
     protected void draw(Canvas c, MapView mapView, boolean shadow) {
-        // no shadow support & need a bounding box to query rtree
-        if (shadow || envelope == null) {
+        // no shadow support & need a bounding box to query rtree & at or above min render zoom
+        if (shadow || envelope == null || zoom < minVectorRenderZoom) {
             return;
         }
 

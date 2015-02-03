@@ -6,6 +6,7 @@
 package com.spatialdev.osm;
 
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.events.MapListener;
@@ -41,6 +42,28 @@ public class OSMMap implements MapViewListener, MapListener {
     public OSMMap(MapView mapView, JTSModel jtsModel, OSMSelectionListener selectionListener) {
         this(mapView, jtsModel);
         this.selectionListener = selectionListener;
+    }
+
+    public OSMMap(MapView mapView, JTSModel jtsModel, OSMSelectionListener selectionListener, float minVectorRenderZoom) {
+        this(mapView, jtsModel, minVectorRenderZoom);
+        this.selectionListener = selectionListener;
+    }
+
+    // Only paint and render vectors at zoom levels greater than or equal to this level.
+    public OSMMap(MapView mapView, JTSModel jtsModel, float minVectorRenderZoom) {
+        if (minVectorRenderZoom > 0) {
+            osmOverlay = new OSMOverlay(jtsModel, minVectorRenderZoom);
+        } else {
+            osmOverlay = new OSMOverlay(jtsModel);
+        }
+        this.mapView = mapView;
+        this.jtsModel = jtsModel;
+        updateBoundingBox();
+        osmOverlay.updateZoom(mapView.getZoomLevel());
+        mapView.setMapViewListener(this);
+        mapView.addListener(this);
+        mapView.getOverlays().add(osmOverlay);
+        mapView.invalidate();
     }
     
     public OSMMap(MapView mapView, JTSModel jtsModel) {
@@ -150,6 +173,8 @@ public class OSMMap implements MapViewListener, MapListener {
     @Override
     public void onZoom(ZoomEvent event) {
         updateBoundingBox();
+        osmOverlay.updateZoom(event.getZoomLevel());
+//        Log.i("ZOOM", String.valueOf(event.getZoomLevel()));
     }
 
     @Override
