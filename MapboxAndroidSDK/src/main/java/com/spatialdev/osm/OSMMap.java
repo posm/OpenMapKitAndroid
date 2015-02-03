@@ -154,7 +154,7 @@ public class OSMMap implements MapViewListener, MapListener {
 
     @Override
     public void onRotate(RotateEvent event) {
-        updateBoundingBox();;
+        updateBoundingBox();
     }
     
     private void updateBoundingBox() {
