@@ -47,7 +47,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         //get intent that started this activity, handle if this activity was launched by an intent that sent it data (e.g. form id, tag collection, etc.)
         Intent intent = getIntent();
-        if(intent.getAction() == "android.intent.action.SEND") {
+        if(intent.getAction().equals("android.intent.action.SEND")) {
 
             if (intent.getType().equals("text/plain")) {
 
@@ -58,7 +58,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     //for fetching the tag id
                     String formId = extras.getString("FORM_ID");
                     String instanceId = extras.getString("INSTANCE_ID");
-                    ArrayList tagsToEdit = intent.getStringArrayListExtra("TAGS_TO_EDIT");
+                    String[] tagsToEdit = intent.getStringArrayExtra("TAGS_TO_EDIT");
 
                     if(intent.getType().equals("text/plain")) {
 
