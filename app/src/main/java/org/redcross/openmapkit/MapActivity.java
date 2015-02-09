@@ -58,7 +58,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     //for fetching the tag id
                     String formId = extras.getString("FORM_ID");
                     String instanceId = extras.getString("INSTANCE_ID");
-                    String[] tagsToEdit = intent.getStringArrayExtra("TAGS_TO_EDIT");
+                    String instanceDir = extras.getString("INSTANCE_DIR");
+                    ArrayList<String> requiredTags = extras.getStringArrayList("REQUIRED_TAGS");
 
                     if(intent.getType().equals("text/plain")) {
 
@@ -68,8 +69,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                         Toast tst1 = Toast.makeText(getApplicationContext(), "instance id: " + instanceId, Toast.LENGTH_SHORT);
                         tst1.show();
 
-                        Toast tst2 = Toast.makeText(getApplicationContext(), "tags to edit: " + tagsToEdit, Toast.LENGTH_SHORT);
+                        Toast tst2 = Toast.makeText(getApplicationContext(), "required tags: " + requiredTags, Toast.LENGTH_SHORT);
                         tst2.show();
+
+                        Toast tst3 = Toast.makeText(getApplicationContext(), "instance dir: " + instanceDir, Toast.LENGTH_SHORT);
+                        tst3.show();
                     }
                 }
             }
