@@ -14,6 +14,8 @@ public class ODKCollectData {
     private String instanceDir;
     private List<String> requiredTags;
     
+    private String editedXml;
+    
     public ODKCollectData ( String formId, 
                             String instanceId, 
                             String instanceDir, 
@@ -40,4 +42,9 @@ public class ODKCollectData {
     public List<String> getRequiredTags() {
         return requiredTags;
     }
+    
+    public void setEditedXml(String xml) {
+        editedXml = xml;        
+    }
+    
 }

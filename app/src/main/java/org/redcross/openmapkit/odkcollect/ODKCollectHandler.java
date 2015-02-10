@@ -65,4 +65,9 @@ public class ODKCollectHandler {
         }
         return odkCollectData.getRequiredTags();
     }
+    
+    public static void setEditedXml(String xml) {
+        odkCollectData.setEditedXml(xml);        
+    }
+    
 }
