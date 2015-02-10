@@ -36,7 +36,8 @@
     <string name="mbtilesFolderName">"mbtiles"</string>
     <string name="osmFolderName">"osm"</string>
     <string name="editsFolderName">"edits"</string>
-    <string name="title_activity_odkcollect_tag">ODKCollectTagActivity</string>
+    <string name="title_activity_odkcollect_tag">OpenStreetMap Tags</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="odkcollect_tag_instructions">Please fill in values for all of the following OpenStreetMap tags:</string>
 </resources>

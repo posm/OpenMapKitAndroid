@@ -40,8 +40,16 @@
             android:label="@string/title_activity_tag_creator" >
         </activity>
         <activity
-            android:name=".odkcollect.ODKCollectTagActivity"
+            android:name=".odkcollect.ODKCollectTagActivityOld"
             android:label="@string/title_activity_odkcollect_tag" >
+        </activity>
+        <activity
+            android:name=".odkcollect.ODKCollectTagActivity"
+            android:label="@string/title_activity_odkcollect_tag"
+            android:parentActivityName=".MapActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.redcross.openmapkit.MapActivity" />
         </activity>
     </application>
 

@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
@@ -21,12 +20,11 @@ import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
-import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
+import org.redcross.openmapkit.odkcollect.ODKCollectTagActivityOld;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
