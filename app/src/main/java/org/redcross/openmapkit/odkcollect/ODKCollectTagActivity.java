@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Button;
 
 import org.redcross.openmapkit.R;
 
@@ -61,6 +62,16 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_odkcollect_tag, container, false);
+            
+            // Just have cancel button break us back into the MapActivity.
+            Button cancelButton = (Button)rootView.findViewById(R.id.cancelButton);
+            cancelButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    getActivity().finish();
+                }
+            });
+            
             return rootView;
         }
     }
