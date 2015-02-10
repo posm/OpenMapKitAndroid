@@ -2,10 +2,9 @@ package org.redcross.openmapkit.odkcollect;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import java.util.List;
 
 /**
  * Created by Nicholas Hallahan on 2/9/15.
@@ -53,11 +52,17 @@ public class ODKCollectHandler {
         return ! odkCollectMode;
     }
     
-    public ODKCollectData getOdkCollectData() throws NoSuchFieldError {
+    public static ODKCollectData getOdkCollectData() throws NoSuchFieldError {
         if (odkCollectData == null) {
             throw new NoSuchFieldError("We have no data from ODK Collect!");
         }
         return odkCollectData;
     }
     
+    public static List<String> getRequiredTags() throws NoSuchFieldError {
+        if (odkCollectData == null) {
+            throw new NoSuchFieldError("We have no data from ODK Collect!");
+        }
+        return odkCollectData.getRequiredTags();
+    }
 }

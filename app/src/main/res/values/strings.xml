@@ -36,4 +36,7 @@
     <string name="mbtilesFolderName">"mbtiles"</string>
     <string name="osmFolderName">"osm"</string>
     <string name="editsFolderName">"edits"</string>
+    <string name="title_activity_odkcollect_tag">ODKCollectTagActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

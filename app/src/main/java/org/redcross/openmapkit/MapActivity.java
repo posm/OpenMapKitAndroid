@@ -23,6 +23,7 @@ import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -206,8 +207,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 if ( ODKCollectHandler.isStandaloneMode() ) {
                     showAlertDialog();
                 } else {
-                    Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
-                    startActivityForResult(editTagIntent, EDIT_TAG_REQUESTCODE);
+                    Intent odkCollectTagIntent = new Intent(getApplicationContext(), ODKCollectTagActivity.class);
+                    startActivityForResult(odkCollectTagIntent, EDIT_TAG_REQUESTCODE);
                 }
             }
         });
