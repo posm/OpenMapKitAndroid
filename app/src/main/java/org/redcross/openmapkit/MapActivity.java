@@ -19,10 +19,10 @@ import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
-import com.spatialdev.osm.model.JTSModel;
-import com.spatialdev.osm.model.OSMDataSet;
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.OSMXmlParser;
+
+import org.redcross.openmapkit.odkcollect.ODKCollectData;
+import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,9 +30,9 @@ import java.util.LinkedList;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
-    MapView mapView;
-    OSMMap osmMap;
-    Button tagsButton;
+    private MapView mapView;
+    private OSMMap osmMap;
+    private Button tagsButton;
 
     /**
      * intent request codes
@@ -45,39 +45,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         super.onCreate(savedInstanceState);
 
-        //get intent that started this activity, handle if this activity was launched by an intent that sent it data (e.g. form id, tag collection, etc.)
-        Intent intent = getIntent();
-        if(intent.getAction().equals("android.intent.action.SEND")) {
-
-            if (intent.getType().equals("text/plain")) {
-
-                Bundle extras = getIntent().getExtras();
-
-                if(extras != null) {
-
-                    //for fetching the tag id
-                    String formId = extras.getString("FORM_ID");
-                    String instanceId = extras.getString("INSTANCE_ID");
-                    String instanceDir = extras.getString("INSTANCE_DIR");
-                    ArrayList<String> requiredTags = extras.getStringArrayList("REQUIRED_TAGS");
-
-                    if(intent.getType().equals("text/plain")) {
-
-                        Toast tst = Toast.makeText(getApplicationContext(), "form id: " + formId, Toast.LENGTH_SHORT);
-                        tst.show();
-
-                        Toast tst1 = Toast.makeText(getApplicationContext(), "instance id: " + instanceId, Toast.LENGTH_SHORT);
-                        tst1.show();
-
-                        Toast tst2 = Toast.makeText(getApplicationContext(), "required tags: " + requiredTags, Toast.LENGTH_SHORT);
-                        tst2.show();
-
-                        Toast tst3 = Toast.makeText(getApplicationContext(), "instance dir: " + instanceDir, Toast.LENGTH_SHORT);
-                        tst3.show();
-                    }
-                }
-            }
-        }
+        // Register the intent to the ODKCollect handler
+        // This will determine if we are in ODK Collect Mode or not.
+        ODKCollectHandler.registerIntent(getIntent());
 
         //set layout
         setContentView(R.layout.activity_map);
@@ -89,11 +59,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
 
         if (deviceIsConnected) {
-
             addOnlineDataSources();
 
         } else {
-
             addOfflineDataSources();
         }
 
@@ -221,11 +189,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
 
                 if (userLocationIsEnabled) {
-
                     mapView.setUserLocationEnabled(false);
 
                 } else {
-
                     mapView.setUserLocationEnabled(true);
                     mapView.goToUserLocation(true);
                     mapView.setUserLocationRequiredZoom(15);
@@ -237,7 +203,12 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void initializeTagsButton() {
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showAlertDialog();
+                if ( ODKCollectHandler.isStandaloneMode() ) {
+                    showAlertDialog();
+                } else {
+                    Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
+                    startActivityForResult(editTagIntent, EDIT_TAG_REQUESTCODE);
+                }
             }
         });
         
