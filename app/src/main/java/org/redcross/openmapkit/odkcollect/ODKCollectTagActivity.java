@@ -88,7 +88,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
             });
             
             initializeModel();
-//            initializeTextAndEditTextViews();
+            initializeTextAndEditTextViews();
             
             return rootView;
         }
@@ -105,7 +105,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
                 TextView tv = new TextView(activity);
                 tv.setText("Test");
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.rowSpec = GridLayout.spec(8);
+                params.rowSpec = GridLayout.spec(9);
                 params.columnSpec = GridLayout.spec(0);
                 tv.setLayoutParams(params);
                 gridLayout.addView(tv);
@@ -113,9 +113,9 @@ public class ODKCollectTagActivity extends ActionBarActivity {
                 TextView tv2 = new TextView(activity);
                 tv2.setText("Test and some more more text");
                 GridLayout.LayoutParams params2 = new GridLayout.LayoutParams();
-                params2.rowSpec = GridLayout.spec(8);
+                params2.rowSpec = GridLayout.spec(9);
                 params2.columnSpec = GridLayout.spec(1);
-                tv.setLayoutParams(params2);
+                tv2.setLayoutParams(params2);
                 gridLayout.addView(tv2);
             }
     }
