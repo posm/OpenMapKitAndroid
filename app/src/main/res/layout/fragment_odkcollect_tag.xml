@@ -4,6 +4,7 @@
     android:layout_height="match_parent" >
 
     <GridLayout
+        android:id="@+id/odkCollectTagGridLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="2"
@@ -17,6 +18,7 @@
             android:layout_columnSpan="2"
             android:text="@string/odkcollect_tag_instructions"
             android:padding="15dp" />
+        
         <TextView
             android:id="@+id/nameLabelTextView"
             style="@style/TagLabelTextView"
@@ -121,17 +123,13 @@
                 android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cancel"
-                android:layout_row="9"
-                android:layout_column="1" />
+                android:text="@string/cancel" />
 
             <Button
                 android:id="@+id/saveToOdkCollectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/save_to_odk_collect"
-                android:layout_row="10"
-                android:layout_column="1" />
+                android:text="@string/save_to_odk_collect" />
         </LinearLayout>
 
     </GridLayout>
