@@ -49,12 +49,22 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // save to odk collect action bar button
+        if (id == R.id.action_save_to_odk_collect) {
+            saveToOdkCollect();
+        }
+        
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    
+    void saveToOdkCollect() {
+        // TODO
+        
     }
 
     /**
@@ -86,18 +96,9 @@ public class ODKCollectTagActivity extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_odkcollect_tag, container, false);
             gridLayout = (GridLayout) rootView.findViewById(R.id.odkCollectTagGridLayout);
-            
-            // Just have cancel button break us back into the MapActivity.
-            Button cancelButton = (Button)rootView.findViewById(R.id.cancelButton);
-            cancelButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    getActivity().finish();
-                }
-            });
 
             setupModel();
-            insertTagKeyAndValueForRow(9, "the key", null);
+            insertRequiredOSMTags();
             
             return rootView;
         }
@@ -105,6 +106,15 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         private void setupModel() {
             osmElement = OSMElement.getSelectedElements().getFirst();
             tags = osmElement.getTags();
+        }
+        
+        private void insertRequiredOSMTags() {
+            requiredTags = ODKCollectHandler.getRequiredTags();
+            int row = 1; // The first row in the GridView is the instructions.
+            for (String tagKey : requiredTags) {
+                String tagVal = tags.get(tagKey);
+                insertTagKeyAndValueForRow(row++, tagKey, tagVal);
+            }
         }
         
         private void insertTagKeyAndValueForRow(int row, String key, String val) {

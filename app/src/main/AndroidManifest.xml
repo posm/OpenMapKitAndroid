@@ -46,7 +46,8 @@
         <activity
             android:name=".odkcollect.ODKCollectTagActivity"
             android:label="@string/title_activity_odkcollect_tag"
-            android:parentActivityName=".MapActivity" >
+            android:parentActivityName=".MapActivity"
+            android:windowSoftInputMode="stateHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.redcross.openmapkit.MapActivity" />
