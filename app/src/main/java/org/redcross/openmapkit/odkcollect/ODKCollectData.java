@@ -2,6 +2,9 @@ package org.redcross.openmapkit.odkcollect;
 
 import android.os.Environment;
 
+import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMXmlWriter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,6 +25,8 @@ public class ODKCollectData {
     private List<String> requiredTags;
     
     private String editedXml;
+    private String osmClassName;
+    private long osmId;
     
     public ODKCollectData ( String formId, 
                             String instanceId, 
@@ -50,15 +55,18 @@ public class ODKCollectData {
         return requiredTags;
     }
     
-    public void setEditedXml(String xml) {
-        editedXml = xml;        
+    public void consumeOSMElement(OSMElement el) throws IOException {
+        osmClassName = el.getClass().getSimpleName();
+        osmId = el.getId();
+        editedXml = OSMXmlWriter.elementToString(el, "theoutpost");
     }
     
     public void writeXmlToOdkCollectInstanceDir() throws IOException {
         if ( ! isODKCollectInstanceDirectoryAvailable() ) {
             throw new IOException("The ODK Collect Instance Directory cannot be accessed!");
         }
-        File f = new File(instanceDir + "/test-from-omk.xml");
+        String fileName = osmClassName + osmId + ".osm";
+        File f = new File( instanceDir + "/" + fileName );
         f.createNewFile();
         FileOutputStream fos = new FileOutputStream(f);
         OutputStreamWriter writer = new OutputStreamWriter(fos);

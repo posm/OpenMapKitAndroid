@@ -3,6 +3,9 @@ package org.redcross.openmapkit.odkcollect;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMXmlWriter;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,9 +65,9 @@ public class ODKCollectHandler {
         return odkCollectData.getRequiredTags();
     }
     
-    public static void saveXmlInODKCollect(String xml) {
-        odkCollectData.setEditedXml(xml);
+    public static void saveXmlInODKCollect(OSMElement el) {
         try {
+            odkCollectData.consumeOSMElement(el);
             odkCollectData.writeXmlToOdkCollectInstanceDir();
         } catch (IOException e) {
             e.printStackTrace();

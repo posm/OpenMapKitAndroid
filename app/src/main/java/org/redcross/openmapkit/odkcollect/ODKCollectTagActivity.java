@@ -71,12 +71,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
     void saveToOdkCollect() {
         OSMElement osmElement = fragment.updateTagsInOSMElement();
         String xml = null;
-        try {
-            xml = OSMXmlWriter.elementToString(osmElement, "theoutpost");
-            ODKCollectHandler.saveXmlInODKCollect(xml);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ODKCollectHandler.saveXmlInODKCollect(osmElement);
     }
 
     /**

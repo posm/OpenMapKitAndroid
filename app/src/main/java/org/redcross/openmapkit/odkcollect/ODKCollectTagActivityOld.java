@@ -145,7 +145,7 @@ public class ODKCollectTagActivityOld extends ActionBarActivity {
         String xml = null; // TODO: Need to specify OSM User
         try {
             xml = OSMXmlWriter.elementsToString(els, "theoutpost");
-            ODKCollectHandler.saveXmlInODKCollect(xml);
+//            ODKCollectHandler.saveXmlInODKCollect(xml);
         } catch (IOException e) {
             e.printStackTrace();
         }
