@@ -15,21 +15,28 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMXmlWriter;
 
 import org.redcross.openmapkit.R;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ODKCollectTagActivity extends ActionBarActivity {
 
+    private PlaceholderFragment fragment;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_odkcollect_tag);
         if (savedInstanceState == null) {
+            fragment = new PlaceholderFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, fragment)
                     .commit();
         }
     }
@@ -63,8 +70,14 @@ public class ODKCollectTagActivity extends ActionBarActivity {
     }
     
     void saveToOdkCollect() {
-        // TODO
-        
+        OSMElement osmElement = fragment.updateTagsInOSMElement();
+        String xml = null;
+        try {
+            xml = OSMXmlWriter.elementToString(osmElement, "theoutpost");
+            ODKCollectHandler.setEditedXml(xml);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -86,7 +99,13 @@ public class ODKCollectTagActivity extends ActionBarActivity {
          */
         private View rootView;
         private GridLayout gridLayout;
-        private Button saveButton;
+
+        /**
+         * TAG KEY TO TEXT EDIT HASH, 
+         * USED TO GET EDITED VALUES
+         * * * * 
+         */
+        private Map<String, EditText> tagEditTextHash;
         
         public PlaceholderFragment() {
         }
@@ -106,6 +125,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         private void setupModel() {
             osmElement = OSMElement.getSelectedElements().getFirst();
             tags = osmElement.getTags();
+            tagEditTextHash = new HashMap<>();
         }
         
         private void insertRequiredOSMTags() {
@@ -138,6 +158,24 @@ public class ODKCollectTagActivity extends ActionBarActivity {
             params2.width = GridLayout.LayoutParams.MATCH_PARENT;
             et.setLayoutParams(params2);
             gridLayout.addView(et);
+            tagEditTextHash.put(key, et);
         }
+
+        /**
+         * Updates the tags in the OSMElement according to the values in the
+         * EditText UI
+         * * * *
+         * @return OSMElement with edited tags
+         */
+        public OSMElement updateTagsInOSMElement() {
+            Set<String> keySet = tagEditTextHash.keySet();
+            for( String key : keySet) {
+                EditText et = tagEditTextHash.get(key);
+                String val = et.getText().toString();
+                osmElement.addOrEditTag(key, val);
+            }
+            return osmElement;
+        }
+        
     }
 }

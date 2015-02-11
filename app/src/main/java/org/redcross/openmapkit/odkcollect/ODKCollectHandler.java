@@ -36,12 +36,6 @@ public class ODKCollectHandler {
                 } 
             }
         }
-        /**
-         * If all of these things are not true, we don't whave what we need from ODK Collect
-         * so we should be in the standard, standalone mode for the app.
-         * * * 
-         */
-        odkCollectMode = false; 
     }
     
     public static boolean isOdkCollectMode() {
