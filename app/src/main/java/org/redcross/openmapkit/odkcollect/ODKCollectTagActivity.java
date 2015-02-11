@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -74,7 +73,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         String xml = null;
         try {
             xml = OSMXmlWriter.elementToString(osmElement, "theoutpost");
-            ODKCollectHandler.setEditedXml(xml);
+            ODKCollectHandler.saveXmlInODKCollect(xml);
         } catch (IOException e) {
             e.printStackTrace();
         }

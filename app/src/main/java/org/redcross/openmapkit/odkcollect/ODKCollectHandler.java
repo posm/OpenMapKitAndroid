@@ -3,6 +3,8 @@ package org.redcross.openmapkit.odkcollect;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,8 +62,13 @@ public class ODKCollectHandler {
         return odkCollectData.getRequiredTags();
     }
     
-    public static void setEditedXml(String xml) {
-        odkCollectData.setEditedXml(xml);        
+    public static void saveXmlInODKCollect(String xml) {
+        odkCollectData.setEditedXml(xml);
+        try {
+            odkCollectData.writeXmlToOdkCollectInstanceDir();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
 }
