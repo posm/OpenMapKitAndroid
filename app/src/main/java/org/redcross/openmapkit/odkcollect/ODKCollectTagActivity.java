@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.odkcollect;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -70,8 +71,13 @@ public class ODKCollectTagActivity extends ActionBarActivity {
     
     void saveToOdkCollect() {
         OSMElement osmElement = fragment.updateTagsInOSMElement();
-        String xml = null;
-        ODKCollectHandler.saveXmlInODKCollect(osmElement);
+        String osmXmlFileFullPath = ODKCollectHandler.saveXmlInODKCollect(osmElement);
+        
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
+        setResult(Activity.RESULT_OK, resultIntent);
+
+        finish();
     }
 
     /**

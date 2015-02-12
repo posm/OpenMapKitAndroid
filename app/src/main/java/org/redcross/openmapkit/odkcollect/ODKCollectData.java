@@ -6,7 +6,6 @@ import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -65,8 +64,7 @@ public class ODKCollectData {
         if ( ! isODKCollectInstanceDirectoryAvailable() ) {
             throw new IOException("The ODK Collect Instance Directory cannot be accessed!");
         }
-        String fileName = osmClassName + osmId + ".osm";
-        File f = new File( instanceDir + "/" + fileName );
+        File f = new File( getOSMFileFullPath() );
         f.createNewFile();
         FileOutputStream fos = new FileOutputStream(f);
         OutputStreamWriter writer = new OutputStreamWriter(fos);
@@ -75,7 +73,13 @@ public class ODKCollectData {
         fos.close();
     }
 
+    public String getOSMFileName() {
+        return osmClassName + osmId + ".osm";
+    }
     
+    public String getOSMFileFullPath() {
+        return instanceDir + "/" + getOSMFileName();
+    }
     
     
     /* Checks if external storage is available for read and write */

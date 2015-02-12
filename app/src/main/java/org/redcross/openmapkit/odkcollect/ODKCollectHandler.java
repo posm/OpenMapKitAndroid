@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.OSMXmlWriter;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +62,25 @@ public class ODKCollectHandler {
         }
         return odkCollectData.getRequiredTags();
     }
-    
-    public static void saveXmlInODKCollect(OSMElement el) {
+
+    /**
+     * Saves an OSM Element as XML in ODK Collect.
+     * * * 
+     * @param el
+     * @return The full path of the saved OSM XML File
+     */
+    public static String saveXmlInODKCollect(OSMElement el) {
         try {
             odkCollectData.consumeOSMElement(el);
             odkCollectData.writeXmlToOdkCollectInstanceDir();
+            return odkCollectData.getOSMFileFullPath();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
     
+    public static String getOSMFileName() {
+        return odkCollectData.getOSMFileName();
+    }
 }

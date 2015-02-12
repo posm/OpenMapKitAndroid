@@ -36,8 +36,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     /**
      * intent request codes
      */
-    static final int CREATE_TAG_REQUESTCODE = 1201;
-    static final int EDIT_TAG_REQUESTCODE = 1202;
+    private static final int ODK_COLLECT_TAG_ACTIVITY_CODE = 2015;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +205,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     showAlertDialog();
                 } else {
                     Intent odkCollectTagIntent = new Intent(getApplicationContext(), ODKCollectTagActivity.class);
-                    startActivityForResult(odkCollectTagIntent, EDIT_TAG_REQUESTCODE);
+                    startActivityForResult(odkCollectTagIntent, ODK_COLLECT_TAG_ACTIVITY_CODE);
                 }
             }
         });
@@ -227,15 +226,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     case 0:
 
                         Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
-                        //startActivity(editTagIntent);
-                        startActivityForResult(editTagIntent, EDIT_TAG_REQUESTCODE);
+                        startActivity(editTagIntent);
                         break;
 
                     case 1:
 
                         Intent createTagIntent = new Intent(getApplicationContext(), TagCreatorActivity.class);
-                        //startActivity(createTagIntent);
-                        startActivityForResult(createTagIntent, CREATE_TAG_REQUESTCODE);
+                        startActivity(createTagIntent);
                         break;
 
                     default:
@@ -302,25 +299,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == CREATE_TAG_REQUESTCODE) {
-
+        if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
             if(resultCode == RESULT_OK) {
-
                 Bundle extras = data.getExtras();
-                String tagKey = extras.getString("TAG_KEY");
-                String tagValue = extras.getString("TAG_VALUE");
-
+                String osmXmlFileFullPath = extras.getString("OSM_PATH");
+                String osmXmlFileName = ODKCollectHandler.getOSMFileName();
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("TAG_KEY", tagKey);
-                resultIntent.putExtra("TAG_VALUE", tagValue);
+                resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
+                resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
                 setResult(Activity.RESULT_OK, resultIntent);
                 finish();
             }
-
-        } else if (requestCode == EDIT_TAG_REQUESTCODE) {
-
-            //TODO - handle results from edit tag activity
         }
     }
     
