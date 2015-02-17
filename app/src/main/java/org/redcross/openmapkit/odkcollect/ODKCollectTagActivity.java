@@ -15,11 +15,10 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.OSMXmlWriter;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.odkcollect.osmtag.OSMTag;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
          * * *
          */
         private OSMElement osmElement;
-        private List<String> requiredTags;
+        private List<OSMTag> requiredTags;
         private Map<String, String> tags;
 
         /**
@@ -105,7 +104,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
          * USED TO GET EDITED VALUES
          * * * * 
          */
-        private Map<String, EditText> tagEditTextHash;
+        private Map<String, TextView> tagEditTextHash;
         
         public PlaceholderFragment() {
         }
@@ -131,34 +130,30 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         private void insertRequiredOSMTags() {
             requiredTags = ODKCollectHandler.getRequiredTags();
             int row = 1; // The first row in the GridView is the instructions.
-            for (String tagKey : requiredTags) {
-                String tagVal = tags.get(tagKey);
-                insertTagKeyAndValueForRow(row++, tagKey, tagVal);
+            for (OSMTag reqTag : requiredTags) {
+                String initialTagVal = tags.get(reqTag.key);
+                insertTagKeyAndValueForRow(row++, reqTag, initialTagVal);
             }
         }
         
-        private void insertTagKeyAndValueForRow(int row, String key, String val) {
+        private void insertTagKeyAndValueForRow(int row, OSMTag reqTag, String initialTagVal) {
             Activity activity = getActivity();
 
-            TextView tv = new TextView(activity);
-            tv.setText(key);
+            TextView keyTextView = reqTag.createTagKeyTextView(activity);
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.rowSpec = GridLayout.spec(row);
             params.columnSpec = GridLayout.spec(0);
-            tv.setLayoutParams(params);
-            gridLayout.addView(tv);
+            keyTextView.setLayoutParams(params);
+            gridLayout.addView(keyTextView);
 
-            EditText et = new EditText(activity);
-            if (val != null) {
-                et.setText(val);
-            }
+            TextView tagValueTextView = reqTag.createTagValueTextView(activity, initialTagVal);
             GridLayout.LayoutParams params2 = new GridLayout.LayoutParams();
             params2.rowSpec = GridLayout.spec(row);
             params2.columnSpec = GridLayout.spec(1);
             params2.width = GridLayout.LayoutParams.MATCH_PARENT;
-            et.setLayoutParams(params2);
-            gridLayout.addView(et);
-            tagEditTextHash.put(key, et);
+            tagValueTextView.setLayoutParams(params2);
+            gridLayout.addView(tagValueTextView);
+            tagEditTextHash.put(reqTag.key, tagValueTextView);
         }
 
         /**
@@ -170,7 +165,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         public OSMElement updateTagsInOSMElement() {
             Set<String> keySet = tagEditTextHash.keySet();
             for( String key : keySet) {
-                EditText et = tagEditTextHash.get(key);
+                TextView et = tagEditTextHash.get(key);
                 String val = et.getText().toString();
                 osmElement.addOrEditTag(key, val);
             }

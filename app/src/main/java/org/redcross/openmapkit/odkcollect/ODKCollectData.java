@@ -5,6 +5,8 @@ import android.os.Environment;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
 
+import org.redcross.openmapkit.odkcollect.osmtag.OSMTag;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,7 +23,7 @@ public class ODKCollectData {
     private String formId;
     private String instanceId;
     private String instanceDir;
-    private List<String> requiredTags;
+    private List<OSMTag> requiredTags;
     
     private String editedXml;
     private String osmClassName;
@@ -30,7 +32,7 @@ public class ODKCollectData {
     public ODKCollectData ( String formId, 
                             String instanceId, 
                             String instanceDir, 
-                            List<String> requiredTags ) {
+                            List<OSMTag> requiredTags ) {
         this.formId = formId;
         this.instanceId = instanceId;
         this.instanceDir = instanceDir;
@@ -50,7 +52,7 @@ public class ODKCollectData {
         return instanceDir;
     }
 
-    public List<String> getRequiredTags() {
+    public List<OSMTag> getRequiredTags() {
         return requiredTags;
     }
     

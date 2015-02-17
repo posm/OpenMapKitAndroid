@@ -35,10 +35,7 @@ public class ODKCollectHandler {
                     String formId = extras.getString("FORM_ID");
                     String instanceId = extras.getString("INSTANCE_ID");
                     String instanceDir = extras.getString("INSTANCE_DIR");
-                    
-                    List<OSMTag> requiredOSMTags = getRequiredOSMTags(extras);
-                    
-                    ArrayList<String> requiredTags = extras.getStringArrayList("REQUIRED_TAGS");
+                    List<OSMTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
                     odkCollectData = new ODKCollectData(formId, instanceId, instanceDir, requiredTags);
                     odkCollectMode = true; // things are good, be in ODK Collect mode
                     return;
@@ -62,7 +59,7 @@ public class ODKCollectHandler {
         return odkCollectData;
     }
     
-    public static List<String> getRequiredTags() throws NoSuchFieldError {
+    public static List<OSMTag> getRequiredTags() throws NoSuchFieldError {
         if (odkCollectData == null) {
             throw new NoSuchFieldError("We have no data from ODK Collect!");
         }
@@ -90,7 +87,7 @@ public class ODKCollectHandler {
         return odkCollectData.getOSMFileName();
     }
     
-    private static List<OSMTag> getRequiredOSMTags(Bundle extras) {
+    private static List<OSMTag> generateRequiredOSMTagsFromBundle(Bundle extras) {
         List<String> tagKeys = extras.getStringArrayList("TAG_KEYS");
         if (tagKeys == null || tagKeys.size() == 0) {
             return null;

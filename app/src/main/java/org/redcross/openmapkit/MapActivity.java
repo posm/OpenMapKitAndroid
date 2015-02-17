@@ -22,7 +22,6 @@ import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
-import org.redcross.openmapkit.odkcollect.ODKCollectTagActivityOld;
 
 import java.io.File;
 import java.util.LinkedList;
