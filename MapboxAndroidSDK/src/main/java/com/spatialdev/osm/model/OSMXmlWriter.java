@@ -39,7 +39,7 @@ public class OSMXmlWriter {
         writer.start(osmUser);
         
         if (elements != null) {
-            writer.iterateElements(elements);
+            writer.iterateElements();
         }
         
         return writer.end();
@@ -66,7 +66,7 @@ public class OSMXmlWriter {
         return stringWriter.toString();
     }
     
-    private void iterateElements(LinkedList<OSMElement> elements) throws IOException {
+    private void iterateElements() throws IOException {
         for (OSMElement element : elements) {
             element.xml(xmlSerializer);
         }
