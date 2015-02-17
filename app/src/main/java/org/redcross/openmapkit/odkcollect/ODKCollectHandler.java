@@ -5,6 +5,9 @@ import android.os.Bundle;
 
 import com.spatialdev.osm.model.OSMElement;
 
+import org.redcross.openmapkit.odkcollect.osmtag.OSMTag;
+import org.redcross.openmapkit.odkcollect.osmtag.OSMTagItem;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,9 @@ public class ODKCollectHandler {
                     String formId = extras.getString("FORM_ID");
                     String instanceId = extras.getString("INSTANCE_ID");
                     String instanceDir = extras.getString("INSTANCE_DIR");
+                    
+                    List<OSMTag> requiredOSMTags = getRequiredOSMTags(extras);
+                    
                     ArrayList<String> requiredTags = extras.getStringArrayList("REQUIRED_TAGS");
                     odkCollectData = new ODKCollectData(formId, instanceId, instanceDir, requiredTags);
                     odkCollectMode = true; // things are good, be in ODK Collect mode
@@ -82,5 +88,35 @@ public class ODKCollectHandler {
     
     public static String getOSMFileName() {
         return odkCollectData.getOSMFileName();
+    }
+    
+    private static List<OSMTag> getRequiredOSMTags(Bundle extras) {
+        List<String> tagKeys = extras.getStringArrayList("TAG_KEYS");
+        if (tagKeys == null || tagKeys.size() == 0) {
+            return null;
+        }
+        List<OSMTag> tags = new ArrayList<>();
+        for (String key : tagKeys) {
+            OSMTag tag = new OSMTag();
+            tags.add(tag);
+            tag.key = key;
+            String label = extras.getString("TAG_LABEL." + key);
+            if (label != null) {
+                tag.label = label;
+            }
+            List<String> values = extras.getStringArrayList("TAG_VALUES." + key);
+            if (values != null && values.size() > 0) {
+                for (String value : values) {
+                    OSMTagItem tagItem = new OSMTagItem();
+                    tag.items.add(tagItem);
+                    tagItem.value = value;
+                    String valueLabel = extras.getString("TAG_VALUE_LABEL." + key + "." + value);
+                    if (valueLabel != null) {
+                        tagItem.label = valueLabel;
+                    }
+                }
+            }
+        }
+        return tags;
     }
 }
