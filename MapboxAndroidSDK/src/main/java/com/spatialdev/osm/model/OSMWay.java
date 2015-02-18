@@ -50,16 +50,19 @@ public class OSMWay extends OSMElement {
 
     @Override
     void xml(XmlSerializer xmlSerializer) throws IOException {
-        xmlSerializer.startTag(null, "way");
-        if (isModified()) {
-            xmlSerializer.attribute(null, "action", "modify");
+        for (OSMNode node : linkedNodes) {
+            node.xml(xmlSerializer);
         }
+        xmlSerializer.startTag(null, "way");
         setOsmElementXmlAttributes(xmlSerializer);
         // generate nds
         setWayXmlNds(xmlSerializer);
         // generate tags
         super.xml(xmlSerializer); 
         xmlSerializer.endTag(null, "way");
+        for (OSMRelation relation : linkedRelations) {
+            relation.xml(xmlSerializer);
+        }
     }
 
     private void setWayXmlNds(XmlSerializer xmlSerializer) throws IOException {

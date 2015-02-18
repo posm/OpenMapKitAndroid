@@ -106,7 +106,7 @@ public abstract class OSMElement {
     
     protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.attribute(null, "id", String.valueOf(id));
-        if (modified) {
+        if (isModified()) {
             xmlSerializer.attribute(null, "action", "modify");
         }
         xmlSerializer.attribute(null, "version", String.valueOf(version));

@@ -29,7 +29,6 @@ import java.util.LinkedList;
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
     private MapView mapView;
-    private OSMMap osmMap;
     private Button tagsButton;
 
     /**
@@ -144,27 +143,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void initializeOsmXml() {
         try {
             OSMMapBuilder.buildMapFromExternalStorage(this);
-            
-//            OSMDataSet ds = OSMXmlParser.parseFromAssets(this, "osm/dhaka_roads_buildings_hospitals_med.osm");
-//            JTSModel jtsModel = new JTSModel(ds);
-//            osmMap = new OSMMap(mapView, jtsModel, this);
-            
-            // Uncomment this block to test drawing things 
-            // using the highly problematic but simple PathOverlay.
-//            ArrayList<Object> uiObjects = OSMUtil.createUIObjectsFromDataSet(ds);
-//
-//            for (Object obj : uiObjects) {
-//                if (obj instanceof Marker) {
-//                    mapView.addMarker((Marker) obj);
-//                } else if (obj instanceof PathOverlay) {
-//                    List<Overlay> overlays = mapView.getOverlays();
-//                    overlays.add((PathOverlay) obj);
-//                }
-//            }
-//            if (uiObjects.size() > 0) {
-//                mapView.invalidate();
-//            }
-            
         } catch (Exception e) {
             e.printStackTrace();
         }
