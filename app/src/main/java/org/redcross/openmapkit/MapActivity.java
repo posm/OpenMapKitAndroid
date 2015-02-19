@@ -38,9 +38,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
+        // create directory structure for app if needed
+        ExternalStorage.checkOrCreateAppDirs();
+        
         // Register the intent to the ODKCollect handler
         // This will determine if we are in ODK Collect Mode or not.
         ODKCollectHandler.registerIntent(getIntent());
