@@ -31,11 +31,6 @@
     <string name="cancelButtonTitle">Cancel</string>
     <string name="saveButtonTitle">Save</string>
 
-    <!-- external storage -->
-    <string name="appFolderName">"openmapkit"</string>
-    <string name="mbtilesFolderName">"mbtiles"</string>
-    <string name="osmFolderName">"osm"</string>
-    <string name="editsFolderName">"edits"</string>
     <string name="title_activity_odkcollect_tag">Tags</string>
 
     <string name="hello_world">Hello world!</string>

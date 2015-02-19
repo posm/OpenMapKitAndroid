@@ -48,7 +48,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         }
         running = true;
         staticMapActivity = mapActivity;
-        File[] xmlFiles = fetchOsmXmlFiles(mapActivity);
+        File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
         remainingFiles = xmlFiles.length;
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
@@ -61,18 +61,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         
         
     }
-    
-    private static File[] fetchOsmXmlFiles(Context ctx) {
-        String dirPath = Environment.getExternalStorageDirectory() + "/" 
-                + ctx.getString(R.string.appFolderName) 
-                + "/" + ctx.getString(R.string.osmFolderName) + "/";
-        File dir = new File(dirPath);
-        return dir.listFiles();
-    }
 
-    
-    
-    
     @Override
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
