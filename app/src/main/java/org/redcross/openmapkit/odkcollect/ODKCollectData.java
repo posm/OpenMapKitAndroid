@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,21 +25,48 @@ public class ODKCollectData {
     private String instanceId;
     private String instanceDir;
     private List<OSMTag> requiredTags;
+    private List<File> editedOSM = new ArrayList<>();
     
     private String editedXml;
     private String osmClassName;
     private long osmId;
     
     public ODKCollectData ( String formId, 
+                            String formFileName,
                             String instanceId, 
                             String instanceDir, 
                             List<OSMTag> requiredTags ) {
         this.formId = formId;
         this.instanceId = instanceId;
         this.instanceDir = instanceDir;
-        this.requiredTags = requiredTags;        
+        this.requiredTags = requiredTags;
+        findEditedOSMForForm(formFileName);
     }
 
+    private void findEditedOSMForForm(String formFileName) {
+        String instances = new File(instanceDir).getParent();
+        File[] instancesDirs = new File(instances).listFiles();
+        for (int i = 0; i < instancesDirs.length; ++i) {
+            File dir = instancesDirs[i];
+            if (!dir.isDirectory()) {
+                continue;
+            }
+            // check if the instance dir is for the form we are dealing with
+            // it is 0 if the form file name is the first substring of the dirname
+            if (dir.getName().indexOf(formFileName) != 0) {
+                continue;
+            }
+            
+            String[] files = dir.list();
+            for (int j = 0; j < files.length; ++j) {
+                String fname = files[j];
+                if (fname.lastIndexOf(".osm") > -1) {
+                    File osmFile = new File(dir, fname);
+                    editedOSM.add(osmFile);
+                }
+            }
+        }
+    }
 
     public String getFormId() {
         return formId;

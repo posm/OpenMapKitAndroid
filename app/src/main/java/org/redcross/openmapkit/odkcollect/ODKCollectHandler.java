@@ -33,12 +33,12 @@ public class ODKCollectHandler {
                 if(extras != null) {
                     // extract data from intent extras
                     String formId = extras.getString("FORM_ID");
+                    String formFileName = extras.getString("FORM_FILE_NAME");
                     String instanceId = extras.getString("INSTANCE_ID");
                     String instanceDir = extras.getString("INSTANCE_DIR");
                     List<OSMTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
-                    odkCollectData = new ODKCollectData(formId, instanceId, instanceDir, requiredTags);
+                    odkCollectData = new ODKCollectData(formId, formFileName, instanceId, instanceDir, requiredTags);
                     odkCollectMode = true; // things are good, be in ODK Collect mode
-                    return;
                 } 
             }
         }
