@@ -62,6 +62,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             addOfflineDataSources();
         }
 
+        initializeOsmXml();
+
         //add user location toggle button
         initializeLocationButton();
 
@@ -92,9 +94,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         //add OSM tile layer to map
         mapView.setTileSource(ws);
-
-        //add osm xml from assets //TODO - this is a placeholder - fetch from Open Mapkit Server over network
-        initializeOsmXml();
     }
 
     /**
@@ -133,9 +132,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
 
         }
-
-        //add osm xml from assets //TODO - this is a placeholder - fetch from OSM XML from External storage too
-        initializeOsmXml();
     }
 
     /**
