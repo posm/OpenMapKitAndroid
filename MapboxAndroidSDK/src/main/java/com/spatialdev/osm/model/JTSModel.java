@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.index.strtree.STRtree;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class JTSModel {
 
     private ArrayList<OSMDataSet> dataSets;
     private GeometryFactory geometryFactory;
-    private STRtree rtree;
+    private Quadtree spatialIndex;
 
     public JTSModel(OSMDataSet ds) {
         this();
@@ -34,7 +34,7 @@ public class JTSModel {
 
     public JTSModel() {
         geometryFactory = new GeometryFactory();
-        rtree = new STRtree();
+        spatialIndex = new Quadtree();
         dataSets = new ArrayList<>();
     }
 
@@ -55,7 +55,7 @@ public class JTSModel {
     }
 
     public List<OSMElement> queryFromEnvelope(Envelope envelope) {
-        List<OSMElement> results = rtree.query(envelope);
+        List<OSMElement> results = spatialIndex.query(envelope);
         return results;
     }
     
@@ -65,7 +65,7 @@ public class JTSModel {
         Coordinate coord = new Coordinate(lng, lat);
         Envelope envelope = createTapEnvelope(coord, lat, lng, zoom);
 
-        List results = rtree.query(envelope);
+        List results = spatialIndex.query(envelope);
 
         int len = results.size();
         if (len == 0 ) {
@@ -148,7 +148,7 @@ public class JTSModel {
             Polygon poly = geometryFactory.createPolygon(coords);
             closedWay.setJTSGeom(poly);
             Envelope envelope = poly.getEnvelopeInternal();
-            rtree.insert(envelope, closedWay);
+            spatialIndex.insert(envelope, closedWay);
         }
     }
 
@@ -160,7 +160,7 @@ public class JTSModel {
             LineString line = geometryFactory.createLineString(coords);
             w.setJTSGeom(line);
             Envelope envelope = line.getEnvelopeInternal();
-            rtree.insert(envelope, w);
+            spatialIndex.insert(envelope, w);
         }
     }
 
@@ -185,7 +185,7 @@ public class JTSModel {
             Point point = geometryFactory.createPoint(coord);
             n.setJTSGeom(point);
             Envelope envelope = point.getEnvelopeInternal();
-            rtree.insert(envelope, n);
+            spatialIndex.insert(envelope, n);
         }
     }
 
