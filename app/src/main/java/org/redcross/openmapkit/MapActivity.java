@@ -16,7 +16,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
-import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
@@ -105,7 +104,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         String fileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
 
-        String filePath = Environment.getExternalStorageDirectory() + "/" + getString(R.string.appFolderName) + "/" + getString(R.string.mbtilesFolderName) + "/";
+        String filePath = Environment.getExternalStorageDirectory() + "/" + ExternalStorage.APP_DIR + "/" + ExternalStorage.MBTILES_DIR + "/";
 
         if(ExternalStorage.isReadable()) {
 
@@ -117,7 +116,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 //inform user if no mbtiles was found
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Device is Offline");
-                builder.setMessage("Please add mbtiles to ExternalStorage" + "/" + getString(R.string.appFolderName) + "/" + getString(R.string.mbtilesFolderName) + "/");
+                builder.setMessage("Please add mbtiles to " + filePath);
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //placeholder
