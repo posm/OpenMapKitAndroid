@@ -72,7 +72,8 @@ public class OSMDataSet {
                            String timestampStr,
                            String changesetStr,
                            String uidStr,
-                           String userStr) {
+                           String userStr,
+                           String action ) {
 
         OSMNode n = new OSMNode(  idStr, latStr, lonStr, versionStr, timestampStr,
                             changesetStr, uidStr, userStr );
@@ -86,7 +87,8 @@ public class OSMDataSet {
                           String timestampStr,
                           String changesetStr,
                           String uidStr,
-                          String userStr ) {
+                          String userStr,
+                          String action ) {
 
         OSMWay w = new OSMWay(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
         ways.put(w.getId(), w);
@@ -98,7 +100,8 @@ public class OSMDataSet {
                                     String timestampStr,
                                     String changesetStr,
                                     String uidStr,
-                                    String userStr ) {
+                                    String userStr,
+                                    String action ) {
 
         OSMRelation r = new OSMRelation(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
         relations.put(r.getId(), r);

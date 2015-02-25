@@ -147,9 +147,10 @@ public class OSMXmlParser {
         String changesetStr = parser.getAttributeValue(ns, "changeset");
         String uidStr       = parser.getAttributeValue(ns, "uid");
         String userStr      = parser.getAttributeValue(ns, "user");
+        String action       = parser.getAttributeValue(ns, "action");
 
-        OSMNode node = ds.createNode(  idStr, latStr, lonStr, versionStr, timestampStr,
-                                    changesetStr, uidStr, userStr   );
+        OSMNode node = ds.createNode( idStr, latStr, lonStr, versionStr, timestampStr,
+                                      changesetStr, uidStr, userStr, action);
 
         // If the next thing is not an END_TAG, we have some tag elements in the node...
         if (parser.nextTag() != XmlPullParser.END_TAG && parser.getName().equals("tag")) {
@@ -165,8 +166,10 @@ public class OSMXmlParser {
         String changesetStr = parser.getAttributeValue(ns, "changeset");
         String uidStr       = parser.getAttributeValue(ns, "uid");
         String userStr      = parser.getAttributeValue(ns, "user");
+        String action       = parser.getAttributeValue(ns, "action");
 
-        OSMWay way = ds.createWay(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        OSMWay way = ds.createWay( idStr, versionStr, timestampStr, 
+                                   changesetStr, uidStr, userStr, action );
 
         if (parser.nextTag() != XmlPullParser.END_TAG) {
             if (parser.getName().equals("nd")) {
@@ -187,8 +190,10 @@ public class OSMXmlParser {
         String changesetStr = parser.getAttributeValue(ns, "changeset");
         String uidStr       = parser.getAttributeValue(ns, "uid");
         String userStr      = parser.getAttributeValue(ns, "user");
+        String action       = parser.getAttributeValue(ns, "action");
 
-        OSMRelation relation = ds.createRelation(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        OSMRelation relation = ds.createRelation( idStr, versionStr, timestampStr,
+                                                  changesetStr, uidStr, userStr, action );
 
         if (parser.nextTag() != XmlPullParser.END_TAG) {
             if (parser.getName().equals("member")) {

@@ -67,6 +67,10 @@ public class ODKCollectData {
             }
         }
     }
+    
+    public List<File> getEditedOSM() {
+        return editedOSM;
+    }
 
     public String getFormId() {
         return formId;

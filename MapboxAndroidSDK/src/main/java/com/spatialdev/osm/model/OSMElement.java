@@ -84,13 +84,36 @@ public abstract class OSMElement {
                       String changesetStr,
                       String uidStr,
                       String userStr) {
-
-        id = Long.valueOf(idStr);
-        version = Long.valueOf(versionStr);
-        timestamp = timestampStr;
-        changeset = Long.valueOf(changesetStr);
-        uid = Long.valueOf(uidStr);
-        user = userStr;
+        try {
+            id = Long.valueOf(idStr);
+        } catch (Exception e) {
+            // dont assign
+        }
+        try {
+            version = Long.valueOf(versionStr);
+        } catch (Exception e) {
+            // dont assign
+        }
+        try {
+            timestamp = timestampStr;
+        } catch (Exception e) {
+            // dont assign
+        }
+        try {
+            changeset = Long.valueOf(changesetStr);
+        } catch (Exception e) {
+            // dont assign
+        }
+        try {
+            uid = Long.valueOf(uidStr);
+        } catch (Exception e) {
+            // dont assign
+        }
+        try {
+            user = userStr;
+        } catch (Exception e) {
+            // dont assign
+        }
     }
 
     void xml(XmlSerializer xmlSerializer) throws IOException {

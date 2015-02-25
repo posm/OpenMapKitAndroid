@@ -8,6 +8,7 @@ import com.spatialdev.osm.model.OSMElement;
 import org.redcross.openmapkit.odkcollect.osmtag.OSMTag;
 import org.redcross.openmapkit.odkcollect.osmtag.OSMTagItem;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,13 @@ public class ODKCollectHandler {
             throw new NoSuchFieldError("We have no data from ODK Collect!");
         }
         return odkCollectData.getRequiredTags();
+    }
+    
+    public static List<File> getEditedOSM() {
+        if (odkCollectData == null) {
+            return new ArrayList<>();
+        }
+        return odkCollectData.getEditedOSM();
     }
 
     /**

@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -26,6 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
 
+import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+
 /**
  * Created by Nicholas Hallahan on 1/28/15.
  * nhallahan@spatialdev.com* 
@@ -35,11 +38,11 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static final float MIN_VECTOR_RENDER_ZOOM = 19;
     
     private static int remainingFiles = -1;
-    public static boolean running = false;
-    private static MapActivity staticMapActivity; // only supporting one per app for now
+    private static boolean running = false;
     private static Set<String> loadedOSMFiles = new HashSet<>();
     private static JTSModel jtsModel = new JTSModel();
-    
+
+    private MapActivity mapActivity; 
     private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
@@ -50,19 +53,30 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             throw new IOException("MAP BUILDER CURRENTLY LOADING!");
         }
         running = true;
-        staticMapActivity = mapActivity;
         File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
-        remainingFiles = xmlFiles.length;
+        List<File> editedOsmFiles = ODKCollectHandler.getEditedOSM();
+        remainingFiles = xmlFiles.length + editedOsmFiles.size();
+        
+        // load the OSM files in OpenMapKit
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
-            OSMMapBuilder builder = new OSMMapBuilder();
+            OSMMapBuilder builder = new OSMMapBuilder(mapActivity);
 //            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
         }
         
-        
+        // load the edited OSM files in ODK Collect
+        for (File f : editedOsmFiles) {
+            OSMMapBuilder builder = new OSMMapBuilder(mapActivity);
+            builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
+        }
     }
 
+    private OSMMapBuilder(MapActivity mapActivity) {
+        super();
+        this.mapActivity = mapActivity;
+    }
+    
     @Override
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
@@ -73,7 +87,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             return jtsModel;
         }
         
-        Log.i("BEGIN_PARSING", "PARSING: " + fileName);
+        Log.i("BEGIN_PARSING", fileName);
         fileSize = f.length();
         try {
             InputStream is = new FileInputStream(f);
@@ -81,9 +95,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             OSMDataSet ds = OSMXmlParserInOSMMapBuilder.parseFromInputStream(countingInputStream, this);
             jtsModel.addOSMDataSet(ds);
             loadedOSMFiles.add(f.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return jtsModel;
@@ -110,7 +122,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         --remainingFiles;
         // do this when everything is done loading
         if (remainingFiles == 0) {
-            new OSMMap(staticMapActivity.getMapView(), jtsModel, staticMapActivity, MIN_VECTOR_RENDER_ZOOM);
+            new OSMMap(mapActivity.getMapView(), jtsModel, mapActivity, MIN_VECTOR_RENDER_ZOOM);
             running = false;
         }
     }
