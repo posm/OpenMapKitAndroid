@@ -24,6 +24,12 @@ public class OSMPolygon extends OSMPath {
     private static final int DEFAULT_SELECTED_G = 140;
     private static final int DEFAULT_SELECTED_B = 0;
 
+    // MAROON
+    private static final int DEFAULT_EDITED_A = 50;
+    private static final int DEFAULT_EDITED_R = 245;
+    private static final int DEFAULT_EDITED_G = 17;
+    private static final int DEFAULT_EDITED_B = 135;
+
     private int a;
     private int r;
     private int g;
@@ -36,7 +42,23 @@ public class OSMPolygon extends OSMPath {
      * @param w
      */
     protected OSMPolygon(OSMWay w, MapView mv) {
-        this(w, mv, DEFAULT_A, DEFAULT_R ,DEFAULT_G, DEFAULT_B);
+        super(w, mv);
+
+        // color polygon according to if it has been edited before
+        if (w.isModified()) {
+            this.a = DEFAULT_EDITED_A;
+            this.r = DEFAULT_EDITED_R;
+            this.g = DEFAULT_EDITED_G;
+            this.b = DEFAULT_EDITED_B;
+        } else {
+            this.a = DEFAULT_A;
+            this.r = DEFAULT_R;
+            this.g = DEFAULT_G;
+            this.b = DEFAULT_B;
+        }
+
+        paint.setStyle(Paint.Style.FILL);
+        paint.setARGB(a, r, g, b);
     }
 
     @Override
@@ -48,22 +70,13 @@ public class OSMPolygon extends OSMPath {
     public void deselect() {
         paint.setARGB(a, r, g, b);
     }
-
-    protected OSMPolygon(OSMWay w, MapView mv, int a, int r, int g, int b) {
-        super(w, mv);
-        this.a = a;
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        paint.setStyle(Paint.Style.FILL);
-        paint.setARGB(a, r, g, b);
-    }
+    
 
 
     /**
      * For now, we are drawing all of the polygons, even those outside of the canvas.
      * 
-     * This isn't too much of a problem for now, because the RTree will give us
+     * This isn't too much of a problem for now, because the Spatial Index will give us
      * only polygons that intersect.
      * 
      * This can be problematic for very large polygons.
