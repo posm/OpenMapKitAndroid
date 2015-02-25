@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,12 +37,13 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static int remainingFiles = -1;
     public static boolean running = false;
     private static MapActivity staticMapActivity; // only supporting one per app for now
+    private static Set<String> loadedOSMFiles = new HashSet<>();
+    private static JTSModel jtsModel = new JTSModel();
     
     private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
 
-    private JTSModel jtsModel = new JTSModel();
     
     public static void buildMapFromExternalStorage(MapActivity mapActivity) throws IOException {
         if (running) {
@@ -52,10 +55,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         remainingFiles = xmlFiles.length;
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
-            String fileName = xmlFile.getName();
             OSMMapBuilder builder = new OSMMapBuilder();
-            Log.i("BEGIN_PARSING", "PARSING: " + fileName);
-//            builder.execute(xmlFile);
+//            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
         }
         
@@ -66,12 +67,20 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
         fileName = f.getName();
+        
+        // Check to see if we have already loaded this file...
+        if (loadedOSMFiles.contains(f.getAbsolutePath())) {
+            return jtsModel;
+        }
+        
+        Log.i("BEGIN_PARSING", "PARSING: " + fileName);
         fileSize = f.length();
         try {
             InputStream is = new FileInputStream(f);
             countingInputStream = new CountingInputStream(is);
             OSMDataSet ds = OSMXmlParserInOSMMapBuilder.parseFromInputStream(countingInputStream, this);
             jtsModel.addOSMDataSet(ds);
+            loadedOSMFiles.add(f.getAbsolutePath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -137,12 +146,12 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
 
-    private static final ThreadFactory yourFactory = new ThreadFactory() {
+    private static final ThreadFactory factory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(Runnable r) {
-            ThreadGroup group = new ThreadGroup("threadGroup");
-            return new Thread(group, r, "YourThreadName", 50000);
+            ThreadGroup group = new ThreadGroup("OSMMapBuilder_group");
+            return new Thread(group, r, "OSMMapBuilder_thread", 50000);
         }
     };
 
@@ -151,6 +160,6 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 
     public static final Executor LARGE_STACK_THREAD_POOL_EXECUTOR
             = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
-            TimeUnit.SECONDS, sPoolWorkQueue, yourFactory);
+            TimeUnit.SECONDS, sPoolWorkQueue, factory);
     
 }
