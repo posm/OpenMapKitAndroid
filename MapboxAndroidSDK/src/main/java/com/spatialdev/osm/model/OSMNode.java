@@ -26,9 +26,10 @@ public class OSMNode extends OSMElement {
                    String timestampStr,
                    String changesetStr,
                    String uidStr,
-                   String userStr) {
+                   String userStr,
+                   String action) {
 
-        super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr);
+        super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr, action);
 
         lat = Double.valueOf(latStr);
         lng = Double.valueOf(lonStr);

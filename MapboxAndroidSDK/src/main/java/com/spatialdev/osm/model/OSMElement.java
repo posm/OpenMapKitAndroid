@@ -83,7 +83,8 @@ public abstract class OSMElement {
                       String timestampStr,
                       String changesetStr,
                       String uidStr,
-                      String userStr) {
+                      String userStr,
+                      String action) {
         try {
             id = Long.valueOf(idStr);
         } catch (Exception e) {
@@ -113,6 +114,9 @@ public abstract class OSMElement {
             user = userStr;
         } catch (Exception e) {
             // dont assign
+        }
+        if (action != null && action.equals("modify")) {
+            modified = true;
         }
     }
 
