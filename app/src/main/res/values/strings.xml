@@ -3,12 +3,17 @@
 
     <string name="app_name">OpenMapKit</string>
 
-    <!-- action menu -->
+    <!-- osm menu -->
     <string name="action_osmsettings">OSM Settings</string>
+
+    <!-- mbtiles menu -->
     <string name="aciton_mbtilessettings">MBTiles Settings</string>
-    <string name="action_settings">Settings</string>
-    
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="mbtilesAppPath">openmapkit/mbtiles</string>
+
     <string name="tags">Tags</string>
+    <string name="action_settings">Settings</string>
 
     <!-- default tile layer -->
     <string name="defaultTileLayerPID">hot</string>
@@ -35,5 +40,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="odkcollect_tag_instructions">Please fill in values for all of the following OpenStreetMap tags:</string>
     <string name="save_to_odk_collect">Save to ODK Collect</string>
-    <string name="cancel">Cancel</string>
+
 </resources>
