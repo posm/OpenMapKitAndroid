@@ -115,6 +115,10 @@ public abstract class OSMPath {
     
     public abstract void deselect();
 
+    public void setMapView(MapView mv) {
+        mapView = mv;
+    }
+    
     public void draw(final Canvas c) {
         int size = projectedPoints.length;
 

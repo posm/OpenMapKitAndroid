@@ -166,6 +166,11 @@ public class OSMWay extends OSMElement {
         // if there is no overlay, make it for this element
         if (osmPath == null) {
             osmPath = OSMPath.createOSMPath(this, mv);
+        } 
+        // Sometimes the app exists or gets a new MapView, and we need to make
+        // sure things get drawn on the actual active map view currently on the screen.
+        else {
+            osmPath.setMapView(mv);
         }
         return osmPath;
     }
