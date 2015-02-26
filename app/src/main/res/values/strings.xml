@@ -4,9 +4,8 @@
     <string name="app_name">OpenMapKit</string>
 
     <!-- action menu -->
-    <string name="action_onlinesettings">Online Settings</string>
-    <string name="aciton_offlinesettings">Offline Settings</string>
-    <string name="action_about">About Open Mapkit</string>
+    <string name="action_osmsettings">OSM Settings</string>
+    <string name="aciton_mbtilessettings">MBTiles Settings</string>
     <string name="action_settings">Settings</string>
     
     <string name="tags">Tags</string>

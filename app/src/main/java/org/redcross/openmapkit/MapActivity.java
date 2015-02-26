@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -223,6 +225,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
 
     /**
+     * For adding action items to the action bar
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return true;
+    }
+
+    /**
      * For handling when a user taps on a menu item (top right)
      */
     @Override
@@ -233,21 +245,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_onlinesettings) {
+        if (id == R.id.osmsettings) {
 
             //TODO
+            Log.e("test", "osm settings");
 
             return true;
         }
-        else if (id == R.id.aciton_offlinesettings) {
+        else if (id == R.id.mbtilessettings) {
 
             //TODO
-
-            return true;
-        }
-        else if(id == R.id.action_about) {
-
-            //TODO
+            Log.e("test", "mbtiles settings");
 
             return true;
         }
