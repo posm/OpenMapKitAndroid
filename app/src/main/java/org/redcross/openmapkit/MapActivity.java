@@ -7,10 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
@@ -23,12 +26,14 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
     private MapView mapView;
     private Button tagsButton;
+    private String mSelectedMBTilesFile;
 
     /**
      * intent request codes
@@ -56,10 +61,12 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
 
         if (deviceIsConnected) {
+
             addOnlineDataSources();
 
         } else {
-            addOfflineDataSources();
+
+            presentMBTilesOptions();
         }
 
         initializeOsmXml();
@@ -99,9 +106,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     /**
      * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
      */
-    private void addOfflineDataSources() {
-
-        String fileName = "dhaka2015-01-02.mbtiles"; //TODO - allow user to declare in UI somehow
+    private void addOfflineDataSources(String fileName) {
 
         String filePath = Environment.getExternalStorageDirectory() + "/" + ExternalStorage.APP_DIR + "/" + ExternalStorage.MBTILES_DIR + "/";
 
@@ -221,6 +226,82 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         dialog.show();
     }
 
+    /**
+     * For presenting a dialog to allow the user to choose which MBTILES file to use that has been uploaded to their devices openmapkit/mbtiles folder
+     */
+    private void presentMBTilesOptions() {
+
+        //fetch names of all files in mbtiles folder
+        final ArrayList mbtilesFileNames = new ArrayList();
+        File primaryExternalStorageDirectory = Environment.getExternalStorageDirectory();
+        if (primaryExternalStorageDirectory != null) {
+            File mbTilesFolder = new File(primaryExternalStorageDirectory, getString(R.string.mbtilesAppPath));
+            for (File file : mbTilesFolder.listFiles()) {
+                if (file.isFile()) {
+                    String fileName = file.getName();
+                    mbtilesFileNames.add(fileName);
+                }
+            }
+        }
+
+        if(mbtilesFileNames.size() > 0) {
+
+            //present user ability to choose an mbtiles file
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose MBTiles File");
+            CharSequence[] charSeq = (CharSequence[]) mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
+            builder.setMultiChoiceItems(charSeq, null,
+                    new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            if (isChecked) {
+
+                                //user made a choice
+                                mSelectedMBTilesFile = mbtilesFileNames.get(which).toString();
+                            }
+                        }
+                    });
+
+            //handle OK button
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+
+                            //user clicked OK
+                            addOfflineDataSources(mSelectedMBTilesFile);
+                        }
+                    });
+
+            //handle cancel button
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+
+                            //user clicked cancel
+                            //TODO
+                        }
+                    });
+
+            //present to user
+            builder.show();
+
+        } else {
+
+            Toast prompt = Toast.makeText(getApplicationContext(), "Please add .mbtiles file to " + getString(R.string.mbtilesAppPath), Toast.LENGTH_LONG);
+            prompt.show();
+        }
+
+    }
+
+    /**
+     * For adding action items to the action bar
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return true;
+    }
 
     /**
      * For handling when a user taps on a menu item (top right)
@@ -233,21 +314,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_onlinesettings) {
+        if (id == R.id.osmsettings) {
 
             //TODO
+            Log.i("test", "osm settings");
 
             return true;
         }
-        else if (id == R.id.aciton_offlinesettings) {
+        else if (id == R.id.mbtilessettings) {
 
-            //TODO
-
-            return true;
-        }
-        else if(id == R.id.action_about) {
-
-            //TODO
+            presentMBTilesOptions();
 
             return true;
         }

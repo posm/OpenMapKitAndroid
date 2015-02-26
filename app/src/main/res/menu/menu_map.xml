@@ -2,16 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MapActivity">
 
-    <item android:id="@+id/action_onlinesettings"
-        android:title="@string/action_onlinesettings"
+    <item android:id="@+id/osmsettings"
+        android:title="@string/action_osmsettings"
         app:showAsAction="never" />
 
-    <item android:id="@+id/aciton_offlinesettings"
-        android:title="@string/aciton_offlinesettings"
-        app:showAsAction="never" />
-
-    <item android:id="@+id/action_about"
-        android:title="@string/action_about"
+    <item android:id="@+id/mbtilessettings"
+        android:title="@string/aciton_mbtilessettings"
         app:showAsAction="never" />
 
 </menu>
