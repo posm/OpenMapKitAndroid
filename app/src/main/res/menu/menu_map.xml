@@ -7,7 +7,7 @@
         app:showAsAction="never" />
 
     <item android:id="@+id/mbtilessettings"
-        android:title="@string/aciton_mbtilessettings"
+        android:title="@string/action_mbtilessettings"
         app:showAsAction="never" />
 
 </menu>

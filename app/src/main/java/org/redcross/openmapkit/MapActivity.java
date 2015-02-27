@@ -246,41 +246,33 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         if(mbtilesFileNames.size() > 0) {
 
-            //present user ability to choose an mbtiles file
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Choose MBTiles File");
+            builder.setTitle(getString(R.string.mbtilesChooserDialogTitle));
             CharSequence[] charSeq = (CharSequence[]) mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
-            builder.setMultiChoiceItems(charSeq, null,
-                    new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                            if (isChecked) {
-
-                                //user made a choice
-                                mSelectedMBTilesFile = mbtilesFileNames.get(which).toString();
-                            }
-                        }
-                    });
+            builder.setSingleChoiceItems(charSeq, -1, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //user made a choice
+                    mSelectedMBTilesFile = mbtilesFileNames.get(which).toString();
+                }
+            });
 
             //handle OK button
             builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-
-                            //user clicked OK
-                            addOfflineDataSources(mSelectedMBTilesFile);
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    //user clicked OK
+                    addOfflineDataSources(mSelectedMBTilesFile);
+                }
+            });
 
             //handle cancel button
             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-
-                            //user clicked cancel
-                            //TODO
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    //user clicked cancel
+                }
+            });
 
             //present to user
             builder.show();

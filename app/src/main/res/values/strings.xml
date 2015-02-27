@@ -7,7 +7,8 @@
     <string name="action_osmsettings">OSM Settings</string>
 
     <!-- mbtiles menu -->
-    <string name="aciton_mbtilessettings">MBTiles Settings</string>
+    <string name="action_mbtilessettings">MBTiles Settings</string>
+    <string name="mbtilesChooserDialogTitle">Choose MBTiles File</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="mbtilesAppPath">openmapkit/mbtiles</string>
