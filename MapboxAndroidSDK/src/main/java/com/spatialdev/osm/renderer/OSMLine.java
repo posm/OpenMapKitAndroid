@@ -27,7 +27,7 @@ public class OSMLine extends OSMPath {
     private static final float DEFAULT_SELECTED_WIDTH = 15.0f;
 
     // MAROON
-    private static final int DEFAULT_EDITED_A = 125;
+    private static final int DEFAULT_EDITED_A = 100;
     private static final int DEFAULT_EDITED_R = 245;
     private static final int DEFAULT_EDITED_G = 17;
     private static final int DEFAULT_EDITED_B = 135;
@@ -59,10 +59,10 @@ public class OSMLine extends OSMPath {
             this.g = DEFAULT_G;
             this.b = DEFAULT_B;
         }
-
+        width = DEFAULT_WIDTH;
         paint.setStyle(Paint.Style.STROKE);
         paint.setARGB(a, r, g, b);
-        setStrokeWidth(DEFAULT_WIDTH);
+        setStrokeWidth(width);
     }
 
     @Override

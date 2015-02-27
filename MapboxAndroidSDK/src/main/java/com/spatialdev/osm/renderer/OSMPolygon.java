@@ -25,7 +25,7 @@ public class OSMPolygon extends OSMPath {
     private static final int DEFAULT_SELECTED_B = 0;
 
     // MAROON
-    private static final int DEFAULT_EDITED_A = 50;
+    private static final int DEFAULT_EDITED_A = 100;
     private static final int DEFAULT_EDITED_R = 245;
     private static final int DEFAULT_EDITED_G = 17;
     private static final int DEFAULT_EDITED_B = 135;

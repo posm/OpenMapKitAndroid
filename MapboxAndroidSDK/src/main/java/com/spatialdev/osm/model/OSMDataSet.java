@@ -183,6 +183,11 @@ public class OSMDataSet {
     public Map<Long, OSMNode> getNodes() {
         return nodes;
     }
+    
+    public OSMNode getNode(Long id) {
+        return nodes.get(id);
+    }
+    
     /**
      * Returns only the nodes that are not part of ways / relations.
      *
@@ -198,6 +203,10 @@ public class OSMDataSet {
 
     public Map<Long, OSMWay> getWays() {
         return ways;
+    }
+    
+    public OSMWay getWay(Long id) {
+        return ways.get(id);        
     }
 
     public List<OSMWay> getClosedWays() {
@@ -218,6 +227,10 @@ public class OSMDataSet {
 
     public Map<Long, OSMRelation> getRelations() {
         return relations;
+    }
+    
+    public OSMRelation getRelation(Long id) {
+        return relations.get(id);
     }
 
 }

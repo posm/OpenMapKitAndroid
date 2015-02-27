@@ -44,7 +44,30 @@ public class JTSModel {
         addOSMOpenWays(ds);
         addOSMStandaloneNodes(ds);
     }
-
+    
+    public void mergeEditedOSMDataSet(OSMDataSet ds) {
+        for (OSMDataSet existingDataSet : dataSets) {
+            // closed ways
+            removeWaysFromExistingDataSet(existingDataSet, ds.getClosedWays());
+            //open ways
+            removeWaysFromExistingDataSet(existingDataSet, ds.getOpenWays());
+        }
+        addOSMDataSet(ds);
+    }
+    
+    private void removeWaysFromExistingDataSet(OSMDataSet existingDataSet, List<OSMWay> ways) {
+        for (OSMWay w : ways) {
+            OSMWay oldWay = existingDataSet.getWay(w.getId());
+            if (oldWay != null) {
+                Geometry geom = oldWay.getJTSGeom();
+                if (geom != null) {
+                    Envelope env = geom.getEnvelopeInternal();
+                    spatialIndex.remove(env, oldWay);
+                }
+            }
+        }
+    }
+    
     public Envelope createTapEnvelope(ILatLng latLng, float zoom) {
         return createTapEnvelope(latLng.getLatitude(), latLng.getLongitude(), zoom);
     }

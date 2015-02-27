@@ -46,6 +46,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
+    
+    // Should be set to true if we are loading edited OSM XML
+    private boolean isOSMEdit = false;
 
     
     public static void buildMapFromExternalStorage(MapActivity mapActivity) throws IOException {
@@ -60,21 +63,22 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         // load the OSM files in OpenMapKit
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
-            OSMMapBuilder builder = new OSMMapBuilder(mapActivity);
+            OSMMapBuilder builder = new OSMMapBuilder(mapActivity, false);
 //            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
         }
         
         // load the edited OSM files in ODK Collect
         for (File f : editedOsmFiles) {
-            OSMMapBuilder builder = new OSMMapBuilder(mapActivity);
+            OSMMapBuilder builder = new OSMMapBuilder(mapActivity, true);
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
         }
     }
 
-    private OSMMapBuilder(MapActivity mapActivity) {
+    private OSMMapBuilder(MapActivity mapActivity, boolean isOSMEdit) {
         super();
         this.mapActivity = mapActivity;
+        this.isOSMEdit = isOSMEdit;
     }
     
     @Override
@@ -93,7 +97,11 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             InputStream is = new FileInputStream(f);
             countingInputStream = new CountingInputStream(is);
             OSMDataSet ds = OSMXmlParserInOSMMapBuilder.parseFromInputStream(countingInputStream, this);
-            jtsModel.addOSMDataSet(ds);
+            if (isOSMEdit) {
+                jtsModel.mergeEditedOSMDataSet(ds);
+            } else {
+                jtsModel.addOSMDataSet(ds);
+            }
             loadedOSMFiles.add(f.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,7 +130,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         --remainingFiles;
         // do this when everything is done loading
         if (remainingFiles == 0) {
-            new OSMMap(mapActivity.getMapView(), jtsModel, mapActivity, MIN_VECTOR_RENDER_ZOOM);
+            new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
             running = false;
         }
     }
