@@ -227,7 +227,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
 
     /**
-     * For presenting a dialog to allow the user to choose which MBTILES file to use that has been uploaded to their devices openmapkit/mbtiles folder
+     * For presenting a dialog to allow the user to choose which MBTILES file to use that has been uploaded to their device/s openmapkit/mbtiles folder
      */
     private void presentMBTilesOptions() {
 
@@ -246,6 +246,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         if(mbtilesFileNames.size() > 0) {
 
+            //present dialog to user with the ability to choose one mbtiles file
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.mbtilesChooserDialogTitle));
             CharSequence[] charSeq = (CharSequence[]) mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
@@ -282,7 +283,70 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             Toast prompt = Toast.makeText(getApplicationContext(), "Please add .mbtiles file to " + getString(R.string.mbtilesAppPath), Toast.LENGTH_LONG);
             prompt.show();
         }
+    }
 
+    /**
+     * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
+     */
+    private void presentOSMOptions() {
+
+        //fetch names of all files in osm folder
+        final ArrayList osmFileNames = new ArrayList();
+        File primaryExternalStorageDirectory = Environment.getExternalStorageDirectory();
+        if (primaryExternalStorageDirectory != null) {
+            File mbTilesFolder = new File(primaryExternalStorageDirectory, getString(R.string.osmAppPath));
+            for (File file : mbTilesFolder.listFiles()) {
+                if (file.isFile()) {
+                    String fileName = file.getName();
+                    osmFileNames.add(fileName);
+                }
+            }
+        }
+
+        if(osmFileNames.size() > 0) {
+
+            final ArrayList selectedOSMFiles = new ArrayList();
+
+            //present dialog to user with the ability to choose one or more osm xml files
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.osmChooserDialogTitle));
+            CharSequence[] charSeq = (CharSequence[]) osmFileNames.toArray(new CharSequence[osmFileNames.size()]);
+            builder.setMultiChoiceItems(charSeq, null, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    if (isChecked) {
+                        //user made a choice
+                        selectedOSMFiles.add(osmFileNames.get(which).toString());
+                    }
+                }
+            });
+
+            //handle OK button
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    //user clicked OK
+                    Log.i("test", "Adding " + selectedOSMFiles);
+                    //TODO potentially pass to OSMMapBuilder by passing a collection of osm xml file names?
+                }
+            });
+
+            //handle cancel button
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    //user clicked cancel
+                }
+            });
+
+            //present to user
+            builder.show();
+
+        } else {
+
+            Toast prompt = Toast.makeText(getApplicationContext(), "Please add .osm files to " + getString(R.string.osmAppPath), Toast.LENGTH_LONG);
+            prompt.show();
+        }
     }
 
     /**
@@ -308,8 +372,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //noinspection SimplifiableIfStatement
         if (id == R.id.osmsettings) {
 
-            //TODO
-            Log.i("test", "osm settings");
+            presentOSMOptions();
 
             return true;
         }
