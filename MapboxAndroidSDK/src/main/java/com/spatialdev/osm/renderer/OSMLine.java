@@ -61,6 +61,7 @@ public class OSMLine extends OSMPath {
         }
         width = DEFAULT_WIDTH;
         paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setARGB(a, r, g, b);
         setStrokeWidth(width);
     }
