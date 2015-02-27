@@ -135,7 +135,7 @@ public class TagEditorActivity extends ActionBarActivity {
     }
     
     private void editsToXml() {
-        LinkedList<OSMElement> els = OSMElement.getModifiedElements();
+        LinkedList<OSMElement> els = OSMElement.getModifiedElementsInInstance();
         String xml = null; // TODO: Need to specify OSM User
         try {
             xml = OSMXmlWriter.elementsToString(els, "theoutpost");

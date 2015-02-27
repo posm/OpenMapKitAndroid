@@ -22,6 +22,7 @@ public abstract class OSMElement {
     private static boolean selectedElementsChanged = false;
     
     private static LinkedList<OSMElement> modifiedElements = new LinkedList<>();
+    private static LinkedList<OSMElement> modifiedElementsInInstance = new LinkedList<>();
     
     protected long id;
     protected long version;
@@ -31,8 +32,11 @@ public abstract class OSMElement {
     protected String user;
     protected boolean selected = false;
     
-    // set to true if the application modifies tags for this element
+    // set to true if the tags for this element have been modified
     protected boolean modified = false;
+    
+    // set to true if the application modifies tags for this element in this instance
+    protected boolean modifiedInInstance = false;
 
     protected Geometry jtsGeom;
 
@@ -58,9 +62,24 @@ public abstract class OSMElement {
     public static LinkedList<OSMElement> getSelectedElements() {
         return selectedElements;
     }
-    
+
+    /**
+     * All of the modified elements we've got in memory, including those in previous
+     * edits of previous survey instances that have been scraped from ODK Collect.
+     * * * * 
+     * @return all modified OSMElements
+     */
     public static LinkedList<OSMElement> getModifiedElements() {
         return modifiedElements;        
+    }
+
+    /**
+     * Only the modified elements that have had their tags modified in this survey instance
+     * * *
+     * @return elements with modified tags in this survey instance
+     */
+    public static LinkedList<OSMElement> getModifiedElementsInInstance() {
+        return modifiedElementsInInstance;        
     }
     
     public static boolean hasSelectedElementsChanged() {
@@ -116,7 +135,7 @@ public abstract class OSMElement {
             // dont assign
         }
         if (action != null && action.equals("modify")) {
-            modified = true;
+            setAsModified();
         }
     }
 
@@ -152,9 +171,8 @@ public abstract class OSMElement {
         if (v.equals(origVal)) {
             return;
         }
-        modified = true;
+        setAsModifiedInInstance();
         tags.put(k, v);
-        modifiedElements.add(this);
     }
 
     /**
@@ -167,13 +185,33 @@ public abstract class OSMElement {
         if (origVal == null) {
             return;
         }
-        modified = true;
+        setAsModifiedInInstance();
         tags.remove(k);
-        modifiedElements.add(this);
     }
     
     public boolean isModified() {
         return modified;
+    }
+
+    /**
+     * Any element that has been modified, either in the current instance or in previous
+     * survey instances.
+     * * * * 
+     */
+    private void setAsModified() {
+        modified = true;
+        modifiedElements.add(this);
+    }
+
+    /**
+     * This is when an element is modified in this survey instance rather than a previous survey.
+     * We need to know this so that the edits can be written to OSM XML in ODK Collect.
+     * * * 
+     */
+    private void setAsModifiedInInstance() {
+        setAsModified();
+        modifiedInInstance = true;
+        modifiedElementsInInstance.add(this);
     }
     
     /**
