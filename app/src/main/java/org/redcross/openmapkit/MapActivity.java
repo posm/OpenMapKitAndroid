@@ -232,16 +232,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void presentMBTilesOptions() {
 
         //fetch names of all files in mbtiles folder
-        final ArrayList mbtilesFileNames = new ArrayList();
-        File primaryExternalStorageDirectory = Environment.getExternalStorageDirectory();
-        if (primaryExternalStorageDirectory != null) {
-            File mbTilesFolder = new File(primaryExternalStorageDirectory, getString(R.string.mbtilesAppPath));
-            for (File file : mbTilesFolder.listFiles()) {
-                if (file.isFile()) {
-                    String fileName = file.getName();
-                    mbtilesFileNames.add(fileName);
-                }
-            }
+        final ArrayList<String> mbtilesFileNames = new ArrayList<>();
+        File[] mbtiles = ExternalStorage.fetchMBTilesFiles();
+        for (File file : mbtiles) {
+            String fileName = file.getName();
+            mbtilesFileNames.add(fileName);
         }
 
         if(mbtilesFileNames.size() > 0) {

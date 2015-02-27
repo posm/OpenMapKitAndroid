@@ -44,6 +44,14 @@ public class ExternalStorage {
         return dir.listFiles();
     }
     
+    public static File[] fetchMBTilesFiles() {
+        String dirPath = Environment.getExternalStorageDirectory() + "/"
+                + APP_DIR + "/"
+                + MBTILES_DIR + "/";
+        File dir = new File(dirPath);
+        return dir.listFiles();
+    }
+    
     /**
      * Checking if external storage is available for read and write
      */
