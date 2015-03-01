@@ -1,5 +1,6 @@
 package org.redcross.openmapkit;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -41,6 +42,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static boolean running = false;
     private static Set<String> loadedOSMFiles = new HashSet<>();
     private static JTSModel jtsModel = new JTSModel();
+    private static ProgressDialog progressDialog;
 
     private MapActivity mapActivity; 
     private String fileName;
@@ -56,6 +58,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             throw new IOException("MAP BUILDER CURRENTLY LOADING!");
         }
         running = true;
+        progressDialog = new ProgressDialog(mapActivity);
         File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
         List<File> editedOsmFiles = ODKCollectHandler.getEditedOSM();
         remainingFiles = xmlFiles.length + editedOsmFiles.size();
@@ -79,6 +82,17 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         super();
         this.mapActivity = mapActivity;
         this.isOSMEdit = isOSMEdit;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        super.onPreExecute();
+        progressDialog.setTitle("Loading OSM XML");
+        progressDialog.setProgressStyle(progressDialog.STYLE_HORIZONTAL);
+        progressDialog.setProgress(0);
+        progressDialog.setMax(100);
+        progressDialog.show();
     }
     
     @Override
@@ -123,6 +137,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
                 "nodesRead=" + nodesRead + ", " +
                 "waysRead=" + waysRead + ", " +
                 "relationsRead=" + relationsRead);
+        progressDialog.setMessage(fileName);
+        progressDialog.setProgress((int)percent);
     }
 
     @Override
@@ -130,6 +146,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         --remainingFiles;
         // do this when everything is done loading
         if (remainingFiles == 0) {
+            if(progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
             running = false;
         }
