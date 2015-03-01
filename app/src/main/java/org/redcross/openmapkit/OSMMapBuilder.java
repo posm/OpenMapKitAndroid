@@ -1,9 +1,7 @@
 package org.redcross.openmapkit;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import com.spatialdev.osm.OSMMap;
@@ -11,7 +9,6 @@ import com.spatialdev.osm.model.JTSModel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -38,7 +35,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
     private static final float MIN_VECTOR_RENDER_ZOOM = 18;
     
-    private static int remainingFiles = -1;
+    private static int totalFiles = -1;
+    private static int completedFiles = 0;
     private static boolean running = false;
     private static Set<String> loadedOSMFiles = new HashSet<>();
     private static JTSModel jtsModel = new JTSModel();
@@ -61,7 +59,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         progressDialog = new ProgressDialog(mapActivity);
         File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
         List<File> editedOsmFiles = ODKCollectHandler.getEditedOSM();
-        remainingFiles = xmlFiles.length + editedOsmFiles.size();
+        totalFiles = xmlFiles.length + editedOsmFiles.size();
         
         // load the OSM files in OpenMapKit
         for (int i = 0; i < xmlFiles.length; i++) {
@@ -88,7 +86,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     protected void onPreExecute() {
         super.onPreExecute();
         super.onPreExecute();
-        progressDialog.setTitle("Loading OSM XML");
+        progressDialog.setTitle("Loading OSM Data");
         progressDialog.setMessage("");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setProgress(0);
@@ -138,20 +136,21 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
                 "nodesRead=" + nodesRead + ", " +
                 "waysRead=" + waysRead + ", " +
                 "relationsRead=" + relationsRead);
-        progressDialog.setMessage(fileName);
+        progressDialog.setMessage("Parsing " + (completedFiles + 1) + " of " + totalFiles + " OSM XML Files.");
         progressDialog.setProgress((int)percent);
     }
 
     @Override
     protected void onPostExecute(JTSModel model) {
-        --remainingFiles;
+        ++completedFiles;
         // do this when everything is done loading
-        if (remainingFiles == 0) {
+        if (completedFiles == totalFiles) {
             if(progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
             running = false;
+            completedFiles = 0;
         }
     }
     
