@@ -61,11 +61,11 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             throw new IOException("MAP BUILDER CURRENTLY LOADING!");
         }
         running = true;
-        progressDialog = new ProgressDialog(mapActivity);
+        
         File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
         List<File> editedOsmFiles = ODKCollectHandler.getEditedOSM();
         totalFiles = xmlFiles.length + editedOsmFiles.size();
-        
+
         // load the OSM files in OpenMapKit
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
@@ -79,6 +79,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             OSMMapBuilder builder = new OSMMapBuilder(mapActivity, true);
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
         }
+
+        setupProgressDialog(mapActivity);
     }
 
     private OSMMapBuilder(MapActivity mapActivity, boolean isOSMEdit) {
@@ -88,13 +90,12 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         activeBuilders.add(this);
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        super.onPreExecute();
+    protected static void setupProgressDialog(MapActivity mapActivity) {
+        progressDialog = new ProgressDialog(mapActivity);
         progressDialog.setTitle("Loading OSM Data");
         progressDialog.setMessage("");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//        progressDialog.setProgressNumberFormat("%1d MB / %2d MB");
         progressDialog.setProgress(0);
         progressDialog.setMax(100);
         progressDialog.show();
@@ -174,7 +175,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         fileBytesLoaded = countingInputStream.getCount();
         computeTotalProgress();
         long percent = (long)(((float)totalBytesLoaded / (float)totalFileSizes) * 100);
-        publishProgress(percent, 
+        publishProgress(percent,
                         elementReadCount, 
                         nodeReadCount, 
                         wayReadCount, 
