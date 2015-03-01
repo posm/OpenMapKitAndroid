@@ -89,7 +89,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         super.onPreExecute();
         super.onPreExecute();
         progressDialog.setTitle("Loading OSM XML");
-        progressDialog.setProgressStyle(progressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMessage("");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setProgress(0);
         progressDialog.setMax(100);
         progressDialog.show();
