@@ -35,17 +35,22 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
     private static final float MIN_VECTOR_RENDER_ZOOM = 18;
     
-    private static int totalFiles = -1;
-    private static int completedFiles = 0;
-    private static boolean running = false;
     private static Set<String> loadedOSMFiles = new HashSet<>();
     private static JTSModel jtsModel = new JTSModel();
     private static ProgressDialog progressDialog;
+
+    private static int totalFiles = -1;
+    private static int completedFiles = 0;
+    private static boolean running = false;
+    private static Set<OSMMapBuilder> activeBuilders = new HashSet<>();
+    private static long totalBytesLoaded = -1;
+    private static long totalFileSizes = -1;
 
     private MapActivity mapActivity; 
     private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
+    private long fileBytesLoaded = -1;
     
     // Should be set to true if we are loading edited OSM XML
     private boolean isOSMEdit = false;
@@ -80,6 +85,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         super();
         this.mapActivity = mapActivity;
         this.isOSMEdit = isOSMEdit;
+        activeBuilders.add(this);
     }
 
     @Override
@@ -105,7 +111,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         }
         
         Log.i("BEGIN_PARSING", fileName);
-        fileSize = f.length();
+        setFileSize(f.length());
         try {
             InputStream is = new FileInputStream(f);
             countingInputStream = new CountingInputStream(is);
@@ -145,13 +151,18 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         ++completedFiles;
         // do this when everything is done loading
         if (completedFiles == totalFiles) {
-            if(progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            finishAndResetStaticState();
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
-            running = false;
-            completedFiles = 0;
         }
+    }
+    
+    private void finishAndResetStaticState() {
+        if(progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        running = false;
+        completedFiles = 0;
+        activeBuilders = new HashSet<>();
     }
     
     public void updateFromParser(long elementReadCount, 
@@ -160,7 +171,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
                                  long relationReadCount, 
                                  long tagReadCount) {
         
-        long percent = (long)(((float)countingInputStream.getCount() / (float)fileSize) * 100);
+        fileBytesLoaded = countingInputStream.getCount();
+        computeTotalProgress();
+        long percent = (long)(((float)totalBytesLoaded / (float)totalFileSizes) * 100);
         publishProgress(percent, 
                         elementReadCount, 
                         nodeReadCount, 
@@ -169,9 +182,29 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
                         tagReadCount);
     }
 
+    private void setFileSize(long size) {
+        fileSize = size;
+    }
+    
+    private long getFileSize() {
+        return fileSize;
+    }
+    
+    private long getFileBytesLoaded() {
+        return fileBytesLoaded;
+    }
     
     
-    
+    private static void computeTotalProgress() {
+        totalBytesLoaded = 0;
+        totalFileSizes = 0;
+        for (OSMMapBuilder builder : activeBuilders) {
+            long bytesLoaded = builder.getFileBytesLoaded();
+            long fileSize = builder.getFileSize();
+            totalBytesLoaded += bytesLoaded;
+            totalFileSizes += fileSize;
+        }
+    }
     
 
     /**
