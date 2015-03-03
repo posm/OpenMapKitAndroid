@@ -7,7 +7,6 @@
     tools:context="org.redcross.openmapkit.tagswipe.TagSwipeActivity$PlaceholderFragment">
 
     <TextView android:id="@+id/section_label" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="wtf" />
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

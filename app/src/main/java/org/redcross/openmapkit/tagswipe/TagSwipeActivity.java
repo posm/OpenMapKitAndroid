@@ -144,6 +144,9 @@ public class TagSwipeActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_tag_swipe, container, false);
+
+            ((TextView) rootView.findViewById(R.id.section_label)).setText("test value");
+            
             return rootView;
         }
     }
