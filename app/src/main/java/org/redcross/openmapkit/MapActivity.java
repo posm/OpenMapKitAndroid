@@ -24,6 +24,7 @@ import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
+import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -181,7 +182,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if ( ODKCollectHandler.isStandaloneMode() ) {
-                    showAlertDialog();
+//                    showAlertDialog();
+                    Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                    startActivity(tagSwipe);
                 } else {
                     Intent odkCollectTagIntent = new Intent(getApplicationContext(), ODKCollectTagActivity.class);
                     startActivityForResult(odkCollectTagIntent, ODK_COLLECT_TAG_ACTIVITY_CODE);

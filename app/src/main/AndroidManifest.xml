@@ -52,6 +52,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.redcross.openmapkit.MapActivity" />
         </activity>
+        <activity
+            android:name=".tagswipe.TagSwipeActivity"
+            android:label="@string/title_activity_tag_swipe"
+            android:parentActivityName=".MapActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.redcross.openmapkit.MapActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -43,5 +43,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="odkcollect_tag_instructions">Please fill in values for all of the following OpenStreetMap tags:</string>
     <string name="save_to_odk_collect">Save to ODK Collect</string>
+    <string name="title_activity_tag_swipe">Edit Tags</string>
+
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>
