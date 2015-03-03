@@ -44,6 +44,9 @@ public class ODKCollectData {
     }
 
     private void findEditedOSMForForm(String formFileName) {
+        if (formFileName == null) {
+            return;
+        }
         String instances = new File(instanceDir).getParent();
         File[] instancesDirs = new File(instances).listFiles();
         for (int i = 0; i < instancesDirs.length; ++i) {
