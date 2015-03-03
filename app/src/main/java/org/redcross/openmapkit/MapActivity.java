@@ -11,8 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -28,12 +32,16 @@ import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
     private MapView mapView;
     private Button tagsButton;
     private String mSelectedMBTilesFile;
+    private ListView mTagListView;
+    private LinearLayout mTagLinearLayout;
+    private TextView mTagTextView;
 
     /**
      * intent request codes
@@ -83,6 +91,37 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         mapView.setCenter(initialCoordinate);
         mapView.setZoom(19);
         mapView.setMaxZoomLevel(21);
+
+        //
+        initializeListView();
+    }
+
+    /**
+     * For initializing the ListView of tags
+     */
+    private void initializeListView() {
+
+        //the layout the ListView is nested in
+        mTagLinearLayout = (LinearLayout)findViewById(R.id.tagListViewLayout);
+
+        //the ListView
+        mTagListView = (ListView)findViewById(R.id.tagListView);
+
+        //the ListView title
+        mTagTextView = (TextView)findViewById(R.id.tagTextView);
+        mTagTextView.setText("Tags");
+
+        List<String> list = new ArrayList<String>();
+        list.add("Building:");
+        list.add("Shelter:");
+        list.add("Source:");
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                list);
+
+        mTagListView.setAdapter(arrayAdapter);
     }
 
     /**
