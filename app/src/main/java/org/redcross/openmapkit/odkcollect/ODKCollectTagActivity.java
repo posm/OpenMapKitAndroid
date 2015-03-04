@@ -18,8 +18,8 @@ import com.spatialdev.osm.model.OSMElement;
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,7 +88,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
          * * *
          */
         private OSMElement osmElement;
-        private List<ODKTag> requiredTags;
+        private Collection<ODKTag> requiredTags;
         private Map<String, String> tags;
 
         /**

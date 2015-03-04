@@ -7,12 +7,15 @@ import com.spatialdev.osm.model.OSMXmlWriter;
 
 import org.redcross.openmapkit.ExternalStorage;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -25,7 +28,7 @@ public class ODKCollectData {
     private String formId;
     private String instanceId;
     private String instanceDir;
-    private List<ODKTag> requiredTags;
+    private LinkedHashMap<String, ODKTag> requiredTags;
     private List<File> editedOSM = new ArrayList<>();
     
     private String editedXml;
@@ -35,8 +38,8 @@ public class ODKCollectData {
     public ODKCollectData ( String formId, 
                             String formFileName,
                             String instanceId, 
-                            String instanceDir, 
-                            List<ODKTag> requiredTags ) {
+                            String instanceDir,
+                            LinkedHashMap<String, ODKTag> requiredTags ) {
         this.formId = formId;
         this.instanceId = instanceId;
         this.instanceDir = instanceDir;
@@ -85,8 +88,38 @@ public class ODKCollectData {
         return instanceDir;
     }
 
-    public List<ODKTag> getRequiredTags() {
-        return requiredTags;
+    public Collection<ODKTag> getRequiredTags() {
+        return requiredTags.values();
+    }
+
+    /**
+     * Returns the ODK defined label for a OSM tag key if exists
+     * * * 
+     * @param key
+     * @return
+     */
+    public String getTagKeyLabel(String key) {
+        ODKTag tag = requiredTags.get(key);
+        if (tag != null) {
+            return tag.getLabel();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the ODK defined label for an OSM tag value if exists
+     * * * 
+     * @param key
+     * @param value
+     * @return
+     */
+    public String getTagValueLabel(String key, String value) {
+        ODKTag tag = requiredTags.get(key);
+        if (tag != null) {
+            ODKTagItem item = tag.getItem(value);
+            return item.getLabel();
+        }
+        return null;
     }
     
     public void consumeOSMElement(OSMElement el) throws IOException {

@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 /**
  *	Structure for ODK OSM Tag elements in XForm.
@@ -14,7 +14,7 @@ import java.util.List;
 public class ODKTag {
     private String key;
     private String label;
-    private List<ODKTagItem> items = new ArrayList<>();
+    private LinkedHashMap<String, ODKTagItem> items = new LinkedHashMap<>();
 
     public String getKey() {
         return key;
@@ -27,17 +27,21 @@ public class ODKTag {
     public String getLabel() {
         return label;
     }
+    
+    public ODKTagItem getItem(String value) {
+        return items.get(value);        
+    }
+    
+    public Collection<ODKTagItem> getItems() {
+        return items.values();
+    }
 
     public void setLabel(String label) {
         this.label = label;
     }
 
-    public List<ODKTagItem> getItems() {
-        return items;
-    }
-
     public void addItem(ODKTagItem item) {
-        items.add(item);
+        items.put(item.getValue(), item);
     }
 
     public TextView createTagKeyTextView(Activity activity) {

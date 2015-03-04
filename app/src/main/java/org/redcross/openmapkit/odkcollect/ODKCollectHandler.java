@@ -11,6 +11,7 @@ import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class ODKCollectHandler {
                     String formFileName = extras.getString("FORM_FILE_NAME");
                     String instanceId = extras.getString("INSTANCE_ID");
                     String instanceDir = extras.getString("INSTANCE_DIR");
-                    List<ODKTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
+                    LinkedHashMap<String, ODKTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
                     odkCollectData = new ODKCollectData(formId, formFileName, instanceId, instanceDir, requiredTags);
                 } 
             }
@@ -74,15 +75,15 @@ public class ODKCollectHandler {
         return null;
     }
     
-    private static List<ODKTag> generateRequiredOSMTagsFromBundle(Bundle extras) {
+    private static LinkedHashMap<String, ODKTag> generateRequiredOSMTagsFromBundle(Bundle extras) {
         List<String> tagKeys = extras.getStringArrayList("TAG_KEYS");
         if (tagKeys == null || tagKeys.size() == 0) {
             return null;
         }
-        List<ODKTag> tags = new ArrayList<>();
+        LinkedHashMap<String, ODKTag> tags = new LinkedHashMap<>();
         for (String key : tagKeys) {
             ODKTag tag = new ODKTag();
-            tags.add(tag);
+            tags.put(key, tag);
             tag.setKey(key);
             String label = extras.getString("TAG_LABEL." + key);
             if (label != null) {

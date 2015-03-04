@@ -46,6 +46,13 @@ public abstract class OSMElement {
     protected Map<String, String> tags = new LinkedHashMap<>();
 
     /**
+     * This can be used to keep track of which tag is currently selected in a tag editor
+     * like OpenMapKit.
+     * * * 
+     */
+    protected String selectedTag;
+
+    /**
      * These tags are the original tags in the data set. This SHOULD NOT BE MODIFIED. 
      */
     protected Map<String, String> originalTags = new LinkedHashMap<>();
@@ -158,6 +165,15 @@ public abstract class OSMElement {
         xmlSerializer.attribute(null, "version", String.valueOf(version));
         xmlSerializer.attribute(null, "changeset", String.valueOf(changeset));
         xmlSerializer.attribute(null, "timestamp", timestamp);
+    }
+
+    /**
+     * Maintains state over which tag is selected in a tag editor UI
+     * * * 
+     * @param tagKey
+     */
+    public void selectTag(String tagKey) {
+        selectedTag = tagKey;
     }
     
     /**
