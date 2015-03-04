@@ -1,10 +1,88 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.redcross.openmapkit.tagswipe.SelectOneTagValueFragment">
+    tools:context="org.redcross.openmapkit.tagswipe.StringTagValueFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="What type of road is this?"
+            android:id="@+id/tagKeyLabel" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="highway"
+            android:id="@+id/tagKey"
+            android:textStyle="italic" />
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="@dimen/abc_text_size_large_material" />
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/selectOneTagValueRadioGroup">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Road in a residential area"
+                android:id="@+id/radioButton"
+                android:checked="true" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Generally for access to a building, motorway service station, beach, campsite..."
+                android:id="@+id/radioButton2"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Roads for agricultural use, gravel roads in the forest etc."
+                android:id="@+id/radioButton3"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Public access road, non-residential."
+                android:id="@+id/radioButton4"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Urban paths designated for pedestrians only."
+                android:id="@+id/radioButton5"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A road linking small settlements, or the local centres of a large town or city."
+                android:id="@+id/radioButton6"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A generic multi-use path open to non-motorized vehicles."
+                android:id="@+id/radioButton7"
+                android:checked="false" />
+        </RadioGroup>
+
+    </LinearLayout>
 
 </FrameLayout>

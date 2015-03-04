@@ -50,7 +50,4 @@
     <string name="title_section2">lanes</string>
     <string name="title_section3">oneway</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
 </resources>
