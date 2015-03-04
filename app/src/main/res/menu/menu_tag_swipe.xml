@@ -2,6 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.redcross.openmapkit.tagswipe.TagSwipeActivity">
+    <item android:id="@+id/action_save_to_odk_collect"
+        android:title="@string/save_to_odk_collect"
+        app:showAsAction="always" />
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>
