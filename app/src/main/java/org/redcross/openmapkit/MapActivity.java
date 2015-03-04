@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -231,7 +230,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if ( ODKCollectHandler.isStandaloneMode() ) {
-//                    showAlertDialog();
                     Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
                     startActivity(tagSwipe);
                 } else {
@@ -243,40 +241,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         
     }
 
-    public void showAlertDialog() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle(R.string.tagPromptTitle);
-
-        builder.setItems(R.array.editoptions, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int which) {
-
-                switch(which) {
-                    case 0:
-
-                        Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
-                        startActivity(editTagIntent);
-                        break;
-
-                    case 1:
-
-                        Intent createTagIntent = new Intent(getApplicationContext(), TagCreatorActivity.class);
-                        startActivity(createTagIntent);
-                        break;
-
-                    default:
-
-                        break;
-                }
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-
-        dialog.show();
-    }
 
     /**
      * For presenting a dialog to allow the user to choose which MBTILES file to use that has been uploaded to their device/s openmapkit/mbtiles folder
