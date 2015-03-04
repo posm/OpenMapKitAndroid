@@ -1,4 +1,4 @@
-package org.redcross.openmapkit.odkcollect.osmtag;
+package org.redcross.openmapkit.odkcollect.tag;
 
 import android.app.Activity;
 import android.widget.EditText;
@@ -8,14 +8,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *	Structure for OSM Tag elements in XForm.
+ *	Structure for ODK OSM Tag elements in XForm.
  *  Created by Nicholas Hallahan nhallahan@spatialdev.com
  */
-public class OSMTag {
-    public String key;
-    public String label;
-    public List<OSMTagItem> items = new ArrayList<>();
-    
+public class ODKTag {
+    private String key;
+    private String label;
+    private List<ODKTagItem> items = new ArrayList<>();
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public List<ODKTagItem> getItems() {
+        return items;
+    }
+
+    public void addItem(ODKTagItem item) {
+        items.add(item);
+    }
+
     public TextView createTagKeyTextView(Activity activity) {
         TextView tv = new TextView(activity);
         if (label != null) {

@@ -5,8 +5,8 @@ import android.os.Bundle;
 
 import com.spatialdev.osm.model.OSMElement;
 
-import org.redcross.openmapkit.odkcollect.osmtag.OSMTag;
-import org.redcross.openmapkit.odkcollect.osmtag.OSMTagItem;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class ODKCollectHandler {
                     String formFileName = extras.getString("FORM_FILE_NAME");
                     String instanceId = extras.getString("INSTANCE_ID");
                     String instanceDir = extras.getString("INSTANCE_DIR");
-                    List<OSMTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
+                    List<ODKTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
                     odkCollectData = new ODKCollectData(formId, formFileName, instanceId, instanceDir, requiredTags);
                     odkCollectMode = true; // things are good, be in ODK Collect mode
                 } 
@@ -60,7 +60,7 @@ public class ODKCollectHandler {
         return odkCollectData;
     }
     
-    public static List<OSMTag> getRequiredTags() throws NoSuchFieldError {
+    public static List<ODKTag> getRequiredTags() throws NoSuchFieldError {
         if (odkCollectData == null) {
             throw new NoSuchFieldError("We have no data from ODK Collect!");
         }
@@ -95,29 +95,29 @@ public class ODKCollectHandler {
         return odkCollectData.getOSMFileName();
     }
     
-    private static List<OSMTag> generateRequiredOSMTagsFromBundle(Bundle extras) {
+    private static List<ODKTag> generateRequiredOSMTagsFromBundle(Bundle extras) {
         List<String> tagKeys = extras.getStringArrayList("TAG_KEYS");
         if (tagKeys == null || tagKeys.size() == 0) {
             return null;
         }
-        List<OSMTag> tags = new ArrayList<>();
+        List<ODKTag> tags = new ArrayList<>();
         for (String key : tagKeys) {
-            OSMTag tag = new OSMTag();
+            ODKTag tag = new ODKTag();
             tags.add(tag);
-            tag.key = key;
+            tag.setKey(key);
             String label = extras.getString("TAG_LABEL." + key);
             if (label != null) {
-                tag.label = label;
+                tag.setLabel(label);
             }
             List<String> values = extras.getStringArrayList("TAG_VALUES." + key);
             if (values != null && values.size() > 0) {
                 for (String value : values) {
-                    OSMTagItem tagItem = new OSMTagItem();
-                    tag.items.add(tagItem);
-                    tagItem.value = value;
+                    ODKTagItem tagItem = new ODKTagItem();
+                    tag.addItem(tagItem);
+                    tagItem.setValue(value);
                     String valueLabel = extras.getString("TAG_VALUE_LABEL." + key + "." + value);
                     if (valueLabel != null) {
-                        tagItem.label = valueLabel;
+                        tagItem.setLabel(valueLabel);
                     }
                 }
             }
