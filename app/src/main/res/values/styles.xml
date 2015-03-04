@@ -2,7 +2,18 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/OpenMapKitActionBar</item>
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/OpenMapKitActionBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="OpenMapKitActionBar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/actionbar</item>
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/actionbar</item>
     </style>
 
     <style name="TagLabelTextView">

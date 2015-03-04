@@ -1,0 +1,150 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.redcross.openmapkit.tagswipe.StringTagValueFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="What type of establishment is this?"
+            android:id="@+id/tagKeyLabel" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="amenity"
+            android:id="@+id/tagKey"
+            android:textStyle="italic" />
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="@dimen/abc_text_size_large_material" />
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/scrollView" >
+
+            <RadioGroup
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/selectOneTagValueRadioGroup">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="School"
+                    android:id="@+id/radioButton"
+                    android:checked="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="school"
+                    android:id="@+id/textView2"
+                    android:paddingLeft="35dp"
+                    android:paddingBottom="10dp"
+                    android:textStyle="italic" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Restaurant"
+                    android:id="@+id/radioButton2"
+                    android:checked="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="restaurant"
+                    android:id="@+id/textView3"
+                    android:paddingLeft="35dp"
+                    android:paddingBottom="10dp"
+                    android:textStyle="italic" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bank Branch / ATM"
+                    android:id="@+id/radioButton3"
+                    android:checked="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="bank"
+                    android:id="@+id/textView4"
+                    android:paddingLeft="35dp"
+                    android:paddingBottom="10dp"
+                    android:textStyle="italic" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fast Food Restaurant"
+                    android:id="@+id/radioButton4"
+                    android:checked="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="fast_food"
+                    android:id="@+id/textView5"
+                    android:paddingLeft="35dp"
+                    android:paddingBottom="10dp"
+                    android:textStyle="italic" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hospital / Clinic"
+                    android:id="@+id/radioButton5"
+                    android:checked="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="hosptial"
+                    android:id="@+id/textView6"
+                    android:paddingLeft="35dp"
+                    android:paddingBottom="10dp"
+                    android:textStyle="italic" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Police Station"
+                    android:id="@+id/radioButton6"
+                    android:checked="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="police"
+                    android:id="@+id/textView7"
+                    android:paddingLeft="35dp"
+                    android:paddingBottom="10dp"
+                    android:textStyle="italic" />
+
+            </RadioGroup>
+        </ScrollView>
+
+    </LinearLayout>
+
+</FrameLayout>

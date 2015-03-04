@@ -16,10 +16,10 @@ import android.widget.TextView;
 import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.R;
-import org.redcross.openmapkit.odkcollect.osmtag.OSMTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,7 +88,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
          * * *
          */
         private OSMElement osmElement;
-        private List<OSMTag> requiredTags;
+        private Collection<ODKTag> requiredTags;
         private Map<String, String> tags;
 
         /**
@@ -127,15 +127,15 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         }
         
         private void insertRequiredOSMTags() {
-            requiredTags = ODKCollectHandler.getRequiredTags();
+            requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
             int row = 1; // The first row in the GridView is the instructions.
-            for (OSMTag reqTag : requiredTags) {
-                String initialTagVal = tags.get(reqTag.key);
+            for (ODKTag reqTag : requiredTags) {
+                String initialTagVal = tags.get(reqTag.getKey());
                 insertTagKeyAndValueForRow(row++, reqTag, initialTagVal);
             }
         }
         
-        private void insertTagKeyAndValueForRow(int row, OSMTag reqTag, String initialTagVal) {
+        private void insertTagKeyAndValueForRow(int row, ODKTag reqTag, String initialTagVal) {
             Activity activity = getActivity();
 
             TextView keyTextView = reqTag.createTagKeyTextView(activity);
@@ -152,7 +152,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
             params2.width = GridLayout.LayoutParams.MATCH_PARENT;
             tagValueTextView.setLayoutParams(params2);
             gridLayout.addView(tagValueTextView);
-            tagEditTextHash.put(reqTag.key, tagValueTextView);
+            tagEditTextHash.put(reqTag.getKey(), tagValueTextView);
         }
 
         /**

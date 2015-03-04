@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -28,6 +31,7 @@ import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
+import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,6 +55,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(android.os.Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.osm_light_green));
+        }
 
         // create directory structure for app if needed
         ExternalStorage.checkOrCreateAppDirs();
@@ -220,7 +231,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if ( ODKCollectHandler.isStandaloneMode() ) {
-                    showAlertDialog();
+//                    showAlertDialog();
+                    Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                    startActivity(tagSwipe);
                 } else {
                     Intent odkCollectTagIntent = new Intent(getApplicationContext(), ODKCollectTagActivity.class);
                     startActivityForResult(odkCollectTagIntent, ODK_COLLECT_TAG_ACTIVITY_CODE);
@@ -273,9 +286,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //fetch names of all files in mbtiles folder
         final ArrayList<String> mbtilesFileNames = new ArrayList<>();
         File[] mbtiles = ExternalStorage.fetchMBTilesFiles();
-        for (File file : mbtiles) {
-            String fileName = file.getName();
-            mbtilesFileNames.add(fileName);
+        if (mbtiles != null && mbtiles.length > 0) {
+            for (File file : mbtiles) {
+                String fileName = file.getName();
+                mbtilesFileNames.add(fileName);
+            }
         }
 
         if(mbtilesFileNames.size() > 0) {
@@ -442,7 +457,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             if(resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 String osmXmlFileFullPath = extras.getString("OSM_PATH");
-                String osmXmlFileName = ODKCollectHandler.getOSMFileName();
+                String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
                 resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
