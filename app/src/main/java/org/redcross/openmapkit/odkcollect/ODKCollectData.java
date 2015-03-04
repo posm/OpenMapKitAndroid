@@ -5,6 +5,7 @@ import android.os.Environment;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
 
+import org.redcross.openmapkit.ExternalStorage;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 
 import java.io.File;
@@ -114,19 +115,10 @@ public class ODKCollectData {
     public String getOSMFileFullPath() {
         return instanceDir + "/" + getOSMFileName();
     }
-    
-    
-    /* Checks if external storage is available for read and write */
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
+
     
     private boolean isODKCollectInstanceDirectoryAvailable() {
-        if ( ! isExternalStorageWritable() ) {
+        if ( ! ExternalStorage.isWritable() ) {
             return false;
         }
         File dir = new File(instanceDir);
