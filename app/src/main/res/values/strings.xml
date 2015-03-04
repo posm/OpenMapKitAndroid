@@ -47,7 +47,7 @@
 
 
     <string name="title_section1">name</string>
-    <string name="title_section2">lanes</string>
-    <string name="title_section3">oneway</string>
+    <string name="title_section2">amenity</string>
+    <string name="title_section3">building:levels</string>
 
 </resources>
