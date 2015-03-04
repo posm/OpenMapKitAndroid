@@ -32,7 +32,7 @@ import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -92,7 +92,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         mapView.setZoom(19);
         mapView.setMaxZoomLevel(21);
 
-        //
+        //initial setup of the list view for tags
         initializeListView();
     }
 
@@ -110,17 +110,35 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //the ListView title
         mTagTextView = (TextView)findViewById(R.id.tagTextView);
         mTagTextView.setText("Tags");
+    }
 
-        List<String> list = new ArrayList<String>();
-        list.add("Building:");
-        list.add("Shelter:");
-        list.add("Source:");
+    /**
+     * For identifying an OSM element and presenting it's tags in the ListView
+     * @param osmElement The target OSMElement.
+     */
+    private void identifyOSMFeature(OSMElement osmElement) {
 
+        //derive an array list
+        ArrayList<String> list = new ArrayList<String>();
+
+        Map<String, String> tagMap = osmElement.getTags();
+        for (Map.Entry<String, String> entry : tagMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            list.add(key + " | " + value);
+        }
+
+        //
+        Log.e("test", list.toString());
+
+        //create adapter for the ListView
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.simple_list_item_1,
                 list);
 
+        //pass the adapter to the ListView
         mTagListView.setAdapter(arrayAdapter);
     }
 
@@ -424,11 +442,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
             tagsButton.setVisibility(View.VISIBLE);
+
+            //fetch the tapped feature
+            OSMElement tappedOSMElement = selectedElements.get(0);
+
+            identifyOSMFeature(tappedOSMElement);
+
         } else {
             tagsButton.setVisibility(View.INVISIBLE);
         }
     }
-
 
     /**
      * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
