@@ -1,27 +1,51 @@
 package org.redcross.openmapkit.tagswipe;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.odkcollect.ODKCollectData;
+import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 public class TagSwipeActivity extends ActionBarActivity {
 
+    /**
+     * MODEL FIELDS
+     * * *
+     */
+    private OSMElement osmElement;
+    private Map<String, String> tags;
+    private Map<String, String> editedTags;
+
+    /**
+     * ODK FIELDS
+     * * *
+     */
+    private boolean odkCollectMode;
+    private ODKCollectData odkCollectData;
+
+    
+    private void setupModel() {
+        osmElement = OSMElement.getSelectedElements().getFirst();
+        tags = osmElement.getTags();
+        editedTags = new HashMap<>();
+        odkCollectMode = ODKCollectHandler.isODKCollectMode();
+        odkCollectData = ODKCollectHandler.getODKCollectData();
+    }
+    
+    
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -42,7 +66,8 @@ public class TagSwipeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag_swipe);
 
-
+        setupModel();
+        
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
