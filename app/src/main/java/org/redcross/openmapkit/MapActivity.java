@@ -418,7 +418,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             if(resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 String osmXmlFileFullPath = extras.getString("OSM_PATH");
-                String osmXmlFileName = ODKCollectHandler.getOSMFileName();
+                String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
                 resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);

@@ -127,7 +127,7 @@ public class ODKCollectTagActivity extends ActionBarActivity {
         }
         
         private void insertRequiredOSMTags() {
-            requiredTags = ODKCollectHandler.getRequiredTags();
+            requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
             int row = 1; // The first row in the GridView is the instructions.
             for (ODKTag reqTag : requiredTags) {
                 String initialTagVal = tags.get(reqTag.getKey());

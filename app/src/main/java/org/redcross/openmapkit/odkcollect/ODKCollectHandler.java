@@ -20,14 +20,9 @@ import java.util.List;
  */
 public class ODKCollectHandler {
 
-    // Set to true if we are working with ODK Collect and interacting with intentions.
-    private static boolean odkCollectMode = false;
-    
-    private static Intent intent;
     private static ODKCollectData odkCollectData;
     
-    public static void registerIntent(Intent i) {
-        intent = i;
+    public static void registerIntent(Intent intent) {
         if(intent.getAction().equals("android.intent.action.SEND")) {
             if (intent.getType().equals("text/plain")) {
                 Bundle extras = intent.getExtras();
@@ -39,39 +34,27 @@ public class ODKCollectHandler {
                     String instanceDir = extras.getString("INSTANCE_DIR");
                     List<ODKTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
                     odkCollectData = new ODKCollectData(formId, formFileName, instanceId, instanceDir, requiredTags);
-                    odkCollectMode = true; // things are good, be in ODK Collect mode
                 } 
             }
         }
     }
     
-    public static boolean isOdkCollectMode() {
-        return odkCollectMode;
+    public static boolean isODKCollectMode() {
+        if (odkCollectData != null) {
+            return true;
+        }
+        return false;
     }
     
     public static boolean isStandaloneMode() {
-        return ! odkCollectMode;
+        if (odkCollectData == null) {
+            return true;
+        }
+        return false;
     }
     
-    public static ODKCollectData getOdkCollectData() throws NoSuchFieldError {
-        if (odkCollectData == null) {
-            throw new NoSuchFieldError("We have no data from ODK Collect!");
-        }
+    public static ODKCollectData getODKCollectData() {
         return odkCollectData;
-    }
-    
-    public static List<ODKTag> getRequiredTags() throws NoSuchFieldError {
-        if (odkCollectData == null) {
-            throw new NoSuchFieldError("We have no data from ODK Collect!");
-        }
-        return odkCollectData.getRequiredTags();
-    }
-    
-    public static List<File> getEditedOSM() {
-        if (odkCollectData == null) {
-            return new ArrayList<>();
-        }
-        return odkCollectData.getEditedOSM();
     }
 
     /**
@@ -89,10 +72,6 @@ public class ODKCollectHandler {
             e.printStackTrace();
         }
         return null;
-    }
-    
-    public static String getOSMFileName() {
-        return odkCollectData.getOSMFileName();
     }
     
     private static List<ODKTag> generateRequiredOSMTagsFromBundle(Bundle extras) {

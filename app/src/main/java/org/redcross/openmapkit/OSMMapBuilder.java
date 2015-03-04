@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
 
+import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 /**
@@ -63,8 +64,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         running = true;
         
         File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
-        List<File> editedOsmFiles = ODKCollectHandler.getEditedOSM();
-        totalFiles = xmlFiles.length + editedOsmFiles.size();
+        totalFiles = xmlFiles.length;
 
         // load the OSM files in OpenMapKit
         for (int i = 0; i < xmlFiles.length; i++) {
@@ -73,11 +73,15 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 //            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
         }
-        
+
         // load the edited OSM files in ODK Collect
-        for (File f : editedOsmFiles) {
-            OSMMapBuilder builder = new OSMMapBuilder(mapActivity, true);
-            builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
+        if (ODKCollectHandler.isODKCollectMode()) {
+            List<File> editedOsmFiles = ODKCollectHandler.getODKCollectData().getEditedOSM();
+            totalFiles += editedOsmFiles.size();
+            for (File f : editedOsmFiles) {
+                OSMMapBuilder builder = new OSMMapBuilder(mapActivity, true);
+                builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
+            }
         }
 
         setupProgressDialog(mapActivity);
