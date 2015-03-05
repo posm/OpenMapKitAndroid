@@ -1,6 +1,6 @@
 package org.redcross.openmapkit.tagswipe;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import android.support.v7.app.ActionBarActivity;
@@ -16,13 +16,23 @@ import org.redcross.openmapkit.R;
 
 public class TagSwipeActivity extends ActionBarActivity {
 
-    private List<TagEdit> tagEdits;
+    private LinkedHashMap<String, TagEdit> tagEditHash;
+    private TagEdit[] tagEdits;
 
     
     private void setupModel() {
-        tagEdits = TagEdit.buildTagEditList();
+        tagEditHash = TagEdit.buildTagEditHash();
+        tagEdits = tagEditHash.values().toArray(new TagEdit[tagEditHash.size()]);
     }
     
+    private int getIndexForTagKey(String key) {
+        TagEdit tagEdit = tagEditHash.get(key);
+        if (tagEdit != null) {
+            return tagEdit.getIndex();
+        }
+        // If its not there, just go to the first TagEdit
+        return 0;
+    }
     
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -53,9 +63,16 @@ public class TagSwipeActivity extends ActionBarActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
+    
+        pageToCorrectTag();
     }
 
+    private void pageToCorrectTag() {
+        String tagKey = getIntent().getStringExtra("TAG_KEY");
+        if (tagKey == null) return;
+        int idx = getIndexForTagKey(tagKey);
+        mViewPager.setCurrentItem(idx);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,7 +109,7 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            TagEdit tagEdit = tagEdits.get(position);
+            TagEdit tagEdit = tagEdits[position];
             if (tagEdit != null) {
                 if (tagEdit.isReadOnly()) {
                     return ReadOnlyTagFragment.newInstance("FOSS", "4GIS");
@@ -107,13 +124,13 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            return tagEdits.size();
+            return tagEdits.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
-            TagEdit tagEdit = tagEdits.get(position);
+            TagEdit tagEdit = tagEdits[position];
             if (tagEdit != null) {
                 return tagEdit.getTitle();
             }

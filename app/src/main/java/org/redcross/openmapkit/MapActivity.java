@@ -230,6 +230,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                tagSwipe.putExtra("TAG_KEY", "name");
                 startActivity(tagSwipe);
             }
         });
