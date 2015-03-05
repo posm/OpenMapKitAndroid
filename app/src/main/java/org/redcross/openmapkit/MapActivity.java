@@ -169,11 +169,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                //fetch the key associated with the list view cell the user tapped
                 TextView tagKeyTextView = (TextView)view.findViewById(R.id.textViewTagKey);
-
                 String tappedKey = String.valueOf(tagKeyTextView.getText());
 
-                Log.d("placeholder", "User tapped on item at position " + String.valueOf(position) + " for key: " + tappedKey);
+                //launch the TagSwipeActivity and pass the key
+                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                tagSwipe.putExtra("TAG_KEY", tappedKey);
+                startActivity(tagSwipe);
             }
         });
     }
