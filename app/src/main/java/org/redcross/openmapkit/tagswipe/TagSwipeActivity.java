@@ -92,12 +92,17 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            if (position == 0) {
-                return StringTagValueFragment.newInstance("string won", "string too");
-            } else {
-                return SelectOneTagValueFragment.newInstance("string won", "string too");
+            TagEdit tagEdit = tagEdits.get(position);
+            if (tagEdit != null) {
+                if (tagEdit.isReadOnly()) {
+                    return ReadOnlyTagFragment.newInstance("FOSS", "4GIS");
+                } else if (tagEdit.isSelectOne()) {
+                    return SelectOneTagValueFragment.newInstance("string won", "string too");
+                } else {
+                    return StringTagValueFragment.newInstance();
+                }
             }
+            return null;
         }
 
         @Override

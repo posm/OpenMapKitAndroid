@@ -80,4 +80,13 @@ public class TagEdit {
     public boolean isReadOnly() {
         return readOnly;
     }
+    
+    public boolean isSelectOne() {
+        if ( !readOnly &&
+                odkTag != null &&
+                odkTag.getItems().size() > 0 ) {
+            return true;
+        }
+        return false;
+    }
 }
