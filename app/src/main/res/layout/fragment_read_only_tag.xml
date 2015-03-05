@@ -3,8 +3,51 @@
     android:layout_height="match_parent"
     tools:context="org.redcross.openmapkit.tagswipe.ReadOnlyTagFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="What type of establishment is this?"
+            android:id="@+id/tagKeyLabel" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="amenity"
+            android:id="@+id/tagKey"
+            android:textStyle="italic" />
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="@dimen/abc_text_size_large_material" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Pub"
+            android:id="@+id/textView"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="pub"
+            android:id="@+id/textView8"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="italic" />
+
+
+    </LinearLayout>
 
 </FrameLayout>
