@@ -2,9 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MapActivity">
 
+    <!--
     <item android:id="@+id/osmsettings"
         android:title="@string/action_osmsettings"
-        app:showAsAction="never" />
+        app:showAsAction="never" /> -->
 
     <item android:id="@+id/mbtilessettings"
         android:title="@string/action_mbtilessettings"

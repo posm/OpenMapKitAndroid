@@ -13,12 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
 import android.view.View;
-
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
-
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -497,18 +494,21 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.osmsettings) {
 
-            presentOSMOptions();
-
-            return true;
-        }
-        else if (id == R.id.mbtilessettings) {
+        if (id == R.id.mbtilessettings) {
 
             presentMBTilesOptions();
 
             return true;
         }
+        /*
+         else if (id == R.id.osmsettings) {
+
+            presentOSMOptions();
+
+            return true;
+         }
+        */
 
         return super.onOptionsItemSelected(item);
     }
