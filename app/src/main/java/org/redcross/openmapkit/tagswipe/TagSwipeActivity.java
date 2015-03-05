@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 
 import android.support.v7.app.ActionBarActivity;
@@ -16,23 +17,13 @@ import org.redcross.openmapkit.R;
 
 public class TagSwipeActivity extends ActionBarActivity {
 
-    private LinkedHashMap<String, TagEdit> tagEditHash;
-    private TagEdit[] tagEdits;
+    private List<TagEdit> tagEdits;
 
     
     private void setupModel() {
-        tagEditHash = TagEdit.buildTagEditHash();
-        tagEdits = tagEditHash.values().toArray(new TagEdit[tagEditHash.size()]);
+        tagEdits = TagEdit.buildTagEdits();
     }
-    
-    private int getIndexForTagKey(String key) {
-        TagEdit tagEdit = tagEditHash.get(key);
-        if (tagEdit != null) {
-            return tagEdit.getIndex();
-        }
-        // If its not there, just go to the first TagEdit
-        return 0;
-    }
+
     
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -70,7 +61,7 @@ public class TagSwipeActivity extends ActionBarActivity {
     private void pageToCorrectTag() {
         String tagKey = getIntent().getStringExtra("TAG_KEY");
         if (tagKey == null) return;
-        int idx = getIndexForTagKey(tagKey);
+        int idx = TagEdit.getIndexForTagKey(tagKey);
         mViewPager.setCurrentItem(idx);
     }
 
@@ -109,14 +100,14 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            TagEdit tagEdit = tagEdits[position];
+            TagEdit tagEdit = tagEdits.get(position);
             if (tagEdit != null) {
                 if (tagEdit.isReadOnly()) {
-                    return ReadOnlyTagFragment.newInstance("FOSS", "4GIS");
+                    return ReadOnlyTagFragment.newInstance(position);
                 } else if (tagEdit.isSelectOne()) {
-                    return SelectOneTagValueFragment.newInstance("string won", "string too");
+                    return SelectOneTagValueFragment.newInstance(position);
                 } else {
-                    return StringTagValueFragment.newInstance();
+                    return StringTagValueFragment.newInstance(position);
                 }
             }
             return null;
@@ -124,13 +115,13 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            return tagEdits.length;
+            return tagEdits.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
-            TagEdit tagEdit = tagEdits[position];
+            TagEdit tagEdit = tagEdits.get(position);
             if (tagEdit != null) {
                 return tagEdit.getTitle();
             }

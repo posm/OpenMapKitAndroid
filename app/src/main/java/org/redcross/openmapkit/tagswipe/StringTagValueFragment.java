@@ -12,12 +12,18 @@ import org.redcross.openmapkit.R;
 
 public class StringTagValueFragment extends Fragment {
 
+    private static final String IDX = "IDX";
 
+    private TagEdit tagEdit;
+    
     private OnFragmentInteractionListener mListener;
 
 
-    public static StringTagValueFragment newInstance() {
+    public static StringTagValueFragment newInstance(int idx) {
         StringTagValueFragment fragment = new StringTagValueFragment();
+        Bundle args = new Bundle();
+        args.putInt(IDX, idx);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -28,6 +34,10 @@ public class StringTagValueFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            int idx = getArguments().getInt(IDX);
+            tagEdit = TagEdit.getTag(idx);
+        }
     }
 
     @Override

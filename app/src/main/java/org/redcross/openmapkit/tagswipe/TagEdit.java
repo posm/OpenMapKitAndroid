@@ -6,9 +6,11 @@ import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +21,8 @@ import java.util.Set;
  */
 public class TagEdit {
 
-    private static LinkedHashMap<String, TagEdit> tagEdits;
+    private static LinkedHashMap<String, TagEdit> tagEditHash;
+    private static List<TagEdit> tagEdits;
     
     private String tagKey;
     private String tagVal;
@@ -27,9 +30,10 @@ public class TagEdit {
     private boolean readOnly;
     private int idx = -1;
     
-    public static LinkedHashMap<String, TagEdit> buildTagEditHash() {
+    public static List<TagEdit> buildTagEdits() {
         int idx = 0;
-        tagEdits = new LinkedHashMap<>();
+        tagEditHash = new LinkedHashMap<>();
+        tagEdits = new ArrayList<>();
         OSMElement osmElement = OSMElement.getSelectedElements().getFirst();
         Map<String, String> tags = osmElement.getTags();
         
@@ -41,13 +45,15 @@ public class TagEdit {
             for (ODKTag odkTag : requiredTags) {
                 String tagKey = odkTag.getKey();
                 TagEdit tagEdit = new TagEdit(tagKey, tags.get(tagKey), odkTag, false, idx++);
-                tagEdits.put(tagKey, tagEdit);
+                tagEditHash.put(tagKey, tagEdit);
+                tagEdits.add(tagEdit);
                 readOnlyTags.remove(tagKey);
             }
             Set<String> readOnlyKeys = readOnlyTags.keySet();
             for (String readOnlyKey : readOnlyKeys) {
                 TagEdit tagEdit = new TagEdit(readOnlyKey, readOnlyTags.get(readOnlyKey), true, idx++);
-                tagEdits.put(readOnlyKey, tagEdit);
+                tagEditHash.put(readOnlyKey, tagEdit);
+                tagEdits.add(tagEdit);
             }
         }
         
@@ -56,15 +62,29 @@ public class TagEdit {
             Set<String> keys = tags.keySet();
             for (String key : keys) {
                 TagEdit tagEdit = new TagEdit(key, tags.get(key), false, idx++);
-                tagEdits.put(key, tagEdit);
+                tagEditHash.put(key, tagEdit);
+                tagEdits.add(tagEdit);
             }
         }
         
         return tagEdits;
     }
     
-    public static LinkedHashMap<String, TagEdit> getTagEdits() {
-        return tagEdits;
+    public static TagEdit getTag(int idx) {
+        return tagEdits.get(idx);
+    }
+    
+    public static TagEdit getTag(String key) {
+        return tagEditHash.get(key);        
+    }
+
+    public static int getIndexForTagKey(String key) {
+        TagEdit tagEdit = tagEditHash.get(key);
+        if (tagEdit != null) {
+            return tagEdit.getIndex();
+        }
+        // If its not there, just go to the first TagEdit
+        return 0;
     }
     
     private TagEdit(String tagKey, String tagVal, ODKTag odkTag, boolean readOnly, int idx) {
