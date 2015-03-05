@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -149,6 +150,19 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     ((View) delegate.getParent()).setTouchDelegate(expandedArea);
                 }
             };
+        });
+
+        //handle list view item taps
+        mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView tagKeyTextView = (TextView)view.findViewById(R.id.textViewTagKey);
+
+                String tappedKey = String.valueOf(tagKeyTextView.getText());
+
+                Log.d("placeholder", "User tapped on item at position " + String.valueOf(position) + " for key: " + tappedKey);
+            }
         });
     }
 

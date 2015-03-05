@@ -4,27 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/textViewTagKey"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="15dp"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:layout_alignParentLeft="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/textViewTagValue"
         android:layout_marginTop="15dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="15dp"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:layout_alignParentRight="true" />
 
 </RelativeLayout>

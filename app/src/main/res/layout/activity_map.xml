@@ -99,8 +99,7 @@
             android:layout_width="fill_parent"
             android:layout_height="2dp"
             android:background="#7ebc6f"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="10dp" />
+            android:layout_marginTop="20dp" />
 
         <!-- list of tags -->
         <ListView

@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by SpatialDeveloper on 3/5/15.
- */
 public class TagListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
@@ -29,7 +26,6 @@ public class TagListAdapter extends BaseAdapter {
 
         mTagMap = tagMap;
 
-        //to allow us to look up
         Set<String> keys = tagMap.keySet();
         mTagKeys = new ArrayList<>();
         for(String key: keys) {
@@ -89,7 +85,6 @@ public class TagListAdapter extends BaseAdapter {
             mViewHolder = (ViewHolder)view.getTag();
         }
 
-
         //get key for current position
         String currentTagKey = mTagKeys.get(position);
 
@@ -101,35 +96,6 @@ public class TagListAdapter extends BaseAdapter {
 
         //set tag value text
         mViewHolder.textViewTagValue.setText(currentTagValue);
-
-        /*
-        //get the current Invasive Species object in the list
-        InvasiveSpecies currentInvasiveSpecies = this.menuItems.get(position);
-
-
-        //set title (e.g. use common name)
-        String title = currentInvasiveSpecies.getCommonName();
-
-        mViewHolder.textViewTitle.setText(title);
-
-
-        //set subtitle (e.g. use scientific name)
-        String subTitle = currentInvasiveSpecies.getScientificName();
-
-        mViewHolder.textViewSubtitle.setText(subTitle);
-
-
-        //set image
-        String imageName = currentInvasiveSpecies.getImageName();
-
-        String uri = "drawable/" + imageName;
-
-        int imageResource = view.getContext().getApplicationContext().getResources().getIdentifier(uri, null, view.getContext().getApplicationContext().getPackageName());
-
-        Drawable image = view.getContext().getResources().getDrawable(imageResource);
-
-        mViewHolder.imageViewIcon.setImageDrawable(image);
-        */
 
         return view;
     }
