@@ -26,6 +26,8 @@
 
     <!-- map activity -->
     <string name="tagPromptTitle">Choose Option</string>
+    <!-- list view under map-->
+    <string name="tagListViewTitle">Tags</string>
 
     <!-- tag editing activity -->
     <string name="title_activity_tag_editor">OSM Tag Editor</string>

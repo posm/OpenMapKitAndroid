@@ -4,16 +4,21 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TouchDelegate;
 import android.view.View;
+
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -35,7 +40,7 @@ import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -43,7 +48,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private Button tagsButton;
     private String mSelectedMBTilesFile;
     private ListView mTagListView;
-    private LinearLayout mTagLinearLayout;
+    private ImageButton mCloseListViewButton;
+    private LinearLayout mTopLinearLayout;
+    private LinearLayout mBottomLinearLayout;
     private TextView mTagTextView;
 
     /**
@@ -71,6 +78,18 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         //set layout
         setContentView(R.layout.activity_map);
+
+        //get the layout the ListView is nested in
+        mBottomLinearLayout = (LinearLayout)findViewById(R.id.bottomLinearLayout);
+
+        //the ListView from layout
+        mTagListView = (ListView)findViewById(R.id.tagListView);
+
+        //the ListView close image button
+        mCloseListViewButton = (ImageButton)findViewById(R.id.imageViewCloseList);
+
+        //get the layout the Map is nested in
+        mTopLinearLayout = (LinearLayout)findViewById(R.id.topLinearLayout);
 
         //get map from layout
         mapView = (MapView)findViewById(R.id.mapView);
@@ -102,7 +121,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         mapView.setZoom(19);
         mapView.setMaxZoomLevel(21);
 
-        //
         initializeListView();
     }
 
@@ -111,27 +129,88 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void initializeListView() {
 
-        //the layout the ListView is nested in
-        mTagLinearLayout = (LinearLayout)findViewById(R.id.tagListViewLayout);
-
-        //the ListView
-        mTagListView = (ListView)findViewById(R.id.tagListView);
-
         //the ListView title
         mTagTextView = (TextView)findViewById(R.id.tagTextView);
-        mTagTextView.setText("Tags");
+        mTagTextView.setText(R.string.tagListViewTitle);
 
-        List<String> list = new ArrayList<String>();
-        list.add("Building:");
-        list.add("Shelter:");
-        list.add("Source:");
+        //hide the ListView by default
+        proportionMapAndList(100, 0);
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_list_item_1,
-                list);
+        //handle when user taps on the close button in the list view
+        mCloseListViewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proportionMapAndList(100, 0);
+            }
+        });
 
-        mTagListView.setAdapter(arrayAdapter);
+        //increase the 'hit area' of the down arrow
+        View parent = findViewById(R.id.bottomLinearLayout);
+        parent.post(new Runnable() {
+            public void run() {
+
+                Rect delegateArea = new Rect();
+                ImageButton delegate = mCloseListViewButton;
+                delegate.getHitRect(delegateArea);
+                delegateArea.top -= 100;
+                delegateArea.bottom += 100;
+                delegateArea.left -= 100;
+                delegateArea.right += 100;
+
+                TouchDelegate expandedArea = new TouchDelegate(delegateArea, delegate);
+
+                if (View.class.isInstance(delegate.getParent())) {
+                    ((View) delegate.getParent()).setTouchDelegate(expandedArea);
+                }
+            };
+        });
+
+        //handle list view item taps
+        mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView tagKeyTextView = (TextView)view.findViewById(R.id.textViewTagKey);
+
+                String tappedKey = String.valueOf(tagKeyTextView.getText());
+
+                Log.d("placeholder", "User tapped on item at position " + String.valueOf(position) + " for key: " + tappedKey);
+            }
+        });
+    }
+
+    /**
+     * For identifying an OSM element and presenting it's tags in the ListView
+     * @param osmElement The target OSMElement.
+     */
+    private void identifyOSMFeature(OSMElement osmElement) {
+
+        //fetch tags associated with tapped OSM element
+        Map<String, String> tagMap = osmElement.getTags();
+
+        //pass the tags to the list adapter
+        TagListAdapter adapter = new TagListAdapter(this, tagMap);
+
+        //set the ListView's adapter
+        mTagListView.setAdapter(adapter);
+
+        //show the ListView under the map
+        proportionMapAndList(60, 40);
+    }
+
+    /**
+     * For setting the proportions of the Map weight and the ListView weight for dual display
+     * @param topWeight Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
+     * @param bottomWeight Referes to the layotu height.  Note, bottomWeight + topWeight must equal the weight sum of 100
+     */
+    private void proportionMapAndList(int topWeight, int bottomWeight) {
+
+        LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams)mTopLinearLayout.getLayoutParams();
+        LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams)mBottomLinearLayout.getLayoutParams();
+
+        //update weight of top and bottom linear layouts
+        mTopLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(topLayoutParams.width, topLayoutParams.height, topWeight));
+        mBottomLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(bottomLayoutParams.width, bottomLayoutParams.height, bottomWeight));
     }
 
     /**
@@ -438,11 +517,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
             tagsButton.setVisibility(View.VISIBLE);
+
+            //fetch the tapped feature
+            OSMElement tappedOSMElement = selectedElements.get(0);
+
+            //present OSM Feature tags in bottom ListView
+            identifyOSMFeature(tappedOSMElement);
+
         } else {
             tagsButton.setVisibility(View.INVISIBLE);
         }
     }
-
 
     /**
      * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
