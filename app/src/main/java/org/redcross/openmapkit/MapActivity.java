@@ -2,8 +2,10 @@ package org.redcross.openmapkit;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Environment;
@@ -358,8 +360,19 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void presentMBTilesOptions() {
 
-        //fetch names of all files in mbtiles folder
+        //shared preferences private to this activity
+        final SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        String previousMBTilesChoice = sharedPreferences.getString(getString(R.string.preferenceMBTileChoice), "nopreviouschoice");
+
+        //create an array of all mbtile options
         final ArrayList<String> mbtilesFileNames = new ArrayList<>();
+
+        //when device is connected, HOT OSM Basemap is the first option
+        if(Connectivity.isConnected(getApplicationContext())) {
+            mbtilesFileNames.add(getString(R.string.hotOSMOptionTitle));
+        }
+
+        //add mbtiles names from external storage
         File[] mbtiles = ExternalStorage.fetchMBTilesFiles();
         if (mbtiles != null && mbtiles.length > 0) {
             for (File file : mbtiles) {
@@ -368,30 +381,68 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
         }
 
+        //present a dialog of mbtiles options
         if(mbtilesFileNames.size() > 0) {
 
-            //present dialog to user with the ability to choose one mbtiles file
+            //create dialog of mbtiles choices
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.mbtilesChooserDialogTitle));
             CharSequence[] charSeq = (CharSequence[]) mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
-            builder.setSingleChoiceItems(charSeq, -1, new DialogInterface.OnClickListener() {
+
+            //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
+            int defaultRadioButtonIndex = -1; //none radio button selected
+            if(previousMBTilesChoice.equals("nopreviouschoice")) {
+                //if user DID NOT previously choose an mbtiles option...
+                if(Connectivity.isConnected(getApplicationContext())) {
+                    //the first radio button (for HOT OSM) will be selected by default
+                    defaultRadioButtonIndex = 0;
+                    //the default selected option is HOT OSM
+                    mSelectedMBTilesFile = mbtilesFileNames.get(0); //default choice
+                } else {
+                    defaultRadioButtonIndex = -1; //no selected radio button by default
+                }
+            } else {
+                //if user previously chose an mbtiles option ...
+                for(int i = 0; i < mbtilesFileNames.size(); i++) {
+                    if(mbtilesFileNames.get(i).equals(previousMBTilesChoice)) {
+                        defaultRadioButtonIndex = i;
+                    }
+                }
+            }
+
+            //add choices to dialog
+            builder.setSingleChoiceItems(charSeq, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    //user made a choice
-                    mSelectedMBTilesFile = mbtilesFileNames.get(which).toString();
+                    //user tapped on radio button and changed previous choice or default
+                    String userMBTilesChoice = mbtilesFileNames.get(which);
+
+                    //add user's choice to shared preferences key
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(getString(R.string.preferenceMBTileChoice), userMBTilesChoice);
+                    editor.commit();
+
+                    mSelectedMBTilesFile = userMBTilesChoice;
                 }
             });
 
-            //handle OK button
+            //handle OK tap event of dialog
             builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     //user clicked OK
-                    addOfflineDataSources(mSelectedMBTilesFile);
+                    if(mSelectedMBTilesFile.equals(getString(R.string.hotOSMOptionTitle))) {
+                        
+                        addOnlineDataSources();
+
+                    } else {
+
+                        addOfflineDataSources(mSelectedMBTilesFile);
+                    }
                 }
             });
 
-            //handle cancel button
+            //handle cancel button tap event of dialog
             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
@@ -399,7 +450,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 }
             });
 
-            //present to user
+            //present dialog to user
             builder.show();
 
         } else {
