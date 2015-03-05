@@ -2,11 +2,15 @@ package org.redcross.openmapkit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import org.redcross.openmapkit.odkcollect.ODKCollectData;
+import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -73,9 +77,7 @@ public class TagListAdapter extends BaseAdapter {
             view = mInflater.inflate(R.layout.taglistviewitem, null);
 
             mViewHolder = new ViewHolder();
-
             mViewHolder.textViewTagKey = (TextView)view.findViewById(R.id.textViewTagKey); //left side tag key
-
             mViewHolder.textViewTagValue = (TextView)view.findViewById(R.id.textViewTagValue); //left side tag value
 
             view.setTag(mViewHolder);
@@ -85,17 +87,46 @@ public class TagListAdapter extends BaseAdapter {
             mViewHolder = (ViewHolder)view.getTag();
         }
 
-        //get key for current position
+        //tag key and value
         String currentTagKey = mTagKeys.get(position);
-
-        //use the key to fetch item
         String currentTagValue = mTagMap.get(currentTagKey);
 
-        //set tag key text
-        mViewHolder.textViewTagKey.setText(currentTagKey);
+        //labels for tag key and value
+        String currentTagKeyLabel = null;
+        String currentTagValueLabel = null;
 
-        //set tag value text
-        mViewHolder.textViewTagValue.setText(currentTagValue);
+        //attempt to assign labels for tag key and value if available from ODK Collect Mode
+        if(ODKCollectHandler.isODKCollectMode()) {
+
+            ODKCollectData odkCollectData = ODKCollectHandler.getODKCollectData();
+
+            if(odkCollectData != null) {
+
+                try {
+
+                    currentTagKeyLabel = odkCollectData.getTagKeyLabel(currentTagKey.toString());
+                    currentTagValueLabel = odkCollectData.getTagValueLabel(currentTagKey.toString(), currentTagValue.toString());
+                }
+                catch (Exception ex) {
+
+                    Log.e("error", "exception raised when calling getTagKeyLabel or getTagValueLabel with tag key: '" + currentTagKey + "' and tag value: '" + currentTagValue + "'") ;
+                }
+            }
+        }
+
+        //present tag key
+        if(currentTagKeyLabel != null) {
+            mViewHolder.textViewTagKey.setText(currentTagKeyLabel);
+        } else {
+            mViewHolder.textViewTagKey.setText(currentTagKey);
+        }
+
+        //present tag value
+        if(currentTagValueLabel != null) {
+            mViewHolder.textViewTagValue.setText(currentTagValueLabel);
+        } else {
+            mViewHolder.textViewTagValue.setText(currentTagValue);
+        }
 
         return view;
     }

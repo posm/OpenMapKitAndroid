@@ -187,14 +187,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //fetch tags associated with tapped OSM element
         Map<String, String> tagMap = osmElement.getTags();
 
-        //pass the tags to the list adapter
-        TagListAdapter adapter = new TagListAdapter(this, tagMap);
+        if(tagMap.size() > 0) {
 
-        //set the ListView's adapter
-        mTagListView.setAdapter(adapter);
+            //pass the tags to the list adapter
+            TagListAdapter adapter = new TagListAdapter(this, tagMap);
 
-        //show the ListView under the map
-        proportionMapAndList(60, 40);
+            //set the ListView's adapter
+            mTagListView.setAdapter(adapter);
+
+            //show the ListView under the map
+            proportionMapAndList(60, 40);
+        }
     }
 
     /**
