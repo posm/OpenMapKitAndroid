@@ -64,7 +64,6 @@ public class StringTagValueFragment extends Fragment {
         if (getArguments() != null) {
             int idx = getArguments().getInt(IDX);
             tagEdit = TagEdit.getTag(idx);
-//            setupWidgets();
         }
     }
 
@@ -73,6 +72,7 @@ public class StringTagValueFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_string_tag_value, container, false);
+        setupWidgets();
         return rootView;
     }
 
