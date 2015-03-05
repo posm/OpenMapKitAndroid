@@ -125,11 +125,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         mCloseListViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //
-                Log.e("test", "close list view");
-
-                proportionMapAndList(100,0);
+                proportionMapAndList(100, 0);
             }
         });
     }
@@ -169,7 +165,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
 
     /**
-     * For setting the proportions of the map weight and the ListView weight for dual display
+     * For setting the proportions of the Map weight and the ListView weight for dual display
      * @param topWeight Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
      * @param bottomWeight Referes to the layotu height.  Note, bottomWeight + topWeight must equal the weight sum of 100
      */
@@ -178,8 +174,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams)mTopLinearLayout.getLayoutParams();
         LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams)mBottomLinearLayout.getLayoutParams();
 
-        topLayoutParams.weight = topWeight;
-        bottomLayoutParams.weight = bottomWeight;
+        //update weight of top and bottom linear layouts
+        mTopLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(topLayoutParams.width, topLayoutParams.height, topWeight));
+        mBottomLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(bottomLayoutParams.width, bottomLayoutParams.height, bottomWeight));
     }
 
     /**
