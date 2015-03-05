@@ -229,13 +229,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void initializeTagsButton() {
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if ( ODKCollectHandler.isStandaloneMode() ) {
-                    Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
-                    startActivity(tagSwipe);
-                } else {
-                    Intent odkCollectTagIntent = new Intent(getApplicationContext(), ODKCollectTagActivity.class);
-                    startActivityForResult(odkCollectTagIntent, ODK_COLLECT_TAG_ACTIVITY_CODE);
-                }
+                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                startActivity(tagSwipe);
             }
         });
         

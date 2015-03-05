@@ -1,8 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -13,36 +12,15 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.spatialdev.osm.model.OSMElement;
-
 import org.redcross.openmapkit.R;
-import org.redcross.openmapkit.odkcollect.ODKCollectData;
-import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 public class TagSwipeActivity extends ActionBarActivity {
 
-    /**
-     * MODEL FIELDS
-     * * *
-     */
-    private OSMElement osmElement;
-    private Map<String, String> tags;
-    private Map<String, String> editedTags;
-
-    /**
-     * ODK FIELDS
-     * * *
-     */
-    private boolean odkCollectMode;
-    private ODKCollectData odkCollectData;
+    private List<TagEdit> tagEdits;
 
     
     private void setupModel() {
-        osmElement = OSMElement.getSelectedElements().getFirst();
-        tags = osmElement.getTags();
-        editedTags = new HashMap<>();
-        odkCollectMode = ODKCollectHandler.isODKCollectMode();
-        odkCollectData = ODKCollectHandler.getODKCollectData();
+        tagEdits = TagEdit.buildTagEditList();
     }
     
     
@@ -124,20 +102,15 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return tagEdits.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+            TagEdit tagEdit = tagEdits.get(position);
+            if (tagEdit != null) {
+                return tagEdit.getTitle();
             }
             return null;
         }
