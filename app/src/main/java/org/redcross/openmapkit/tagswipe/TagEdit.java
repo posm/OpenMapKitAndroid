@@ -5,6 +5,7 @@ import com.spatialdev.osm.model.OSMElement;
 import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -104,6 +105,31 @@ public class TagEdit {
     
     public String getTitle() {
         return tagKey;
+    }
+    
+    
+    public String getTagKeyLabel() {
+        if (odkTag != null) {
+            return odkTag.getLabel();
+        }
+        return null;
+    }
+
+    public String getTagKey() {
+        return tagKey;
+    }
+    
+    public String getTagValLabel() {
+        if (odkTag == null) return null;
+        ODKTagItem item = odkTag.getItem(tagVal);
+        if (item != null) {
+            return item.getLabel();
+        }
+        return null;
+    }
+    
+    public String getTagVal() {
+        return tagVal;
     }
     
     public boolean isReadOnly() {

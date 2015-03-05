@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
@@ -15,6 +17,11 @@ public class StringTagValueFragment extends Fragment {
     private static final String IDX = "IDX";
 
     private TagEdit tagEdit;
+    private View rootView;
+    
+    private TextView tagKeyLabelTextView;
+    private TextView tagKeyTextView;
+    private EditText tagValueEditText;
     
     private OnFragmentInteractionListener mListener;
 
@@ -25,6 +32,26 @@ public class StringTagValueFragment extends Fragment {
         args.putInt(IDX, idx);
         fragment.setArguments(args);
         return fragment;
+    }
+    
+    private void setupWidgets() {
+        tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
+        tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
+        tagValueEditText = (EditText)rootView.findViewById(R.id.tagValueEditText);
+        
+        String keyLabel = tagEdit.getTagKeyLabel();
+        String key = tagEdit.getTagKey();
+        String val = tagEdit.getTagVal();
+        
+        if (keyLabel != null) {
+            tagKeyLabelTextView.setText(keyLabel);
+            tagKeyTextView.setText(key);
+        } else {
+            tagKeyLabelTextView.setText(key);
+            tagKeyTextView.setText("");
+        }
+        
+        tagValueEditText.setText(val);
     }
 
     public StringTagValueFragment() {
@@ -37,14 +64,16 @@ public class StringTagValueFragment extends Fragment {
         if (getArguments() != null) {
             int idx = getArguments().getInt(IDX);
             tagEdit = TagEdit.getTag(idx);
+//            setupWidgets();
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_string_tag_value, container, false);
+
+        rootView = inflater.inflate(R.layout.fragment_string_tag_value, container, false);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

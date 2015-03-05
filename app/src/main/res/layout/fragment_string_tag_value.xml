@@ -13,15 +13,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Name of Building"
-            android:id="@+id/tagKeyLabel" />
+            android:text="tagKeyLabel"
+            android:id="@+id/tagKeyLabelTextView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="name"
-            android:id="@+id/tagKey"
+            android:text="tagKey"
+            android:id="@+id/tagKeyTextView"
             android:textStyle="italic" />
 
         <Space
