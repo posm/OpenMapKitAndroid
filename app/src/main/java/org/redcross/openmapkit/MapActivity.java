@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -139,10 +138,10 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 Rect delegateArea = new Rect();
                 ImageButton delegate = mCloseListViewButton;
                 delegate.getHitRect(delegateArea);
-                delegateArea.top -= 80;
-                delegateArea.bottom += 80;
-                delegateArea.left -= 80;
-                delegateArea.right += 80;
+                delegateArea.top -= 100;
+                delegateArea.bottom += 100;
+                delegateArea.left -= 100;
+                delegateArea.right += 100;
 
                 TouchDelegate expandedArea = new TouchDelegate(delegateArea, delegate);
 
@@ -159,29 +158,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void identifyOSMFeature(OSMElement osmElement) {
 
-        //derive an array list
-        ArrayList<String> list = new ArrayList<String>();
-
-        //iterate tag key values and put in ArrayAdapter
+        //fetch tags associated with tapped OSM element
         Map<String, String> tagMap = osmElement.getTags();
-        for (Map.Entry<String, String> entry : tagMap.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
 
-            list.add(key + " | " + value);
-        }
+        //pass the tags to the list adapter
+        TagListAdapter adapter = new TagListAdapter(this, tagMap);
 
-        //
-        Log.e("test", list.toString());
-
-        //create an adapter for the ListView
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_list_item_1,
-                list);
-
-        //pass the adapter to the ListView
-        mTagListView.setAdapter(arrayAdapter);
+        //set the ListView's adapter
+        mTagListView.setAdapter(adapter);
 
         //show the ListView under the map
         proportionMapAndList(60, 40);

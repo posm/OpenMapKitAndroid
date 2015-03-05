@@ -52,7 +52,9 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:visibility="invisible" />
+
         </RelativeLayout>
+
     </LinearLayout>
 
     <!--BOTTOM SECTION OF VERTICAL LINEAR LAYOUT WITH LIST VIEW-->
@@ -74,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:textSize="10pt"
                 android:textColor="#7ebc6f"
@@ -84,7 +86,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:layout_centerHorizontal="true"
                 android:id="@+id/imageViewCloseList"
                 android:background="@null"
@@ -98,8 +100,7 @@
             android:layout_height="2dp"
             android:background="#7ebc6f"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginRight="10dp" />
 
         <!-- list of tags -->
         <ListView
@@ -107,6 +108,7 @@
             android:layout_height="match_parent"
             android:id="@+id/tagListView">
         </ListView>
+
     </LinearLayout>
 
 </LinearLayout>
