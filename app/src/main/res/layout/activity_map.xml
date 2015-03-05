@@ -87,8 +87,9 @@
                 android:layout_marginTop="15dp"
                 android:layout_centerHorizontal="true"
                 android:id="@+id/imageViewCloseList"
+                android:background="@null"
+                android:src="@drawable/arrow"/>
 
-                android:src="@drawable/listviewcarrot"/>
         </RelativeLayout>
 
         <!-- separator -->

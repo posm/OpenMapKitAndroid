@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -127,6 +129,27 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             public void onClick(View v) {
                 proportionMapAndList(100, 0);
             }
+        });
+
+        //increase the 'hit area' of the down arrow
+        View parent = findViewById(R.id.bottomLinearLayout);
+        parent.post(new Runnable() {
+            public void run() {
+
+                Rect delegateArea = new Rect();
+                ImageButton delegate = mCloseListViewButton;
+                delegate.getHitRect(delegateArea);
+                delegateArea.top -= 80;
+                delegateArea.bottom += 80;
+                delegateArea.left -= 80;
+                delegateArea.right += 80;
+
+                TouchDelegate expandedArea = new TouchDelegate(delegateArea, delegate);
+
+                if (View.class.isInstance(delegate.getParent())) {
+                    ((View) delegate.getParent()).setTouchDelegate(expandedArea);
+                }
+            };
         });
     }
 
