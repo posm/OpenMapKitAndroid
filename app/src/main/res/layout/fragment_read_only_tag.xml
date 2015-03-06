@@ -1,13 +1,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.redcross.openmapkit.tagswipe.StringTagValueFragment">
+    tools:context="org.redcross.openmapkit.tagswipe.ReadOnlyTagFragment">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="20dp">
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,10 +30,30 @@
             android:layout_width="20px"
             android:layout_height="@dimen/abc_text_size_large_material" />
 
-        <EditText
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tagValueEditText" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="tagValueLabel"
+            android:id="@+id/tagValueLabelTextView"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="tagValue"
+            android:id="@+id/tagValueTextView"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="italic" />
+
+
     </LinearLayout>
+
+    <ViewAnimator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/viewAnimator"
+        android:layout_gravity="left|center_vertical" />
 
 </FrameLayout>

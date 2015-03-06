@@ -175,7 +175,7 @@ public abstract class OSMElement {
     public void selectTag(String tagKey) {
         selectedTag = tagKey;
     }
-    
+
     /**
      * If a tag is edited or added, this should be called by the application.* 
      * @param k

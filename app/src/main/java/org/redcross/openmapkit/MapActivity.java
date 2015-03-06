@@ -313,53 +313,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void initializeTagsButton() {
         tagsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if ( ODKCollectHandler.isStandaloneMode() ) {
-//                    showAlertDialog();
-                    Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
-                    startActivity(tagSwipe);
-                } else {
-                    Intent odkCollectTagIntent = new Intent(getApplicationContext(), ODKCollectTagActivity.class);
-                    startActivityForResult(odkCollectTagIntent, ODK_COLLECT_TAG_ACTIVITY_CODE);
-                }
+                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                tagSwipe.putExtra("TAG_KEY", "name");
+                startActivity(tagSwipe);
             }
         });
         
     }
 
-    public void showAlertDialog() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle(R.string.tagPromptTitle);
-
-        builder.setItems(R.array.editoptions, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int which) {
-
-                switch(which) {
-                    case 0:
-
-                        Intent editTagIntent = new Intent(getApplicationContext(), TagEditorActivity.class);
-                        startActivity(editTagIntent);
-                        break;
-
-                    case 1:
-
-                        Intent createTagIntent = new Intent(getApplicationContext(), TagCreatorActivity.class);
-                        startActivity(createTagIntent);
-                        break;
-
-                    default:
-
-                        break;
-                }
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-
-        dialog.show();
-    }
 
     /**
      * For presenting a dialog to allow the user to choose which MBTILES file to use that has been uploaded to their device/s openmapkit/mbtiles folder

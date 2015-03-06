@@ -1,27 +1,30 @@
 package org.redcross.openmapkit.tagswipe;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
 public class TagSwipeActivity extends ActionBarActivity {
 
+    private List<TagEdit> tagEdits;
+
+    
+    private void setupModel() {
+        tagEdits = TagEdit.buildTagEdits();
+    }
+
+    
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -42,7 +45,8 @@ public class TagSwipeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag_swipe);
 
-
+        setupModel();
+        
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -50,9 +54,16 @@ public class TagSwipeActivity extends ActionBarActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
+    
+        pageToCorrectTag();
     }
 
+    private void pageToCorrectTag() {
+        String tagKey = getIntent().getStringExtra("TAG_KEY");
+        if (tagKey == null) return;
+        int idx = TagEdit.getIndexForTagKey(tagKey);
+        mViewPager.setCurrentItem(idx);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,30 +100,30 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            if (position == 0) {
-                return StringTagValueFragment.newInstance("string won", "string too");
-            } else {
-                return SelectOneTagValueFragment.newInstance("string won", "string too");
+            TagEdit tagEdit = tagEdits.get(position);
+            if (tagEdit != null) {
+                if (tagEdit.isReadOnly()) {
+                    return ReadOnlyTagFragment.newInstance(position);
+                } else if (tagEdit.isSelectOne()) {
+                    return SelectOneTagValueFragment.newInstance(position);
+                } else {
+                    return StringTagValueFragment.newInstance(position);
+                }
             }
+            return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return tagEdits.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+            TagEdit tagEdit = tagEdits.get(position);
+            if (tagEdit != null) {
+                return tagEdit.getTitle();
             }
             return null;
         }

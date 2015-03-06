@@ -6,45 +6,52 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link StringTagValueFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link StringTagValueFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class StringTagValueFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String IDX = "IDX";
 
+    private TagEdit tagEdit;
+    private View rootView;
+    
+    private TextView tagKeyLabelTextView;
+    private TextView tagKeyTextView;
+    private EditText tagValueEditText;
+    
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment StringTagValueFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static StringTagValueFragment newInstance(String param1, String param2) {
+
+    public static StringTagValueFragment newInstance(int idx) {
         StringTagValueFragment fragment = new StringTagValueFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(IDX, idx);
         fragment.setArguments(args);
         return fragment;
+    }
+    
+    private void setupWidgets() {
+        tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
+        tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
+        tagValueEditText = (EditText)rootView.findViewById(R.id.tagValueEditText);
+        
+        String keyLabel = tagEdit.getTagKeyLabel();
+        String key = tagEdit.getTagKey();
+        String val = tagEdit.getTagVal();
+        
+        if (keyLabel != null) {
+            tagKeyLabelTextView.setText(keyLabel);
+            tagKeyTextView.setText(key);
+        } else {
+            tagKeyLabelTextView.setText(key);
+            tagKeyTextView.setText("");
+        }
+        
+        tagValueEditText.setText(val);
     }
 
     public StringTagValueFragment() {
@@ -55,16 +62,18 @@ public class StringTagValueFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            int idx = getArguments().getInt(IDX);
+            tagEdit = TagEdit.getTag(idx);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_string_tag_value, container, false);
+
+        rootView = inflater.inflate(R.layout.fragment_string_tag_value, container, false);
+        setupWidgets();
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
