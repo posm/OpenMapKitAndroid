@@ -15,15 +15,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="What type of establishment is this?"
-            android:id="@+id/tagKeyLabel" />
+            android:text="tagKeyLabel"
+            android:id="@+id/tagKeyLabelTextView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="amenity"
-            android:id="@+id/tagKey"
+            android:text="tagKey"
+            android:id="@+id/tagKeyTextView"
             android:textStyle="italic" />
 
         <Space
@@ -34,20 +34,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Pub"
-            android:id="@+id/textView"
+            android:text="tagValueLabel"
+            android:id="@+id/tagValueLabelTextView"
             android:layout_gravity="center_horizontal" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="pub"
-            android:id="@+id/textView8"
+            android:text="tagValue"
+            android:id="@+id/tagValueTextView"
             android:layout_gravity="center_horizontal"
             android:textStyle="italic" />
 
 
     </LinearLayout>
+
+    <ViewAnimator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/viewAnimator"
+        android:layout_gravity="left|center_vertical" />
 
 </FrameLayout>

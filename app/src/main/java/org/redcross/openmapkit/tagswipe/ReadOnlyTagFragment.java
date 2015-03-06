@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
@@ -22,7 +24,14 @@ public class ReadOnlyTagFragment extends Fragment {
     private static final String IDX = "IDX";
 
     private TagEdit tagEdit;
+    private View rootView;
 
+    private TextView tagKeyLabelTextView;
+    private TextView tagKeyTextView;
+    private TextView tagValueLabelTextView;
+    private TextView tagValueTextView;
+    
+    
     private OnFragmentInteractionListener mListener;
 
 
@@ -32,6 +41,34 @@ public class ReadOnlyTagFragment extends Fragment {
         args.putInt(IDX, idx);
         fragment.setArguments(args);
         return fragment;
+    }
+    
+    private void setupWidgets() {
+        tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
+        tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
+        tagValueLabelTextView = (TextView)rootView.findViewById(R.id.tagValueLabelTextView);
+        tagValueTextView = (TextView)rootView.findViewById(R.id.tagValueTextView);
+        
+        String keyLabel = tagEdit.getTagKeyLabel();
+        String key = tagEdit.getTagKey();
+        String valLabel = tagEdit.getTagValLabel();
+        String val = tagEdit.getTagVal();
+
+        if (keyLabel != null) {
+            tagKeyLabelTextView.setText(keyLabel);
+            tagKeyTextView.setText(key);
+        } else {
+            tagKeyLabelTextView.setText(key);
+            tagKeyTextView.setText("");
+        }
+        
+        if (valLabel != null) {
+            tagValueLabelTextView.setText(valLabel);
+            tagValueTextView.setText(val);
+        } else {
+            tagValueLabelTextView.setText(val);
+            tagValueTextView.setText("");
+        }
     }
 
     public ReadOnlyTagFragment() {
@@ -50,8 +87,10 @@ public class ReadOnlyTagFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_read_only_tag, container, false);
+        
+        rootView = inflater.inflate(R.layout.fragment_read_only_tag, container, false);
+        setupWidgets();
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
