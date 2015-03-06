@@ -79,6 +79,11 @@ public class TagSwipeActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // save to odk collect action bar button
+        if (id == R.id.action_save_to_odk_collect) {
+            TagEdit.saveToODKCollect();
+        }
+        
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;

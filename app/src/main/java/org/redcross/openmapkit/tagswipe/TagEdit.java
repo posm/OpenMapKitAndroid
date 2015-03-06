@@ -1,5 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.widget.EditText;
+
 import com.spatialdev.osm.model.OSMElement;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectData;
@@ -24,18 +26,20 @@ public class TagEdit {
 
     private static LinkedHashMap<String, TagEdit> tagEditHash;
     private static List<TagEdit> tagEdits;
+    private static OSMElement osmElement;
     
     private String tagKey;
     private String tagVal;
     private ODKTag odkTag;
     private boolean readOnly;
     private int idx = -1;
+    private EditText editText;
     
     public static List<TagEdit> buildTagEdits() {
         int idx = 0;
         tagEditHash = new LinkedHashMap<>();
         tagEdits = new ArrayList<>();
-        OSMElement osmElement = OSMElement.getSelectedElements().getFirst();
+        osmElement = OSMElement.getSelectedElements().getFirst();
         Map<String, String> tags = osmElement.getTags();
         
         // Tag Edits for ODK Collect Mode
@@ -88,6 +92,17 @@ public class TagEdit {
         return 0;
     }
     
+    public static void saveToODKCollect() {
+        updateTagsInOSMElement();
+        ODKCollectHandler.saveXmlInODKCollect(osmElement);
+    }
+    
+    private static void updateTagsInOSMElement() {
+        for (TagEdit tagEdit : tagEdits) {
+            tagEdit.updateTagInOSMElement();
+        }
+    }
+    
     private TagEdit(String tagKey, String tagVal, ODKTag odkTag, boolean readOnly, int idx) {
         this.tagKey = tagKey;
         this.tagVal = tagVal;
@@ -102,11 +117,30 @@ public class TagEdit {
         this.readOnly = readOnly;
         this.idx = idx;
     }
+
+    /**
+     * The EditText widget from StringTagValueFragment gets passed into here
+     * so that the value can be retrieved on save.
+     * * * *
+     * @param editText
+     */
+    public void setEditText(EditText editText) {
+        this.editText = editText;
+    }
+    
+    // TODO: Clint, this is where we get the actual value
+    // from the editText, and we need to do something
+    // similar to get it from the set of radio buttons.
+    private void updateTagInOSMElement() {
+        if (editText == null) return; // need to account for when its a select one
+        String val = editText.getText().toString();
+        tagVal = val;
+        osmElement.addOrEditTag(tagKey, tagVal);
+    }
     
     public String getTitle() {
         return tagKey;
     }
-    
     
     public String getTagKeyLabel() {
         if (odkTag != null) {

@@ -52,6 +52,7 @@ public class StringTagValueFragment extends Fragment {
         }
         
         tagValueEditText.setText(val);
+        tagEdit.setEditText(tagValueEditText);
     }
 
     public StringTagValueFragment() {
