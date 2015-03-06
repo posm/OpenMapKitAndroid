@@ -10,8 +10,8 @@
 
     <!-- mbtiles menu -->
     <string name="action_mbtilessettings">MBTiles Settings</string>
-    <string name="mbtilesChooserDialogTitle">Choose MBTiles File</string>
-    <string name="hotOSMOptionTitle">HOT OSM Basemap</string>
+    <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
+    <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="mbtilesAppPath">openmapkit/mbtiles</string>
