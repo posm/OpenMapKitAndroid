@@ -557,7 +557,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
             if(resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
                 String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
                 String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
                 Intent resultIntent = new Intent();
