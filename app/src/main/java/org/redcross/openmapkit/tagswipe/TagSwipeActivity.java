@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -82,6 +83,8 @@ public class TagSwipeActivity extends ActionBarActivity {
         // save to odk collect action bar button
         if (id == R.id.action_save_to_odk_collect) {
             TagEdit.saveToODKCollect();
+            setResult(Activity.RESULT_OK);
+            finish();
         }
         
         //noinspection SimplifiableIfStatement

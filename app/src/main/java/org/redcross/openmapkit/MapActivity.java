@@ -176,7 +176,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 //launch the TagSwipeActivity and pass the key
                 Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
                 tagSwipe.putExtra("TAG_KEY", tappedKey);
-                startActivity(tagSwipe);
+                startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
             }
         });
     }
@@ -558,7 +558,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
             if(resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
-                String osmXmlFileFullPath = extras.getString("OSM_PATH");
+                String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
                 String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
