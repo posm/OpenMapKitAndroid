@@ -7,9 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.odkcollect.ODKCollectData;
@@ -18,7 +15,6 @@ import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +55,9 @@ public class SelectOneTagValueFragment extends Fragment {
      */
     private void setupWidgets() {
 
+        // sample code ...
+
+        /*
         //tag key label
         TextView tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabel);
         tagKeyLabelTextView.setText("What type of establishment is this?");
@@ -91,6 +90,7 @@ public class SelectOneTagValueFragment extends Fragment {
             targetRadioGroup.addView(textView);
             //TODO layout params
         }
+        */
     }
 
     @Override
@@ -113,6 +113,7 @@ public class SelectOneTagValueFragment extends Fragment {
                 //
                 Log.e("test", "key: " + currentTagKey + " label: " + currentTagLabel);
 
+                //HOW TO GET RADIO BUTTON OPTION KEY-VALUE-LABELS?
                 Collection<ODKTagItem> tagItems = currentTag.getItems();
                 if(tagItems.size() > 0) {
                     Iterator tagItemsIterator = tagItems.iterator();
@@ -133,9 +134,8 @@ public class SelectOneTagValueFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_select_one_tag_value, container, false);
-        //setupWidgets();
+        setupWidgets();
         return rootView;
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
