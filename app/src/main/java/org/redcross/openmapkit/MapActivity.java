@@ -115,7 +115,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         initializeTagsButton();
 
         //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(23.707873, 90.409774);
+        LatLng initialCoordinate = new LatLng(-17.807396,30.931202);
         mapView.setCenter(initialCoordinate);
         mapView.setZoom(19);
         mapView.setMaxZoomLevel(21);
@@ -534,7 +534,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     @Override
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
-            tagsButton.setVisibility(View.VISIBLE);
+//            tagsButton.setVisibility(View.VISIBLE);
 
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
