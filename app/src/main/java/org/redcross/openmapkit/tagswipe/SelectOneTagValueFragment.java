@@ -3,6 +3,7 @@ package org.redcross.openmapkit.tagswipe;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.odkcollect.ODKCollectData;
+import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -91,28 +97,34 @@ public class SelectOneTagValueFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+
             int idx = getArguments().getInt(IDX);
             tagEdit = TagEdit.getTag(idx);
 
-            //get some collection of data for radio button and textview labels from TagEdit???
+            ODKCollectData odkData = ODKCollectHandler.getODKCollectData();
+            Collection<ODKTag> odkTags = odkData.getRequiredTags();
 
-            //test by re-creating what is statically in this fragment's layout
-            mTagValueOptions = new ArrayList<Map<String, String>>();
+            Iterator iterator = odkTags.iterator();
+            while(iterator.hasNext()) {
+                ODKTag currentTag = (ODKTag)iterator.next();
+                String currentTagKey = currentTag.getKey();
+                String currentTagLabel = currentTag.getLabel();
 
-            Map<String,String> option1 = new HashMap<String,String>();
-            option1.put("tagValue", "school");
-            option1.put("tagValueLabel", "School");
-            mTagValueOptions.add(option1);
+                //
+                Log.e("test", "key: " + currentTagKey + " label: " + currentTagLabel);
 
-            Map<String,String> option2 = new HashMap<String,String>();
-            option1.put("tagValue", "restaurant");
-            option1.put("tagValueLabel", "Restaurant");
-            mTagValueOptions.add(option2);
+                Collection<ODKTagItem> tagItems = currentTag.getItems();
+                if(tagItems.size() > 0) {
+                    Iterator tagItemsIterator = tagItems.iterator();
+                    while(tagItemsIterator.hasNext()) {
+                        ODKTagItem currentTagItem = (ODKTagItem)tagItemsIterator.next();
+                        String currentTagItemLabel = currentTagItem.getLabel();
 
-            Map<String,String> option3 = new HashMap<String,String>();
-            option1.put("tagValue", "bank");
-            option1.put("tagValueLabel", "Bank Branch / ATM");
-            mTagValueOptions.add(option3);
+                        //
+                        Log.e("test", currentTagItemLabel);
+                    }
+                }
+            }
         }
     }
 
@@ -121,7 +133,7 @@ public class SelectOneTagValueFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_select_one_tag_value, container, false);
-        setupWidgets();
+        //setupWidgets();
         return rootView;
 
     }
