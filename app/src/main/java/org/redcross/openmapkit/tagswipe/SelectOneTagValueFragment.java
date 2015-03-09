@@ -64,14 +64,35 @@ public class SelectOneTagValueFragment extends Fragment {
         RadioGroup tagValueRadioGroup = (RadioGroup)rootView.findViewById(R.id.selectOneTagValueRadioGroup);
 
         Activity activity = getActivity();
-        RadioButton radioButton1 = new RadioButton(activity);
+        final RadioButton radioButton1 = new RadioButton(activity);
         TextView textView1 = new TextView(activity);
-        RadioButton radioButton2 = new RadioButton(activity);
+        final RadioButton radioButton2 = new RadioButton(activity);
         TextView textView2 = new TextView(activity);
+        
         radioButton1.setText("radioButton1");
+        radioButton1.setTextSize(18);
+                
         textView1.setText("textView1");
+        textView1.setPadding(65, 0, 0, 25);
+        textView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                radioButton1.toggle();
+            }
+        });
+
         radioButton2.setText("radioButton2");
+        radioButton2.setTextSize(18);
+        
         textView2.setText("textView2");
+        textView2.setPadding(65, 0, 0, 25);
+        textView2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                radioButton2.toggle();
+            }
+        });
+        
         tagValueRadioGroup.addView(radioButton1);
         tagValueRadioGroup.addView(textView1);
         tagValueRadioGroup.addView(radioButton2);
