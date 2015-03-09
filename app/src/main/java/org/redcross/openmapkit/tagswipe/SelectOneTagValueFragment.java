@@ -1,11 +1,14 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
@@ -54,9 +57,26 @@ public class SelectOneTagValueFragment extends Fragment {
             tagKeyTextView.setText("");
         }
         
-        
+        setupRadioButtons();
     }
     
+    private void setupRadioButtons() {
+        RadioGroup tagValueRadioGroup = (RadioGroup)rootView.findViewById(R.id.selectOneTagValueRadioGroup);
+
+        Activity activity = getActivity();
+        RadioButton radioButton1 = new RadioButton(activity);
+        TextView textView1 = new TextView(activity);
+        RadioButton radioButton2 = new RadioButton(activity);
+        TextView textView2 = new TextView(activity);
+        radioButton1.setText("radioButton1");
+        textView1.setText("textView1");
+        radioButton2.setText("radioButton2");
+        textView2.setText("textView2");
+        tagValueRadioGroup.addView(radioButton1);
+        tagValueRadioGroup.addView(textView1);
+        tagValueRadioGroup.addView(radioButton2);
+        tagValueRadioGroup.addView(textView2);
+    }
     public SelectOneTagValueFragment() {
         // Required empty public constructor
     }
