@@ -15,15 +15,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="What type of establishment is this?"
-            android:id="@+id/tagKeyLabel" />
+            android:text="tagKeyLabel"
+            android:id="@+id/tagKeyLabelTextView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="amenity"
-            android:id="@+id/tagKey"
+            android:text="tagKey"
+            android:id="@+id/tagKeyTextView"
             android:textStyle="italic" />
 
         <Space

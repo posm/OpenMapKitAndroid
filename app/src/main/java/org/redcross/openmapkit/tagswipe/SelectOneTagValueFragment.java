@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
@@ -22,6 +23,10 @@ public class SelectOneTagValueFragment extends Fragment {
     private static final String IDX = "IDX";
 
     private TagEdit tagEdit;
+    private View rootView;
+
+    private TextView tagKeyLabelTextView;
+    private TextView tagKeyTextView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -34,6 +39,24 @@ public class SelectOneTagValueFragment extends Fragment {
         return fragment;
     }
 
+    private void setupWidgets() {
+        tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
+        tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
+
+        String keyLabel = tagEdit.getTagKeyLabel();
+        String key = tagEdit.getTagKey();
+
+        if (keyLabel != null) {
+            tagKeyLabelTextView.setText(keyLabel);
+            tagKeyTextView.setText(key);
+        } else {
+            tagKeyLabelTextView.setText(key);
+            tagKeyTextView.setText("");
+        }
+        
+        
+    }
+    
     public SelectOneTagValueFragment() {
         // Required empty public constructor
     }
@@ -50,8 +73,10 @@ public class SelectOneTagValueFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_select_one_tag_value, container, false);
+
+        rootView =  inflater.inflate(R.layout.fragment_select_one_tag_value, container, false);
+        setupWidgets();
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
