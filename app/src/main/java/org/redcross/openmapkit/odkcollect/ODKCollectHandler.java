@@ -95,12 +95,12 @@ public class ODKCollectHandler {
             if (values != null && values.size() > 0) {
                 for (String value : values) {
                     ODKTagItem tagItem = new ODKTagItem();
-                    tag.addItem(tagItem);
                     tagItem.setValue(value);
                     String valueLabel = extras.getString("TAG_VALUE_LABEL." + key + "." + value);
                     if (valueLabel != null) {
                         tagItem.setLabel(valueLabel);
                     }
+                    tag.addItem(tagItem);
                 }
             }
         }

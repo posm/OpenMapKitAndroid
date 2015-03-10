@@ -77,7 +77,7 @@ public class SelectOneTagValueFragment extends Fragment {
             RadioButton button = new RadioButton(activity);
             button.setTextSize(18);
             TextView textView = new TextView(activity);
-            textView.setPadding(65, 0, 0, 25);
+            textView.setPadding(66, 0, 0, 25);
 //            textView.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
