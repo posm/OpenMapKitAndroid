@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
 import android.widget.EditText;
+import android.widget.RadioGroup;
 
 import com.spatialdev.osm.model.OSMElement;
 
@@ -34,6 +35,7 @@ public class TagEdit {
     private boolean readOnly;
     private int idx = -1;
     private EditText editText;
+    private RadioGroup radioGroup;
     
     public static List<TagEdit> buildTagEdits() {
         int idx = 0;
@@ -128,9 +130,14 @@ public class TagEdit {
         this.editText = editText;
     }
     
-    // TODO: Clint, this is where we get the actual value
-    // from the editText, and we need to do something
-    // similar to get it from the set of radio buttons.
+    public void setRadioGroup(RadioGroup radioGroup) {
+        this.radioGroup = radioGroup;
+    }
+    
+    public ODKTag getODKTag() {
+        return odkTag;
+    }
+    
     private void updateTagInOSMElement() {
         if (editText == null) return; // need to account for when its a select one
         String val = editText.getText().toString();

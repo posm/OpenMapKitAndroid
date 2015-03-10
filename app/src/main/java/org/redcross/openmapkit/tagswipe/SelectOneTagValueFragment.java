@@ -12,6 +12,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
+
+import java.util.Collection;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,41 +66,34 @@ public class SelectOneTagValueFragment extends Fragment {
     
     private void setupRadioButtons() {
         RadioGroup tagValueRadioGroup = (RadioGroup)rootView.findViewById(R.id.selectOneTagValueRadioGroup);
-
+        tagEdit.setRadioGroup(tagValueRadioGroup);
         Activity activity = getActivity();
-        final RadioButton radioButton1 = new RadioButton(activity);
-        TextView textView1 = new TextView(activity);
-        final RadioButton radioButton2 = new RadioButton(activity);
-        TextView textView2 = new TextView(activity);
-        
-        radioButton1.setText("radioButton1");
-        radioButton1.setTextSize(18);
-                
-        textView1.setText("textView1");
-        textView1.setPadding(65, 0, 0, 25);
-        textView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                radioButton1.toggle();
+        ODKTag odkTag = tagEdit.getODKTag();
+        if (odkTag == null) return;
+        Collection<ODKTagItem> odkTagItems = odkTag.getItems();
+        for (ODKTagItem item : odkTagItems) {
+            String label = item.getLabel();
+            String value = item.getValue();
+            RadioButton button = new RadioButton(activity);
+            button.setTextSize(18);
+            TextView textView = new TextView(activity);
+            textView.setPadding(65, 0, 0, 25);
+//            textView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    button.toggle();
+//                }
+//            });
+            if (label != null) {
+                button.setText(label);
+                textView.setText(value);
+            } else {
+                button.setText(value);
+                textView.setText("");
             }
-        });
-
-        radioButton2.setText("radioButton2");
-        radioButton2.setTextSize(18);
-        
-        textView2.setText("textView2");
-        textView2.setPadding(65, 0, 0, 25);
-        textView2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                radioButton2.toggle();
-            }
-        });
-        
-        tagValueRadioGroup.addView(radioButton1);
-        tagValueRadioGroup.addView(textView1);
-        tagValueRadioGroup.addView(radioButton2);
-        tagValueRadioGroup.addView(textView2);
+            tagValueRadioGroup.addView(button);
+            tagValueRadioGroup.addView(textView);
+        }
     }
     public SelectOneTagValueFragment() {
         // Required empty public constructor
