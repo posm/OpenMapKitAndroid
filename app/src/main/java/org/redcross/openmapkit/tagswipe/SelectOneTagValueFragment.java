@@ -78,12 +78,7 @@ public class SelectOneTagValueFragment extends Fragment {
             button.setTextSize(18);
             TextView textView = new TextView(activity);
             textView.setPadding(66, 0, 0, 25);
-//            textView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    button.toggle();
-//                }
-//            });
+            textView.setOnClickListener(new TextViewOnClickListener(button));
             if (label != null) {
                 button.setText(label);
                 textView.setText(value);
@@ -97,6 +92,24 @@ public class SelectOneTagValueFragment extends Fragment {
             tagValueRadioGroup.addView(textView);
         }
     }
+
+    /**
+     * Allows us to pass a RadioButton as a parameter to onClick
+     * * * 
+     */
+    private class TextViewOnClickListener implements View.OnClickListener {
+        RadioButton radioButton;
+        
+        public TextViewOnClickListener(RadioButton rb) {
+            radioButton = rb;
+        }
+        
+        @Override
+        public void onClick(View v) {
+            radioButton.toggle();
+        }
+    }
+    
     public SelectOneTagValueFragment() {
         // Required empty public constructor
     }
