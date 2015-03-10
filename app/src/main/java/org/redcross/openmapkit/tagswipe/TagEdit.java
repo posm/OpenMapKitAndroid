@@ -139,10 +139,16 @@ public class TagEdit {
     }
     
     private void updateTagInOSMElement() {
-        if (editText == null) return; // need to account for when its a select one
-        String val = editText.getText().toString();
-        tagVal = val;
-        osmElement.addOrEditTag(tagKey, tagVal);
+        if (radioGroup != null && odkTag != null) {
+            int checkedId = radioGroup.getCheckedRadioButtonId();
+            if (checkedId != -1) {
+                tagVal = odkTag.getTagItemValueFromRadioButtonId(checkedId);
+                osmElement.addOrEditTag(tagKey, tagVal);
+            }
+        } else if (editText != null) {
+            tagVal = editText.getText().toString();
+            osmElement.addOrEditTag(tagKey, tagVal);
+        }
     }
     
     public String getTitle() {

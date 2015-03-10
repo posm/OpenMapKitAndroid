@@ -75,6 +75,7 @@ public class SelectOneTagValueFragment extends Fragment {
             String label = item.getLabel();
             String value = item.getValue();
             RadioButton button = new RadioButton(activity);
+            odkTag.putRadioButtonIdToTagItemHash(button.getId(), item);
             button.setTextSize(18);
             TextView textView = new TextView(activity);
             textView.setPadding(66, 0, 0, 25);
