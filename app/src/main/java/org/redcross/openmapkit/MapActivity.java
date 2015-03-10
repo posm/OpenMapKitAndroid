@@ -32,14 +32,20 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
+import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
@@ -51,6 +57,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private LinearLayout mTopLinearLayout;
     private LinearLayout mBottomLinearLayout;
     private TextView mTagTextView;
+
+    private Map<String, String> tagMap = new LinkedHashMap<>();
 
     /**
      * intent request codes
@@ -170,8 +178,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 //fetch the key associated with the list view cell the user tapped
-                TextView tagKeyTextView = (TextView)view.findViewById(R.id.textViewTagKey);
-                String tappedKey = String.valueOf(tagKeyTextView.getText());
+//                TextView tagKeyTextView = (TextView)view.findViewById(R.id.textViewTagKey);
+//                String tappedKey = String.valueOf(tagKeyTextView.getText());
+                
+                String[] keys = tagMap.keySet().toArray(new String[tagMap.size()]);
+                String tappedKey = keys[position];
 
                 //launch the TagSwipeActivity and pass the key
                 Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
@@ -187,8 +198,27 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void identifyOSMFeature(OSMElement osmElement) {
 
-        //fetch tags associated with tapped OSM element
-        Map<String, String> tagMap = osmElement.getTags();
+        tagMap = new LinkedHashMap<>();
+        
+        // TODO: REFACTOR, THIS IS JUST ME GETTING A THING TO WORK AT FOSS!
+        if (ODKCollectHandler.isODKCollectMode()) {
+            Map<String,String> tags = osmElement.getTags();
+            Map<String, String> readOnlyTags = new LinkedHashMap<>(tags);
+            ODKCollectData odkCollectData = ODKCollectHandler.getODKCollectData();
+            Collection<ODKTag> requiredTags = odkCollectData.getRequiredTags();
+            for (ODKTag odkTag : requiredTags) {
+                String key = odkTag.getKey();
+                String val = tags.get(key);
+                tagMap.put(key, val);
+                readOnlyTags.remove(key);
+            }
+            Set<String> readOnlyKeys = readOnlyTags.keySet();
+            for (String readOnlyKey : readOnlyKeys) {
+                tagMap.put(readOnlyKey, tags.get(readOnlyKey));
+            }
+        } else {
+            tagMap = osmElement.getTags();
+        }
 
         if(tagMap.size() > 0) {
 
