@@ -150,9 +150,13 @@ public abstract class OSMElement {
         // set the tags for the element (all element types can have tags)
         Set<String> tagKeys = tags.keySet();
         for (String tagKey : tagKeys) {
+            String tagVal = tags.get(tagKey);
+            if (tagVal == null || tagVal.equals("")) {
+                continue;
+            }
             xmlSerializer.startTag(null, "tag");
             xmlSerializer.attribute(null, "k", tagKey);
-            xmlSerializer.attribute(null, "v", tags.get(tagKey));
+            xmlSerializer.attribute(null, "v", tagVal);
             xmlSerializer.endTag(null, "tag");
         }
     }
