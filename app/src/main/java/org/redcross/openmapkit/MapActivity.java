@@ -51,12 +51,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     private MapView mapView;
     private Button tagsButton;
-    private String mSelectedMBTilesFile;
     private ListView mTagListView;
     private ImageButton mCloseListViewButton;
     private LinearLayout mTopLinearLayout;
     private LinearLayout mBottomLinearLayout;
     private TextView mTagTextView;
+    
+    private Basemap basemap;
 
     private Map<String, String> tagMap = new LinkedHashMap<>();
 
@@ -100,18 +101,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         //get map from layout
         mapView = (MapView)findViewById(R.id.mapView);
-
-        //add map data based on connectivity status
-        boolean deviceIsConnected = Connectivity.isConnected(getApplicationContext());
-
-        if (deviceIsConnected) {
-
-            addOnlineDataSources();
-
-        } else {
-
-            presentMBTilesOptions();
-        }
+        
+        // initialize basemap object
+        basemap = new Basemap(this);
 
         initializeOsmXml();
 
@@ -249,60 +241,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
 
     /**
-     * For adding data to map when online
-     */
-    private void addOnlineDataSources() {
-
-        //create OSM tile layer
-        String defaultTilePID = getString(R.string.defaultTileLayerPID);
-        String defaultTileURL = getString(R.string.defaultTileLayerURL);
-        String defaultTileName = getString(R.string.defaultTileLayerName);
-        String defaultTileAttribution = getString(R.string.defaultTileLayerAttribution);
-
-        WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
-        ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
-
-        //add OSM tile layer to map
-        mapView.setTileSource(ws);
-    }
-
-    /**
-     * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
-     */
-    private void addOfflineDataSources(String fileName) {
-
-        String filePath = Environment.getExternalStorageDirectory() + "/" + ExternalStorage.APP_DIR + "/" + ExternalStorage.MBTILES_DIR + "/";
-
-        if(ExternalStorage.isReadable()) {
-
-            //fetch mbtiles from application folder (e.g. openmapkit/mbtiles)
-            File targetMBTiles = ExternalStorage.fetchFileFromExternalStorage(filePath + fileName);
-
-            if(!targetMBTiles.exists()) {
-
-                //inform user if no mbtiles was found
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Device is Offline");
-                builder.setMessage("Please add mbtiles to " + filePath);
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //placeholder
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-            } else {
-
-                //add mbtiles to map
-                mapView.setTileSource(new MBTilesLayer(targetMBTiles));
-            }
-
-        }
-    }
-
-    /**
      * Loads OSM XML stored on the device.
      */
     private void initializeOsmXml() {
@@ -351,111 +289,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         
     }
 
-
-    /**
-     * For presenting a dialog to allow the user to choose which MBTILES file to use that has been uploaded to their device/s openmapkit/mbtiles folder
-     */
-    private void presentMBTilesOptions() {
-
-        //shared preferences private to this activity
-        final SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        String previousMBTilesChoice = sharedPreferences.getString(getString(R.string.preferenceMBTileChoice), "nopreviouschoice");
-
-        //create an array of all mbtile options
-        final ArrayList<String> mbtilesFileNames = new ArrayList<>();
-
-        //when device is connected, HOT OSM Basemap is the first option
-        if(Connectivity.isConnected(getApplicationContext())) {
-            mbtilesFileNames.add(getString(R.string.hotOSMOptionTitle));
-        }
-
-        //add mbtiles names from external storage
-        File[] mbtiles = ExternalStorage.fetchMBTilesFiles();
-        if (mbtiles != null && mbtiles.length > 0) {
-            for (File file : mbtiles) {
-                String fileName = file.getName();
-                mbtilesFileNames.add(fileName);
-            }
-        }
-
-        //present a dialog of mbtiles options
-        if(mbtilesFileNames.size() > 0) {
-
-            //create dialog of mbtiles choices
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.mbtilesChooserDialogTitle));
-            CharSequence[] charSeq = (CharSequence[]) mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
-
-            //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
-            int defaultRadioButtonIndex = -1; //none radio button selected
-            if(previousMBTilesChoice.equals("nopreviouschoice")) {
-                //if user DID NOT previously choose an mbtiles option...
-                if(Connectivity.isConnected(getApplicationContext())) {
-                    //the first radio button (for HOT OSM) will be selected by default
-                    defaultRadioButtonIndex = 0;
-                    //the default selected option is HOT OSM
-                    mSelectedMBTilesFile = mbtilesFileNames.get(0); //default choice
-                } else {
-                    defaultRadioButtonIndex = -1; //no selected radio button by default
-                }
-            } else {
-                //if user previously chose an mbtiles option ...
-                for(int i = 0; i < mbtilesFileNames.size(); i++) {
-                    if(mbtilesFileNames.get(i).equals(previousMBTilesChoice)) {
-                        defaultRadioButtonIndex = i;
-                    }
-                }
-            }
-
-            //add choices to dialog
-            builder.setSingleChoiceItems(charSeq, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //user tapped on radio button and changed previous choice or default
-                    String userMBTilesChoice = mbtilesFileNames.get(which);
-
-                    //add user's choice to shared preferences key
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(getString(R.string.preferenceMBTileChoice), userMBTilesChoice);
-                    editor.commit();
-
-                    mSelectedMBTilesFile = userMBTilesChoice;
-                }
-            });
-
-            //handle OK tap event of dialog
-            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    //user clicked OK
-                    if(mSelectedMBTilesFile.equals(getString(R.string.hotOSMOptionTitle))) {
-                        
-                        addOnlineDataSources();
-
-                    } else {
-
-                        addOfflineDataSources(mSelectedMBTilesFile);
-                    }
-                }
-            });
-
-            //handle cancel button tap event of dialog
-            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    //user clicked cancel
-                }
-            });
-
-            //present dialog to user
-            builder.show();
-
-        } else {
-
-            Toast prompt = Toast.makeText(getApplicationContext(), "Please add .mbtiles file to " + getString(R.string.mbtilesAppPath), Toast.LENGTH_LONG);
-            prompt.show();
-        }
-    }
 
     /**
      * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
@@ -545,7 +378,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         if (id == R.id.mbtilessettings) {
 
-            presentMBTilesOptions();
+            basemap.presentMBTilesOptions();
 
             return true;
         }
