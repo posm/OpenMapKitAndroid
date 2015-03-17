@@ -1,11 +1,13 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -59,6 +61,10 @@ public class StringTagValueFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public EditText getEditText() {
+        return tagValueEditText;
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +96,15 @@ public class StringTagValueFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        
+        // Close keyboard if open
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(tagValueEditText.getWindowToken(), 0);
+    }
+    
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

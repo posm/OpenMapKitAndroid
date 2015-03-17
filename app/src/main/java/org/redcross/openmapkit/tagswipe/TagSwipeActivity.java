@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,9 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import org.redcross.openmapkit.R;
 
@@ -101,21 +105,41 @@ public class TagSwipeActivity extends ActionBarActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        
+        private Fragment fragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+        private void hideKeyboard() {
+            if (fragment != null && fragment instanceof StringTagValueFragment) {
+                StringTagValueFragment stvf = (StringTagValueFragment) fragment;
+                EditText et = stvf.getEditText();
+                if (et != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+                }
+            }
+        }
+        
         @Override
         public Fragment getItem(int position) {
+            
+            // hide keyboard if last fragment had a user edit text
+            hideKeyboard();
+            
             TagEdit tagEdit = tagEdits.get(position);
             if (tagEdit != null) {
                 if (tagEdit.isReadOnly()) {
-                    return ReadOnlyTagFragment.newInstance(position);
+                    fragment = ReadOnlyTagFragment.newInstance(position);
+                    return fragment;
                 } else if (tagEdit.isSelectOne()) {
-                    return SelectOneTagValueFragment.newInstance(position);
+                    fragment = SelectOneTagValueFragment.newInstance(position);
+                    return fragment;
                 } else {
-                    return StringTagValueFragment.newInstance(position);
+                    fragment = StringTagValueFragment.newInstance(position);
+                    return fragment;
                 }
             }
             return null;
