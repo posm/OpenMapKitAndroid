@@ -36,18 +36,26 @@ public class ExternalStorage {
         }
     }
 
-    public static File[] fetchOSMXmlFiles() {
-        String dirPath = Environment.getExternalStorageDirectory() + "/"
-                + APP_DIR + "/" 
+    public static String getMBTilesDir() {
+        return Environment.getExternalStorageDirectory() + "/"
+                + APP_DIR + "/"
+                + MBTILES_DIR + "/";
+    }
+    
+    public static String getOSMDir() {
+        return Environment.getExternalStorageDirectory() + "/"
+                + APP_DIR + "/"
                 + OSM_DIR + "/";
+    }
+    
+    public static File[] fetchOSMXmlFiles() {
+        String dirPath = getOSMDir();
         File dir = new File(dirPath);
         return dir.listFiles();
     }
     
     public static File[] fetchMBTilesFiles() {
-        String dirPath = Environment.getExternalStorageDirectory() + "/"
-                + APP_DIR + "/"
-                + MBTILES_DIR + "/";
+        String dirPath = getMBTilesDir();
         File dir = new File(dirPath);
         return dir.listFiles();
     }

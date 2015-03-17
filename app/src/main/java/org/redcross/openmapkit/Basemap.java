@@ -23,6 +23,8 @@ import java.util.ArrayList;
  */
 public class Basemap {
     
+    private static final String PREVIOUS_BASEMAP = "org.redcross.openmapkit.PREVIOUS_BASEMAP";
+    
     private MapActivity mapActivity;
     private MapView mapView;
     private Context context;
@@ -56,9 +58,9 @@ public class Basemap {
     }
     
     public void presentMBTilesOptions() {
-        //shared preferences private to this activity
+        //shared preferences private to mapActivity
         final SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
-        String previousMBTilesChoice = sharedPreferences.getString(mapActivity.getString(R.string.preferenceMBTileChoice), "nopreviouschoice");
+        String previousMBTilesChoice = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
 
         //create an array of all mbtile options
         final ArrayList<String> mbtilesFileNames = new ArrayList<>();
@@ -87,7 +89,7 @@ public class Basemap {
 
             //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
             int defaultRadioButtonIndex = -1; //none radio button selected
-            if(previousMBTilesChoice.equals("nopreviouschoice")) {
+            if(previousMBTilesChoice == null) {
                 //if user DID NOT previously choose an mbtiles option...
                 if(Connectivity.isConnected(context)) {
                     //the first radio button (for HOT OSM) will be selected by default
@@ -115,8 +117,8 @@ public class Basemap {
 
                     //add user's choice to shared preferences key
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(mapActivity.getString(R.string.preferenceMBTileChoice), userMBTilesChoice);
-                    editor.commit();
+                    editor.putString(PREVIOUS_BASEMAP, userMBTilesChoice);
+                    editor.apply();
 
                     selectedMBTilesFile = userMBTilesChoice;
                 }
@@ -151,7 +153,7 @@ public class Basemap {
 
         } else {
 
-            Toast prompt = Toast.makeText(context, "Please add .mbtiles file to " + mapActivity.getString(R.string.mbtilesAppPath), Toast.LENGTH_LONG);
+            Toast prompt = Toast.makeText(context, "Please add .mbtiles file to " + ExternalStorage.getMBTilesDir(), Toast.LENGTH_LONG);
             prompt.show();
         }
     }
@@ -160,7 +162,7 @@ public class Basemap {
      * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
      */
     private void addOfflineDataSources(String fileName) {
-        String filePath = Environment.getExternalStorageDirectory() + "/" + ExternalStorage.APP_DIR + "/" + ExternalStorage.MBTILES_DIR + "/";
+        String filePath = ExternalStorage.getMBTilesDir();
         if(ExternalStorage.isReadable()) {
             //fetch mbtiles from application folder (e.g. openmapkit/mbtiles)
             File targetMBTiles = ExternalStorage.fetchFileFromExternalStorage(filePath + fileName);
