@@ -29,14 +29,16 @@ public class Basemap {
     private MapView mapView;
     private Context context;
     
-    private String selectedMBTilesFile;
+    private static String selectedMBTilesFile;
     
     public Basemap(MapActivity mapActivity) {
         this.mapActivity = mapActivity;
         this.mapView = mapActivity.getMapView();
         this.context = mapActivity.getApplicationContext();
 
-        if (Connectivity.isConnected(context)) {
+        if (selectedMBTilesFile != null) {
+            addOfflineDataSources(selectedMBTilesFile);
+        } else if (Connectivity.isConnected(context)) {
             addOnlineDataSources();
         } else {
             presentMBTilesOptions();
@@ -53,6 +55,8 @@ public class Basemap {
         WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
         ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
 
+        selectedMBTilesFile = null;
+        
         //add OSM tile layer to map
         mapView.setTileSource(ws);
     }
