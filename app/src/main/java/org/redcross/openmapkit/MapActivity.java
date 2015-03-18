@@ -50,7 +50,6 @@ import java.util.Set;
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
     private MapView mapView;
-    private Button tagsButton;
     private ListView mTagListView;
     private ImageButton mCloseListViewButton;
     private LinearLayout mTopLinearLayout;
@@ -109,10 +108,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         //add user location toggle button
         initializeLocationButton();
-
-        //add tags button
-        tagsButton = (Button) findViewById(R.id.tagsButton);
-        initializeTagsButton();
 
         //set default map extent and zoom
         LatLng initialCoordinate = new LatLng(-17.807396,30.931202);
@@ -278,16 +273,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         });
     }
     
-    private void initializeTagsButton() {
-        tagsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
-                tagSwipe.putExtra("TAG_KEY", "name");
-                startActivity(tagSwipe);
-            }
-        });
-        
-    }
 
 
     /**
@@ -405,8 +390,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             //present OSM Feature tags in bottom ListView
             identifyOSMFeature(tappedOSMElement);
 
-        } else {
-            tagsButton.setVisibility(View.INVISIBLE);
         }
     }
 
