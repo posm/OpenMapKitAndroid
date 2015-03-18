@@ -1,10 +1,10 @@
 package org.redcross.openmapkit.tagswipe;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -129,35 +128,38 @@ public class TagSwipeActivity extends ActionBarActivity {
             // hide keyboard if last fragment had a user edit text
             hideKeyboard();
             
-            TagEdit tagEdit = tagEdits.get(position);
-            if (tagEdit != null) {
-                if (tagEdit.isReadOnly()) {
-                    fragment = ReadOnlyTagFragment.newInstance(position);
-                    return fragment;
-                } else if (tagEdit.isSelectOne()) {
-                    fragment = SelectOneTagValueFragment.newInstance(position);
-                    return fragment;
-                } else {
-                    fragment = StringTagValueFragment.newInstance(position);
-                    return fragment;
+            if (position < tagEdits.size()) {
+                TagEdit tagEdit = tagEdits.get(position);
+                if (tagEdit != null) {
+                    if (tagEdit.isReadOnly()) {
+                        fragment = ReadOnlyTagFragment.newInstance(position);
+                        return fragment;
+                    } else if (tagEdit.isSelectOne()) {
+                        fragment = SelectOneTagValueFragment.newInstance(position);
+                        return fragment;
+                    } else {
+                        fragment = StringTagValueFragment.newInstance(position);
+                        return fragment;
+                    }
                 }
             }
-            return null;
+            return ODKCollectFragment.newInstance("one", "tow");
         }
 
         @Override
         public int getCount() {
-            return tagEdits.size();
+            return tagEdits.size() + 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            TagEdit tagEdit = tagEdits.get(position);
-            if (tagEdit != null) {
-                return tagEdit.getTitle();
+            if (position < tagEdits.size()) {
+                TagEdit tagEdit = tagEdits.get(position);
+                if (tagEdit != null) {
+                    return tagEdit.getTitle();
+                }
             }
-            return null;
+            return "test";
         }
     }
 
