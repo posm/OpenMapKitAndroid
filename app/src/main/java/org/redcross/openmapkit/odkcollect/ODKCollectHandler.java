@@ -35,11 +35,9 @@ public class ODKCollectHandler {
                     String instanceDir = extras.getString("INSTANCE_DIR");
                     LinkedHashMap<String, ODKTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
                     odkCollectData = new ODKCollectData(formId, formFileName, instanceId, instanceDir, requiredTags);
-                    return;
-                } 
+                }
             }
         }
-        odkCollectData = null;
     }
     
     public static boolean isODKCollectMode() {
