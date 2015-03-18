@@ -55,10 +55,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private LinearLayout mTopLinearLayout;
     private LinearLayout mBottomLinearLayout;
     private TextView mTagTextView;
-    
     private Basemap basemap;
-
-    private Map<String, String> tagMap = new LinkedHashMap<>();
+    private TagListAdapter tagListAdapter;
 
     /**
      * intent request codes
@@ -156,20 +154,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 if (View.class.isInstance(delegate.getParent())) {
                     ((View) delegate.getParent()).setTouchDelegate(expandedArea);
                 }
-            };
+            }
         });
 
         //handle list view item taps
         mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                //fetch the key associated with the list view cell the user tapped
-//                TextView tagKeyTextView = (TextView)view.findViewById(R.id.textViewTagKey);
-//                String tappedKey = String.valueOf(tagKeyTextView.getText());
-                
-                String[] keys = tagMap.keySet().toArray(new String[tagMap.size()]);
-                String tappedKey = keys[position];
+                String tappedKey = tagListAdapter.getTagKeyForIndex(position);
 
                 //launch the TagSwipeActivity and pass the key
                 Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
@@ -185,11 +177,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      */
     private void identifyOSMFeature(OSMElement osmElement) {
         //pass the tags to the list adapter
-        TagListAdapter adapter = new TagListAdapter(this, osmElement);
+        tagListAdapter = new TagListAdapter(this, osmElement);
         
-        if(!adapter.isEmpty()) {
+        if(!tagListAdapter.isEmpty()) {
             //set the ListView's adapter
-            mTagListView.setAdapter(adapter);
+            mTagListView.setAdapter(tagListAdapter);
 
             //show the ListView under the map
             proportionMapAndList(60, 40);

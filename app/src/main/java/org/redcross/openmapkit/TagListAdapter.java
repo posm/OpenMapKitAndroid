@@ -87,6 +87,11 @@ public class TagListAdapter extends BaseAdapter {
         return false;
     }
     
+    public String getTagKeyForIndex(int idx) {
+        String[] keys = tagMap.keySet().toArray(new String[tagMap.size()]);
+        return keys[idx];
+    }
+    
     /**
      * Implementing Adapter inherited abstract methods
      */
