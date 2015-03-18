@@ -85,10 +85,10 @@ public class Basemap {
             //create dialog of mbtiles choices
             AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
             builder.setTitle(mapActivity.getString(R.string.mbtilesChooserDialogTitle));
-            CharSequence[] charSeq = (CharSequence[]) mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
+            CharSequence[] charSeq = mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
 
             //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
-            int defaultRadioButtonIndex = -1; //none radio button selected
+            int defaultRadioButtonIndex = 0;
             if(previousMBTilesChoice == null) {
                 //if user DID NOT previously choose an mbtiles option...
                 if(Connectivity.isConnected(context)) {
@@ -101,10 +101,15 @@ public class Basemap {
                 }
             } else {
                 //if user previously chose an mbtiles option ...
-                for(int i = 0; i < mbtilesFileNames.size(); i++) {
-                    if(mbtilesFileNames.get(i).equals(previousMBTilesChoice)) {
+                for(int i = 0; i < mbtilesFileNames.size(); ++i) {
+                    String fileName = mbtilesFileNames.get(i);
+                    if(fileName.equals(previousMBTilesChoice)) {
                         defaultRadioButtonIndex = i;
-                    }
+                        selectedMBTilesFile = fileName;
+                    } 
+                }
+                if (selectedMBTilesFile == null) {
+                    selectedMBTilesFile = mbtilesFileNames.get(0);
                 }
             }
 
@@ -113,14 +118,12 @@ public class Basemap {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //user tapped on radio button and changed previous choice or default
-                    String userMBTilesChoice = mbtilesFileNames.get(which);
+                    selectedMBTilesFile = mbtilesFileNames.get(which);
 
                     //add user's choice to shared preferences key
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(PREVIOUS_BASEMAP, userMBTilesChoice);
+                    editor.putString(PREVIOUS_BASEMAP, selectedMBTilesFile);
                     editor.apply();
-
-                    selectedMBTilesFile = userMBTilesChoice;
                 }
             });
 
@@ -152,7 +155,6 @@ public class Basemap {
             builder.show();
 
         } else {
-
             Toast prompt = Toast.makeText(context, "Please add .mbtiles file to " + ExternalStorage.getMBTilesDir(), Toast.LENGTH_LONG);
             prompt.show();
         }
