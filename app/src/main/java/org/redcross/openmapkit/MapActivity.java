@@ -184,34 +184,10 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * @param osmElement The target OSMElement.
      */
     private void identifyOSMFeature(OSMElement osmElement) {
-
-        tagMap = new LinkedHashMap<>();
+        //pass the tags to the list adapter
+        TagListAdapter adapter = new TagListAdapter(this, osmElement);
         
-        // TODO: REFACTOR, THIS IS JUST ME GETTING A THING TO WORK AT FOSS!
-        if (ODKCollectHandler.isODKCollectMode()) {
-            Map<String,String> tags = osmElement.getTags();
-            Map<String, String> readOnlyTags = new LinkedHashMap<>(tags);
-            ODKCollectData odkCollectData = ODKCollectHandler.getODKCollectData();
-            Collection<ODKTag> requiredTags = odkCollectData.getRequiredTags();
-            for (ODKTag odkTag : requiredTags) {
-                String key = odkTag.getKey();
-                String val = tags.get(key);
-                tagMap.put(key, val);
-                readOnlyTags.remove(key);
-            }
-            Set<String> readOnlyKeys = readOnlyTags.keySet();
-            for (String readOnlyKey : readOnlyKeys) {
-                tagMap.put(readOnlyKey, tags.get(readOnlyKey));
-            }
-        } else {
-            tagMap = osmElement.getTags();
-        }
-
-        if(tagMap.size() > 0) {
-
-            //pass the tags to the list adapter
-            TagListAdapter adapter = new TagListAdapter(this, tagMap);
-
+        if(!adapter.isEmpty()) {
             //set the ListView's adapter
             mTagListView.setAdapter(adapter);
 

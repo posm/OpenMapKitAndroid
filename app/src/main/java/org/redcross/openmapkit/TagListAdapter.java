@@ -9,49 +9,67 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.spatialdev.osm.model.OSMElement;
+
 import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class TagListAdapter extends BaseAdapter {
 
-    private LayoutInflater mInflater;
+    private LayoutInflater inflater;
+    private Map<String, String> tagMap;
+    private ArrayList<String> tagKeys;
 
-    private Map<String, String> mTagMap;
+    public TagListAdapter(Activity activity, OSMElement osmElement) {
 
-    private ArrayList<String> mTagKeys;
+        tagMap = new LinkedHashMap<>();
 
-    private ViewHolder mViewHolder;
-
-    public TagListAdapter(Activity activity, Map<String, String> tagMap) {
-
-        mTagMap = tagMap;
-
+        if (ODKCollectHandler.isODKCollectMode()) {
+            Map<String,String> tags = osmElement.getTags();
+            Map<String, String> readOnlyTags = new LinkedHashMap<>(tags);
+            ODKCollectData odkCollectData = ODKCollectHandler.getODKCollectData();
+            Collection<ODKTag> requiredTags = odkCollectData.getRequiredTags();
+            for (ODKTag odkTag : requiredTags) {
+                String key = odkTag.getKey();
+                String val = tags.get(key);
+                tagMap.put(key, val);
+                readOnlyTags.remove(key);
+            }
+            Set<String> readOnlyKeys = readOnlyTags.keySet();
+            for (String readOnlyKey : readOnlyKeys) {
+                tagMap.put(readOnlyKey, tags.get(readOnlyKey));
+            }
+        } else {
+            tagMap = osmElement.getTags();
+        }
+        
         Set<String> keys = tagMap.keySet();
-        mTagKeys = new ArrayList<>();
+        tagKeys = new ArrayList<>();
         for(String key: keys) {
-            mTagKeys.add(key);
+            tagKeys.add(key);
         }
 
-        mInflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     /**
      * Implementing Adapter inherited abstract methods
      */
     public int getCount() {
-
-        return mTagMap.size();
+        return tagMap.size();
     }
 
     /**
      * Implementing Adapter inherited abstract methods
      */
     public Object getItem(int arg0) {
-
         return null;
     }
 
@@ -59,10 +77,16 @@ public class TagListAdapter extends BaseAdapter {
      * Implementing Adapter inherited abstract methods
      */
     public long getItemId(int position) {
-
         return 0;
     }
 
+    public boolean isEmpty() {
+        if (tagMap == null || tagMap.size() == 0) {
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * Implementing Adapter inherited abstract methods
      */
@@ -72,9 +96,10 @@ public class TagListAdapter extends BaseAdapter {
 
         View view = convertView;
 
+        ViewHolder mViewHolder;
         if(convertView == null) {
 
-            view = mInflater.inflate(R.layout.taglistviewitem, null);
+            view = inflater.inflate(R.layout.taglistviewitem, null);
 
             mViewHolder = new ViewHolder();
             mViewHolder.textViewTagKey = (TextView)view.findViewById(R.id.textViewTagKey); //left side tag key
@@ -88,8 +113,8 @@ public class TagListAdapter extends BaseAdapter {
         }
 
         //tag key and value
-        String currentTagKey = mTagKeys.get(position);
-        String currentTagValue = mTagMap.get(currentTagKey);
+        String currentTagKey = tagKeys.get(position);
+        String currentTagValue = tagMap.get(currentTagKey);
 
         //labels for tag key and value
         String currentTagKeyLabel = null;
@@ -132,11 +157,10 @@ public class TagListAdapter extends BaseAdapter {
     }
 
     static class ViewHolder{
-
         TextView textViewTagKey;
-
         TextView textViewTagValue;
     }
+    
 }
 
 
