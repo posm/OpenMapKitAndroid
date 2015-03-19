@@ -87,9 +87,7 @@ public class TagSwipeActivity extends ActionBarActivity {
 
         // save to odk collect action bar button
         if (id == R.id.action_save_to_odk_collect) {
-            TagEdit.saveToODKCollect();
-            setResult(Activity.RESULT_OK);
-            finish();
+            saveToODKCollect();
         }
         
         //noinspection SimplifiableIfStatement
@@ -100,7 +98,17 @@ public class TagSwipeActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    public void saveToODKCollect() {
+        TagEdit.saveToODKCollect();
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
+    
+    public void cancel() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+    }
+    
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -147,7 +155,7 @@ public class TagSwipeActivity extends ActionBarActivity {
             }
             
             if (ODKCollectHandler.isODKCollectMode()) {
-                return ODKCollectFragment.newInstance("one", "tow");    
+                return ODKCollectFragment.newInstance();    
             } else {
                 return StandaloneFragment.newInstance("one", "two");
             }
