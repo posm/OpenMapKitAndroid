@@ -3,9 +3,45 @@
     android:layout_height="match_parent"
     tools:context="org.redcross.openmapkit.tagswipe.ODKCollectFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="ODK Collect Mode Fragment"
-        android:id="@+id/asdf" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/odkcollect_fragment_question"
+            android:id="@+id/questionTextView" />
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="@dimen/abc_text_size_large_material" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:id="@+id/button2" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+                android:id="@+id/button" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 </FrameLayout>
