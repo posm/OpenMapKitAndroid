@@ -52,11 +52,10 @@
     <string name="title_activity_tag_swipe">Tags</string>
 
 
-    <string name="title_section1">name</string>
-    <string name="title_section2">amenity</string>
-    <string name="title_section3">building:levels</string>
-
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <string name="standalone_fragment_title">Save</string>
+    <string name="odkcollect_fragment_title">Add or Save</string>
 
 </resources>

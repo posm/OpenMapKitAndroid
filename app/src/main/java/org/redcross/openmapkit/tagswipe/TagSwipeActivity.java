@@ -6,6 +6,7 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -165,10 +166,11 @@ public class TagSwipeActivity extends ActionBarActivity {
                     return tagEdit.getTitle();
                 }
             }
+            Resources res = getResources();
             if (ODKCollectHandler.isODKCollectMode()) {
-                return "SAVE";
+                return res.getString(R.string.odkcollect_fragment_title);
             } else {
-                return "ADD OR SAVE";
+                return res.getString(R.string.standalone_fragment_title);
             }
         }
     }
