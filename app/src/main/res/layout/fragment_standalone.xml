@@ -3,72 +3,81 @@
     android:layout_height="match_parent"
     tools:context="org.redcross.openmapkit.tagswipe.StandaloneFragment">
 
-
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:paddingLeft="20dp"
-        android:paddingTop="20dp"
-        android:paddingRight="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/standalone_fragment_question1"
-            android:id="@+id/questionTextView" />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="@dimen/abc_text_size_large_material" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+"
-            android:id="@+id/addTagButton"
-            android:layout_gravity="center_horizontal"
-            android:textSize="@dimen/abc_text_size_display_3_material"
-            android:paddingLeft="35dp"
-            android:paddingRight="35dp"
-            android:paddingBottom="12dp" />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="@dimen/abc_text_size_display_2_material" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/standalone_fragment_question2"
-            android:id="@+id/questionTextView2" />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="@dimen/abc_text_size_large_material" />
+        android:id="@+id/scrollView" >
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:paddingLeft="20dp"
+            android:paddingTop="20dp"
+            android:paddingRight="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/standalone_fragment_question1"
+                android:id="@+id/questionTextView" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="@dimen/abc_text_size_large_material" />
 
             <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cancel"
-                android:id="@+id/button2" />
+                android:text="+"
+                android:id="@+id/addTagButton"
+                android:layout_gravity="center_horizontal"
+                android:textSize="@dimen/abc_text_size_display_3_material"
+                android:paddingLeft="35dp"
+                android:paddingRight="35dp"
+                android:paddingBottom="12dp" />
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="@dimen/abc_text_size_display_2_material" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:id="@+id/button" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/standalone_fragment_question2"
+                android:id="@+id/questionTextView2" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="@dimen/abc_text_size_large_material" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel"
+                    android:id="@+id/button2" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save"
+                    android:id="@+id/button" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="@dimen/abc_text_size_display_2_material" />
+
         </LinearLayout>
+    </ScrollView>
 
-
-    </LinearLayout>
 </FrameLayout>
