@@ -49,6 +49,10 @@ import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
+    private static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
+    private static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
+    private static final String PREVIOUS_ZOOM = "org.redcross.openmapkit.PREVIOUS_ZOOM";
+    
     private MapView mapView;
     private ListView mTagListView;
     private ImageButton mCloseListViewButton;
@@ -107,15 +111,49 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //add user location toggle button
         initializeLocationButton();
 
-        //set default map extent and zoom
-        LatLng initialCoordinate = new LatLng(-17.807396,30.931202);
-        mapView.setCenter(initialCoordinate);
-        mapView.setZoom(19);
-        mapView.setMaxZoomLevel(21);
+        positionMap();
 
         initializeListView();
     }
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveMapPosition();        
+    }
 
+    private void saveMapPosition() {
+        LatLng c = mapView.getCenter();
+        float lat = (float) c.getLatitude();
+        float lng = (float) c.getLongitude();
+        float z = mapView.getZoomLevel();
+
+        SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+        editor.putFloat(PREVIOUS_LAT, lat);
+        editor.putFloat(PREVIOUS_LNG, lng);
+        editor.putFloat(PREVIOUS_ZOOM, z);
+        editor.apply();
+    }
+    
+    private void positionMap() {
+        SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+        double lat = (double) pref.getFloat(PREVIOUS_LAT, -999);
+        double lng = (double) pref.getFloat(PREVIOUS_LNG, -999);
+        float z = pref.getFloat(PREVIOUS_ZOOM, -999);
+        
+        // no shared pref
+        if (lat == -999 || lng == -999 || z == -999) {
+            mapView.setUserLocationEnabled(true);
+            mapView.goToUserLocation(true);
+        } 
+        // there is a shared pref
+        else {
+            LatLng c = new LatLng(lat, lng);
+            mapView.setCenter(c);
+            mapView.setZoom(z);
+        }
+    }
+    
     /**
      * For initializing the ListView of tags
      */
@@ -220,22 +258,18 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void initializeLocationButton() {
 
         //instantiate location button
-        ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
+        final ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
 
         //set tap event
         locationButton.setOnClickListener(new View.OnClickListener() {
-
+            @Override
             public void onClick(View v) {
-
                 boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
-
                 if (userLocationIsEnabled) {
                     mapView.setUserLocationEnabled(false);
-
                 } else {
                     mapView.setUserLocationEnabled(true);
                     mapView.goToUserLocation(true);
-                    mapView.setUserLocationRequiredZoom(15);
                 }
             }
         });
