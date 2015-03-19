@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 public class TagSwipeActivity extends ActionBarActivity {
 
@@ -143,7 +144,12 @@ public class TagSwipeActivity extends ActionBarActivity {
                     }
                 }
             }
-            return ODKCollectFragment.newInstance("one", "tow");
+            
+            if (ODKCollectHandler.isODKCollectMode()) {
+                return ODKCollectFragment.newInstance("one", "tow");    
+            } else {
+                return StandaloneFragment.newInstance("one", "two");
+            }
         }
 
         @Override
@@ -159,7 +165,11 @@ public class TagSwipeActivity extends ActionBarActivity {
                     return tagEdit.getTitle();
                 }
             }
-            return "test";
+            if (ODKCollectHandler.isODKCollectMode()) {
+                return "SAVE";
+            } else {
+                return "ADD OR SAVE";
+            }
         }
     }
 
