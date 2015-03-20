@@ -49,18 +49,18 @@ import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
 
-    private static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
-    private static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
-    private static final String PREVIOUS_ZOOM = "org.redcross.openmapkit.PREVIOUS_ZOOM";
-    
-    private MapView mapView;
-    private ListView mTagListView;
-    private ImageButton mCloseListViewButton;
-    private LinearLayout mTopLinearLayout;
-    private LinearLayout mBottomLinearLayout;
-    private TextView mTagTextView;
-    private Basemap basemap;
-    private TagListAdapter tagListAdapter;
+    protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
+    protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
+    protected static final String PREVIOUS_ZOOM = "org.redcross.openmapkit.PREVIOUS_ZOOM";
+
+    protected MapView mapView;
+    protected ListView mTagListView;
+    protected ImageButton mCloseListViewButton;
+    protected LinearLayout mTopLinearLayout;
+    protected LinearLayout mBottomLinearLayout;
+    protected TextView mTagTextView;
+    protected Basemap basemap;
+    protected TagListAdapter tagListAdapter;
 
     /**
      * intent request codes
@@ -122,7 +122,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         saveMapPosition();        
     }
 
-    private void saveMapPosition() {
+    protected void saveMapPosition() {
         LatLng c = mapView.getCenter();
         float lat = (float) c.getLatitude();
         float lng = (float) c.getLongitude();
@@ -134,8 +134,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         editor.putFloat(PREVIOUS_ZOOM, z);
         editor.apply();
     }
-    
-    private void positionMap() {
+
+    protected void positionMap() {
         SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
         double lat = (double) pref.getFloat(PREVIOUS_LAT, -999);
         double lng = (double) pref.getFloat(PREVIOUS_LNG, -999);
@@ -157,7 +157,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     /**
      * For initializing the ListView of tags
      */
-    private void initializeListView() {
+    protected void initializeListView() {
 
         //the ListView title
         mTagTextView = (TextView)findViewById(R.id.tagTextView);
@@ -213,7 +213,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * For identifying an OSM element and presenting it's tags in the ListView
      * @param osmElement The target OSMElement.
      */
-    private void identifyOSMFeature(OSMElement osmElement) {
+    protected void identifyOSMFeature(OSMElement osmElement) {
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
         
@@ -231,7 +231,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * @param topWeight Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
      * @param bottomWeight Referes to the layotu height.  Note, bottomWeight + topWeight must equal the weight sum of 100
      */
-    private void proportionMapAndList(int topWeight, int bottomWeight) {
+    protected void proportionMapAndList(int topWeight, int bottomWeight) {
 
         LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams)mTopLinearLayout.getLayoutParams();
         LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams)mBottomLinearLayout.getLayoutParams();
@@ -244,7 +244,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     /**
      * Loads OSM XML stored on the device.
      */
-    private void initializeOsmXml() {
+    protected void initializeOsmXml() {
         try {
             OSMMapBuilder.buildMapFromExternalStorage(this);
         } catch (Exception e) {
@@ -255,7 +255,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     /**
      * For instantiating the location button and setting up its tap event handler
      */
-    private void initializeLocationButton() {
+    protected void initializeLocationButton() {
 
         //instantiate location button
         final ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
