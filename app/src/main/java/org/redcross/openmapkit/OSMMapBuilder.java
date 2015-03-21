@@ -109,9 +109,10 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     protected JTSModel doInBackground(File... params) {
         File f = params[0];
         fileName = f.getName();
+        String absPath = f.getAbsolutePath();
         
         // Check to see if we have already loaded this file...
-        if (loadedOSMFiles.contains(f.getAbsolutePath())) {
+        if (loadedOSMFiles.contains(absPath)) {
             return jtsModel;
         }
         
@@ -122,11 +123,11 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             countingInputStream = new CountingInputStream(is);
             OSMDataSet ds = OSMXmlParserInOSMMapBuilder.parseFromInputStream(countingInputStream, this);
             if (isOSMEdit) {
-                jtsModel.mergeEditedOSMDataSet(ds);
+                jtsModel.mergeEditedOSMDataSet(absPath, ds);
             } else {
-                jtsModel.addOSMDataSet(ds);
+                jtsModel.addOSMDataSet(absPath, ds);
             }
-            loadedOSMFiles.add(f.getAbsolutePath());
+            loadedOSMFiles.add(absPath);
         } catch (Exception e) {
             e.printStackTrace();
         }
