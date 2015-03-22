@@ -17,6 +17,10 @@ Android mobile application for browsing OpenStreetMap features to create and edi
 
 ![OpenMapKit Flowchart](/docs/assets/OpenMapKit_flowchart.png)
 
+## Documentation
+
+See the [wiki](https://github.com/AmericanRedCross/openmapkit.git) for details on how to setup and load data into the app.
+
 ###License (GNU)
 
 See license [here](https://github.com/AmericanRedCross/openmapkit/blob/master/LICENSE.md).
