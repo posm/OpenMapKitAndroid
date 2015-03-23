@@ -212,6 +212,11 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         }
     }
     
+    
+    public boolean[] isFileArrayLoaded(File[] files) {
+        
+       return null;
+    }
 
     /**
      *  CUSTOM THREAD POOL THAT HAS A LARGER STACK SIZE TO HANDLE LARGER OSM XML FILES
