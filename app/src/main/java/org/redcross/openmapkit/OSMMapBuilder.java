@@ -87,6 +87,20 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         setupProgressDialog(mapActivity);
     }
 
+    public static boolean[] isFileArrayLoaded(File[] files) {
+        int len = files.length;
+        boolean[] isLoaded = new boolean[len];
+        for (int i=0; i < len; ++i) {
+            String absPath = files[i].getAbsolutePath();
+            if (loadedOSMFiles.contains(absPath)) {
+                isLoaded[i] = true;
+            } else {
+                isLoaded[i] = false;
+            }
+        }
+        return isLoaded;
+    }
+
     private OSMMapBuilder(MapActivity mapActivity, boolean isOSMEdit) {
         super();
         this.mapActivity = mapActivity;
@@ -213,10 +227,6 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     }
     
     
-    public boolean[] isFileArrayLoaded(File[] files) {
-        
-       return null;
-    }
 
     /**
      *  CUSTOM THREAD POOL THAT HAS A LARGER STACK SIZE TO HANDLE LARGER OSM XML FILES

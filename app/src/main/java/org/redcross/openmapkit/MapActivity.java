@@ -283,13 +283,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void presentOSMOptions() {
         final File[] osmFiles = ExternalStorage.fetchOSMXmlFiles();
         String[] osmFileNames = ExternalStorage.fetchOSMXmlFileNames();
-        
-        // NH TODO temporary, find out what is really goin on
-        final boolean[] checkedOsmFiles = new boolean[osmFiles.length];
-        for (int i=0; i < checkedOsmFiles.length; ++i) {
-            checkedOsmFiles[i] = true;
-        }
-        
+        final boolean[] checkedOsmFiles = OSMMapBuilder.isFileArrayLoaded(osmFiles);
+
         if (osmFileNames.length > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.osmChooserDialogTitle));
