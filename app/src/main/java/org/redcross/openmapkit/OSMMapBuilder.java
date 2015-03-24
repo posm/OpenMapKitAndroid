@@ -35,7 +35,8 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
     private static final float MIN_VECTOR_RENDER_ZOOM = 18;
-    
+
+    private static MapActivity mapActivity;
     private static Set<String> loadedOSMFiles = new HashSet<>();
     private static JTSModel jtsModel = new JTSModel();
     private static ProgressDialog progressDialog;
@@ -46,8 +47,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static Set<OSMMapBuilder> activeBuilders = new HashSet<>();
     private static long totalBytesLoaded = -1;
     private static long totalFileSizes = -1;
-
-    private MapActivity mapActivity; 
+ 
     private String fileName;
     private CountingInputStream countingInputStream;
     private long fileSize = -1;
@@ -57,19 +57,20 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private boolean isOSMEdit = false;
 
     
-    public static void buildMapFromExternalStorage(MapActivity mapActivity) throws IOException {
+    public static void buildMapFromExternalStorage(MapActivity ma) throws IOException {
         if (running) {
             throw new IOException("MAP BUILDER CURRENTLY LOADING!");
         }
         running = true;
         
+        mapActivity = ma;
         File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
         totalFiles = xmlFiles.length;
 
         // load the OSM files in OpenMapKit
         for (int i = 0; i < xmlFiles.length; i++) {
             File xmlFile = xmlFiles[i];
-            OSMMapBuilder builder = new OSMMapBuilder(mapActivity, false);
+            OSMMapBuilder builder = new OSMMapBuilder(false);
 //            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
         }
@@ -79,7 +80,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             List<File> editedOsmFiles = ODKCollectHandler.getODKCollectData().getEditedOSM();
             totalFiles += editedOsmFiles.size();
             for (File f : editedOsmFiles) {
-                OSMMapBuilder builder = new OSMMapBuilder(mapActivity, true);
+                OSMMapBuilder builder = new OSMMapBuilder(true);
                 builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
             }
         }
@@ -110,9 +111,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 
     }
     
-    private OSMMapBuilder(MapActivity mapActivity, boolean isOSMEdit) {
+    private OSMMapBuilder(boolean isOSMEdit) {
         super();
-        this.mapActivity = mapActivity;
         this.isOSMEdit = isOSMEdit;
         activeBuilders.add(this);
     }
