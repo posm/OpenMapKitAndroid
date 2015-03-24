@@ -101,6 +101,14 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         return isLoaded;
     }
 
+    public static void removeOSMFilesFromModel(Set<File> files) {
+        
+    }
+    
+    public static void addOSMFilesToModel(Set<File> files) {
+
+    }
+    
     private OSMMapBuilder(MapActivity mapActivity, boolean isOSMEdit) {
         super();
         this.mapActivity = mapActivity;

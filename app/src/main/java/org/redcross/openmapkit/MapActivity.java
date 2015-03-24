@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -18,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -26,25 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
-import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
-import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
-import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
-import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
@@ -284,6 +273,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         final File[] osmFiles = ExternalStorage.fetchOSMXmlFiles();
         String[] osmFileNames = ExternalStorage.fetchOSMXmlFileNames();
         final boolean[] checkedOsmFiles = OSMMapBuilder.isFileArrayLoaded(osmFiles);
+        final Set<File> filesToAdd = new HashSet<>();
+        final Set<File> filesToRemove = new HashSet<>();
 
         if (osmFileNames.length > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -291,19 +282,32 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             builder.setMultiChoiceItems(osmFileNames, checkedOsmFiles, new DialogInterface.OnMultiChoiceClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
-                    boolean pastChecked = checkedOsmFiles[i];
                     // load the file
-                    if (!pastChecked && isChecked) {
+                    if (isChecked) {
                         File fileToAdd = osmFiles[i];
-                       // NH TODO call some loading function     
+                        filesToAdd.add(fileToAdd);
                     }
                     // remove the file
-                    else if (pastChecked && !isChecked) {
+                    else if (!isChecked) {
                         File fileToRemove = osmFiles[i];
-                       // NH TODO call some removing function 
+                        filesToRemove.add(fileToRemove);
                     }
-                    // keep track of what happened
-                    checkedOsmFiles[i] = isChecked;
+                }
+            });
+            //handle OK tap event of dialog
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    OSMMapBuilder.removeOSMFilesFromModel(filesToRemove);
+                    OSMMapBuilder.addOSMFilesToModel(filesToAdd);
+                }
+            });
+
+            //handle cancel button tap event of dialog
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    //user clicked cancel
                 }
             });
             builder.show();
