@@ -1,6 +1,8 @@
 package org.redcross.openmapkit;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -25,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
 
-import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
 /**
@@ -35,8 +36,11 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
     private static final float MIN_VECTOR_RENDER_ZOOM = 18;
+    private static final String PERSISTED_OSM_FILES = "org.redcross.openmapkit.PERSISTED_OSM_FILES";
 
     private static MapActivity mapActivity;
+    private static SharedPreferences sharedPreferences;
+    private static Set<String> persistedOSMFiles = new HashSet<>();
     private static Set<String> loadedOSMFiles = new HashSet<>();
     private static JTSModel jtsModel = new JTSModel();
     private static ProgressDialog progressDialog;
@@ -64,12 +68,13 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         running = true;
         
         mapActivity = ma;
-        File[] xmlFiles = ExternalStorage.fetchOSMXmlFiles();
-        totalFiles = xmlFiles.length;
+        sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
+        persistedOSMFiles = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
+        totalFiles = persistedOSMFiles.size();
 
-        // load the OSM files in OpenMapKit
-        for (int i = 0; i < xmlFiles.length; i++) {
-            File xmlFile = xmlFiles[i];
+        // load the previously selected OSM files in OpenMapKit
+        for (String absPath : persistedOSMFiles) {
+            File xmlFile = new File(absPath);
             OSMMapBuilder builder = new OSMMapBuilder(false);
 //            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
@@ -85,9 +90,17 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             }
         }
 
-        setupProgressDialog(mapActivity);
+        if (totalFiles > 0) {
+            setupProgressDialog(mapActivity);
+        }
     }
 
+    /**
+     * Returns a boolean array of what files have been loaded
+     * * 
+     * @param files
+     * @return
+     */
     public static boolean[] isFileArrayLoaded(File[] files) {
         int len = files.length;
         boolean[] isLoaded = new boolean[len];
@@ -98,18 +111,56 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         return isLoaded;
     }
 
+    /**
+     * Returns a boolean array of what files have been previously
+     * selected and persisted to be on the map.
+     * * * *
+     * @param files
+     * @return
+     */
+    public static boolean[] isFileArraySelected(File[] files) {
+        int len = files.length;
+        boolean[] isLoaded = new boolean[len];
+        for (int i=0; i < len; ++i) {
+            String absPath = files[i].getAbsolutePath();
+            isLoaded[i] = persistedOSMFiles.contains(absPath);
+        }
+        return isLoaded;
+    }
+
     public static void removeOSMFilesFromModel(Set<File> files) {
         for (File f : files) {
             String absPath = f.getAbsolutePath();
             if (loadedOSMFiles.contains(absPath)) {
                 jtsModel.removeDataSet(absPath);
+                loadedOSMFiles.remove(absPath);
+                persistedOSMFiles.remove(absPath);
             }
         }
         mapActivity.getMapView().invalidate();
+        updateSharedPreferences();
     }
     
     public static void addOSMFilesToModel(Set<File> files) {
+        for (File f : files) {
+            String absPath = f.getAbsolutePath();
+            // Don't add something that is either in progress
+            // or already on the map.
+            if (persistedOSMFiles.contains(absPath)) {
+                return;
+            }
+            File xmlFile = new File(absPath);
+            OSMMapBuilder builder = new OSMMapBuilder(false);
+            builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
+        }
+        mapActivity.getMapView().invalidate();
+        updateSharedPreferences();
+    }
 
+    private static void updateSharedPreferences() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putStringSet(PERSISTED_OSM_FILES, persistedOSMFiles);
+        editor.apply();
     }
     
     private OSMMapBuilder(boolean isOSMEdit) {

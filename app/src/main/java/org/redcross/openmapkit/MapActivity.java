@@ -272,7 +272,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private void presentOSMOptions() {
         final File[] osmFiles = ExternalStorage.fetchOSMXmlFiles();
         String[] osmFileNames = ExternalStorage.fetchOSMXmlFileNames();
-        final boolean[] checkedOsmFiles = OSMMapBuilder.isFileArrayLoaded(osmFiles);
+        final boolean[] checkedOsmFiles = OSMMapBuilder.isFileArraySelected(osmFiles);
         final Set<File> filesToAdd = new HashSet<>();
         final Set<File> filesToRemove = new HashSet<>();
 
