@@ -22,9 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
-import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
@@ -316,6 +316,12 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             prompt.show();
         }
     }
+    
+    private void downloadOSM() {
+        BoundingBox bbox = mapView.getBoundingBox();
+        OSMDownloader downloader = new OSMDownloader(bbox);
+        downloader.start();
+    }
 
     /**
      * For adding action items to the action bar
@@ -335,23 +341,21 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        super.onOptionsItemSelected(item);
+                
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-
-        if (id == R.id.mbtilessettings) {
-
+        if (id == R.id.osmdownloader) {
+            downloadOSM();
+            return true;
+        } else if (id == R.id.mbtilessettings) {
             basemap.presentMBTilesOptions();
-
             return true;
         } else if (id == R.id.osmsettings) {
-
             presentOSMOptions();
-
             return true;
-         }
-
-        return super.onOptionsItemSelected(item);
+        }
+        return false;
     }
 
     @Override

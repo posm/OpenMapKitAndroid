@@ -3,13 +3,14 @@
 
     <string name="app_name">OpenMapKit</string>
 
+    <string name="action_osmdownloader">OSM Downloader</string>
     <!-- osm menu -->
     <string name="action_osmsettings">OSM Settings</string>
     <string name="osmChooserDialogTitle">Choose OSM XML Files</string>
     <string name="osmAppPath">openmapkit/osm</string>
 
     <!-- mbtiles menu -->
-    <string name="action_mbtilessettings">MBTiles Settings</string>
+    <string name="action_mbtilessettings">Basemap Settings</string>
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
     <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
     <string name="ok">OK</string>
