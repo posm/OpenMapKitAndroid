@@ -288,7 +288,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                         filesToAdd.add(fileToAdd);
                     }
                     // remove the file
-                    else if (!isChecked) {
+                    else {
                         File fileToRemove = osmFiles[i];
                         filesToRemove.add(fileToRemove);
                     }

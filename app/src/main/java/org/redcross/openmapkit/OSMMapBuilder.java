@@ -92,17 +92,18 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         boolean[] isLoaded = new boolean[len];
         for (int i=0; i < len; ++i) {
             String absPath = files[i].getAbsolutePath();
-            if (loadedOSMFiles.contains(absPath)) {
-                isLoaded[i] = true;
-            } else {
-                isLoaded[i] = false;
-            }
+            isLoaded[i] = loadedOSMFiles.contains(absPath);
         }
         return isLoaded;
     }
 
     public static void removeOSMFilesFromModel(Set<File> files) {
-        
+        for (File f : files) {
+            String absPath = f.getAbsolutePath();
+            if (loadedOSMFiles.contains(absPath)) {
+                jtsModel.removeDataSet(absPath);
+            }
+        }
     }
     
     public static void addOSMFilesToModel(Set<File> files) {
