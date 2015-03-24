@@ -105,6 +105,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
                 jtsModel.removeDataSet(absPath);
             }
         }
+        mapActivity.getMapView().invalidate();
     }
     
     public static void addOSMFilesToModel(Set<File> files) {
