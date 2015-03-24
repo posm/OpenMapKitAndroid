@@ -35,7 +35,7 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
  */
 public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
-    private static final float MIN_VECTOR_RENDER_ZOOM = 18;
+    private static final float MIN_VECTOR_RENDER_ZOOM = 17;
     private static final String PERSISTED_OSM_FILES = "org.redcross.openmapkit.PERSISTED_OSM_FILES";
 
     private static MapActivity mapActivity;
@@ -149,6 +149,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             if (persistedOSMFiles.contains(absPath)) {
                 return;
             }
+            persistedOSMFiles.add(absPath);
             File xmlFile = new File(absPath);
             OSMMapBuilder builder = new OSMMapBuilder(false);
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
