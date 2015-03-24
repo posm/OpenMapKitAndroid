@@ -129,6 +129,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     }
 
     public static void removeOSMFilesFromModel(Set<File> files) {
+        if (files.size() < 1) {
+            return;
+        }
         for (File f : files) {
             String absPath = f.getAbsolutePath();
             if (loadedOSMFiles.contains(absPath)) {
@@ -142,6 +145,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     }
     
     public static void addOSMFilesToModel(Set<File> files) {
+        if (files.size() < 1) {
+            return;
+        }
         for (File f : files) {
             String absPath = f.getAbsolutePath();
             // Don't add something that is either in progress
@@ -154,6 +160,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             OSMMapBuilder builder = new OSMMapBuilder(false);
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
         }
+        setupProgressDialog(mapActivity);
         mapActivity.getMapView().invalidate();
         updateSharedPreferences();
     }
