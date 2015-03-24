@@ -54,6 +54,16 @@ public class ExternalStorage {
         return dir.listFiles();
     }
     
+    public static String[] fetchOSMXmlFileNames() {
+        File[] files = fetchOSMXmlFiles();
+        int len = files.length;
+        String [] names = new String[len];
+        for (int i=0; i < len; ++i) {
+            names[i] = files[i].getName();
+        }
+        return names;
+    }
+    
     public static File[] fetchMBTilesFiles() {
         String dirPath = getMBTilesDir();
         File dir = new File(dirPath);

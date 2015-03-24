@@ -5,6 +5,8 @@
 
 package com.spatialdev.osm.model;
 
+import android.util.Log;
+
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -15,44 +17,79 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class JTSModel {
 
     private static final int TAP_PIXEL_TOLERANCE = 24;
 
-
-    private ArrayList<OSMDataSet> dataSets;
+    private LinkedHashMap<String, OSMDataSet> dataSetHash;
     private GeometryFactory geometryFactory;
     private Quadtree spatialIndex;
-
-    public JTSModel(OSMDataSet ds) {
-        this();
-        addOSMDataSet(ds);
-    }
 
     public JTSModel() {
         geometryFactory = new GeometryFactory();
         spatialIndex = new Quadtree();
-        dataSets = new ArrayList<>();
+        dataSetHash = new LinkedHashMap<>();
     }
 
-    public void addOSMDataSet(OSMDataSet ds) {
-        dataSets.add(ds);
+    public void addOSMDataSet(String filePath, OSMDataSet ds) {
+        dataSetHash.put(filePath, ds);
         addOSMClosedWays(ds);
         addOSMOpenWays(ds);
         addOSMStandaloneNodes(ds);
     }
     
-    public void mergeEditedOSMDataSet(OSMDataSet ds) {
+    public void mergeEditedOSMDataSet(String absPath, OSMDataSet ds) {
+        Collection<OSMDataSet> dataSets = dataSetHash.values();
         for (OSMDataSet existingDataSet : dataSets) {
             // closed ways
             removeWaysFromExistingDataSet(existingDataSet, ds.getClosedWays());
             //open ways
             removeWaysFromExistingDataSet(existingDataSet, ds.getOpenWays());
         }
-        addOSMDataSet(ds);
+        addOSMDataSet(absPath, ds);
+    }
+
+    /**
+     * Removes a specific OSM XML Data Set based off of the path of the file.
+     * * * 
+     * @param absoluteFilePath
+     */
+    public void removeDataSet(String absoluteFilePath) {
+        OSMDataSet ds = dataSetHash.get(absoluteFilePath);
+        List<OSMWay> closedWays = ds.getClosedWays();
+        List<OSMWay> openWays = ds.getOpenWays();
+        List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
+        for (OSMWay w : closedWays) {
+            try {
+                Geometry geom = w.getJTSGeom();
+                Envelope env = geom.getEnvelopeInternal();
+                spatialIndex.remove(env, w);
+            } catch (Exception e) {
+                Log.e("NO_GEOM", "Cannot remove a closed way with no JTS geom.");
+            }
+        }
+        for (OSMWay w : openWays) {
+            try {
+                Geometry geom = w.getJTSGeom();
+                Envelope env = geom.getEnvelopeInternal();
+                spatialIndex.remove(env, w);
+            } catch (Exception e) {
+                Log.e("NO_GEOM", "Cannot remove an open way with no JTS geom.");
+            }
+        }
+        for (OSMNode n : standaloneNodes) {
+            try {
+                Geometry geom = n.getJTSGeom();
+                Envelope env = geom.getEnvelopeInternal();
+                spatialIndex.remove(env, n);
+            } catch (Exception e) {
+                Log.e("NO_GEOM", "Cannot remove a standalone node with no JTS geom.");
+            }
+        }
     }
     
     private void removeWaysFromExistingDataSet(OSMDataSet existingDataSet, List<OSMWay> ways) {

@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -18,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -26,25 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
-import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
-import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
-import org.redcross.openmapkit.odkcollect.ODKCollectTagActivity;
-import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
@@ -281,62 +270,49 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
      */
     private void presentOSMOptions() {
+        final File[] osmFiles = ExternalStorage.fetchOSMXmlFiles();
+        String[] osmFileNames = ExternalStorage.fetchOSMXmlFileNames();
+        final boolean[] checkedOsmFiles = OSMMapBuilder.isFileArraySelected(osmFiles);
+        final Set<File> filesToAdd = new HashSet<>();
+        final Set<File> filesToRemove = new HashSet<>();
 
-        //fetch names of all files in osm folder
-        final ArrayList osmFileNames = new ArrayList();
-        File primaryExternalStorageDirectory = Environment.getExternalStorageDirectory();
-        if (primaryExternalStorageDirectory != null) {
-            File mbTilesFolder = new File(primaryExternalStorageDirectory, getString(R.string.osmAppPath));
-            for (File file : mbTilesFolder.listFiles()) {
-                if (file.isFile()) {
-                    String fileName = file.getName();
-                    osmFileNames.add(fileName);
-                }
-            }
-        }
-
-        if(osmFileNames.size() > 0) {
-
-            final ArrayList selectedOSMFiles = new ArrayList();
-
-            //present dialog to user with the ability to choose one or more osm xml files
+        if (osmFileNames.length > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.osmChooserDialogTitle));
-            CharSequence[] charSeq = (CharSequence[]) osmFileNames.toArray(new CharSequence[osmFileNames.size()]);
-            builder.setMultiChoiceItems(charSeq, null, new DialogInterface.OnMultiChoiceClickListener() {
+            builder.setMultiChoiceItems(osmFileNames, checkedOsmFiles, new DialogInterface.OnMultiChoiceClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
+                    // load the file
                     if (isChecked) {
-                        //user made a choice
-                        selectedOSMFiles.add(osmFileNames.get(which).toString());
+                        File fileToAdd = osmFiles[i];
+                        filesToAdd.add(fileToAdd);
+                    }
+                    // remove the file
+                    else {
+                        File fileToRemove = osmFiles[i];
+                        filesToRemove.add(fileToRemove);
                     }
                 }
             });
-
-            //handle OK button
+            //handle OK tap event of dialog
             builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    //user clicked OK
-                    Log.i("test", "Adding " + selectedOSMFiles);
-                    //TODO potentially pass to OSMMapBuilder by passing a collection of osm xml file names?
+                    OSMMapBuilder.removeOSMFilesFromModel(filesToRemove);
+                    OSMMapBuilder.addOSMFilesToModel(filesToAdd);
                 }
             });
 
-            //handle cancel button
+            //handle cancel button tap event of dialog
             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     //user clicked cancel
                 }
             });
-
-            //present to user
             builder.show();
-
         } else {
-
-            Toast prompt = Toast.makeText(getApplicationContext(), "Please add .osm files to " + getString(R.string.osmAppPath), Toast.LENGTH_LONG);
+            Toast prompt = Toast.makeText(getApplicationContext(), "Please add .osm files to " + ExternalStorage.getOSMDir(), Toast.LENGTH_LONG);
             prompt.show();
         }
     }
@@ -368,15 +344,12 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             basemap.presentMBTilesOptions();
 
             return true;
-        }
-        /*
-         else if (id == R.id.osmsettings) {
+        } else if (id == R.id.osmsettings) {
 
             presentOSMOptions();
 
             return true;
          }
-        */
 
         return super.onOptionsItemSelected(item);
     }
