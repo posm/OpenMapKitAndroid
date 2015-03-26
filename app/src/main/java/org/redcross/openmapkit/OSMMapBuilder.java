@@ -45,49 +45,45 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     private static JTSModel jtsModel = new JTSModel();
     private static ProgressDialog progressDialog;
 
-    private static int totalFiles = -1;
+    private static int totalFiles = 0;
     private static int completedFiles = 0;
-    private static boolean running = false;
     private static Set<OSMMapBuilder> activeBuilders = new HashSet<>();
-    private static long totalBytesLoaded = -1;
-    private static long totalFileSizes = -1;
+    private static long totalBytesLoaded = 0;
+    private static long totalFileSizes = 0;
  
     private String fileName;
     private CountingInputStream countingInputStream;
-    private long fileSize = -1;
-    private long fileBytesLoaded = -1;
+    private long fileSize = 0;
+    private long fileBytesLoaded = 0;
     
     // Should be set to true if we are loading edited OSM XML
     private boolean isOSMEdit = false;
 
     
-    public static void buildMapFromExternalStorage(MapActivity ma) throws IOException {
-        if (running) {
-            throw new IOException("MAP BUILDER CURRENTLY LOADING!");
-        }
-        
+    public static void buildMapFromExternalStorage(MapActivity ma) {
         mapActivity = ma;
         sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
         persistedOSMFiles = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
-        totalFiles = persistedOSMFiles.size();
 
         // load the previously selected OSM files in OpenMapKit
         for (String absPath : persistedOSMFiles) {
-            File xmlFile = new File(absPath);
-            OSMMapBuilder builder = new OSMMapBuilder(false);
-//            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
-            builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
-            running = true;
+            if (!loadedOSMFiles.contains(absPath)) {
+                ++totalFiles;
+                File xmlFile = new File(absPath);
+                OSMMapBuilder builder = new OSMMapBuilder(false);
+                builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
+            }
         }
 
         // load the edited OSM files in ODK Collect
         if (ODKCollectHandler.isODKCollectMode()) {
             List<File> editedOsmFiles = ODKCollectHandler.getODKCollectData().getEditedOSM();
-            totalFiles += editedOsmFiles.size();
             for (File f : editedOsmFiles) {
-                OSMMapBuilder builder = new OSMMapBuilder(true);
-                builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
-                running = true;
+                if (!loadedOSMFiles.contains(f.getAbsolutePath())) {
+                    ++totalFiles;
+                    OSMMapBuilder builder = new OSMMapBuilder(true);
+                    builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
+                }
             }
         }
 
@@ -196,11 +192,6 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         fileName = f.getName();
         String absPath = f.getAbsolutePath();
         
-        // Check to see if we have already loaded this file...
-        if (loadedOSMFiles.contains(absPath)) {
-            return jtsModel;
-        }
-        
         Log.i("BEGIN_PARSING", fileName);
         setFileSize(f.length());
         try {
@@ -251,7 +242,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         if(progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        running = false;
+        totalFiles = 0;
         completedFiles = 0;
         activeBuilders = new HashSet<>();
     }
