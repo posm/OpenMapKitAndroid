@@ -145,14 +145,14 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         if (files.size() < 1) {
             return;
         }
-        totalFiles = files.size();
         for (File f : files) {
             String absPath = f.getAbsolutePath();
             // Don't add something that is either in progress
             // or already on the map.
             if (persistedOSMFiles.contains(absPath)) {
-                return;
+                continue;
             }
+            ++totalFiles;
             persistedOSMFiles.add(absPath);
             File xmlFile = new File(absPath);
             OSMMapBuilder builder = new OSMMapBuilder(false);
