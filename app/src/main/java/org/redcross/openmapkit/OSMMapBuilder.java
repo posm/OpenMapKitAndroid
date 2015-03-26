@@ -310,8 +310,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         }
     };
 
-    private static final BlockingQueue<Runnable> sPoolWorkQueue =
-            new LinkedBlockingQueue<Runnable>(128);
+    private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<>();
 
     public static final Executor LARGE_STACK_THREAD_POOL_EXECUTOR
             = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
