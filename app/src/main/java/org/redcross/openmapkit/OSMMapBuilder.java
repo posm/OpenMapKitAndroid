@@ -65,7 +65,6 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         if (running) {
             throw new IOException("MAP BUILDER CURRENTLY LOADING!");
         }
-        running = true;
         
         mapActivity = ma;
         sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
@@ -78,6 +77,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             OSMMapBuilder builder = new OSMMapBuilder(false);
 //            builder.execute(xmlFile);  // stock executor that doesnt handle big files well
             builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, xmlFile);
+            running = true;
         }
 
         // load the edited OSM files in ODK Collect
@@ -87,6 +87,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             for (File f : editedOsmFiles) {
                 OSMMapBuilder builder = new OSMMapBuilder(true);
                 builder.executeOnExecutor(LARGE_STACK_THREAD_POOL_EXECUTOR, f);
+                running = true;
             }
         }
 
