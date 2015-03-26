@@ -18,31 +18,32 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JTSModel {
 
     private static final int TAP_PIXEL_TOLERANCE = 24;
 
-    private LinkedHashMap<String, OSMDataSet> dataSetHash;
+    private Map<String, OSMDataSet> dataSetHash;
     private GeometryFactory geometryFactory;
     private Quadtree spatialIndex;
 
     public JTSModel() {
         geometryFactory = new GeometryFactory();
         spatialIndex = new Quadtree();
-        dataSetHash = new LinkedHashMap<>();
+        dataSetHash = new ConcurrentHashMap<>();
     }
 
-    public void addOSMDataSet(String filePath, OSMDataSet ds) {
+    public synchronized void addOSMDataSet(String filePath, OSMDataSet ds) {
         dataSetHash.put(filePath, ds);
         addOSMClosedWays(ds);
         addOSMOpenWays(ds);
         addOSMStandaloneNodes(ds);
     }
     
-    public void mergeEditedOSMDataSet(String absPath, OSMDataSet ds) {
+    public synchronized void mergeEditedOSMDataSet(String absPath, OSMDataSet ds) {
         Collection<OSMDataSet> dataSets = dataSetHash.values();
         for (OSMDataSet existingDataSet : dataSets) {
             // closed ways
