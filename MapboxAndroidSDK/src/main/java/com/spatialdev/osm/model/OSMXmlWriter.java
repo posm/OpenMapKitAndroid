@@ -16,26 +16,26 @@ import java.util.LinkedList;
 public class OSMXmlWriter {
 
     private static final String OSM_API_VERSION = "0.6";
-    private static final String GENERATOR = "OpenMapKit 0.1";
-    
+
     // We are not using namespaces.
     private static final String ns = null;
 
     private LinkedList<OSMElement> elements;
+    private String generator = "unknown";
     private XmlSerializer xmlSerializer;
     StringWriter stringWriter;
     
-    public static String elementToString(OSMElement element, String osmUser) throws IOException {
+    public static String elementToString(OSMElement element, String osmUser, String appNameAndVersion) throws IOException {
         LinkedList<OSMElement> elements = null;
         if (element != null) {
             elements = new LinkedList<>();
             elements.add(element);
         }
-        return elementsToString(elements, osmUser);
+        return elementsToString(elements, osmUser, appNameAndVersion);
     }
     
-    public static String elementsToString(LinkedList<OSMElement> elements, String osmUser) throws IOException {
-        OSMXmlWriter writer = new OSMXmlWriter(elements);
+    public static String elementsToString(LinkedList<OSMElement> elements, String osmUser, String appNameAndVersion) throws IOException {
+        OSMXmlWriter writer = new OSMXmlWriter(elements, appNameAndVersion);
         writer.start(osmUser);
         
         if (elements != null) {
@@ -45,8 +45,9 @@ public class OSMXmlWriter {
         return writer.end();
     }
     
-    private OSMXmlWriter(LinkedList<OSMElement> elements) {
+    private OSMXmlWriter(LinkedList<OSMElement> elements, String generator) {
         this.elements = elements;
+        this.generator = generator;
         xmlSerializer = Xml.newSerializer();
         stringWriter = new StringWriter();
     }
@@ -56,7 +57,7 @@ public class OSMXmlWriter {
         xmlSerializer.startDocument("UTF-8", null);
         xmlSerializer.startTag(ns, "osm");
         xmlSerializer.attribute(ns, "version", OSM_API_VERSION);
-        xmlSerializer.attribute(ns, "generator", GENERATOR);
+        xmlSerializer.attribute(ns, "generator", generator);
         xmlSerializer.attribute(ns, "user", osmUser);
     }
     

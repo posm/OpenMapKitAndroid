@@ -32,14 +32,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TagEditorActivity"
-            android:label="@string/title_activity_tag_editor" >
-        </activity>
-        <activity
-            android:name=".TagCreatorActivity"
-            android:label="@string/title_activity_tag_creator" >
-        </activity>
-        <activity
             android:name=".odkcollect.ODKCollectTagActivity"
             android:label="@string/title_activity_odkcollect_tag"
             android:parentActivityName=".MapActivity"

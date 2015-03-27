@@ -6,6 +6,7 @@ import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
 
 import org.redcross.openmapkit.ExternalStorage;
+import org.redcross.openmapkit.MapActivity;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
@@ -25,6 +26,8 @@ import java.util.List;
  */
 public class ODKCollectData {
     
+    public static final String APP_NAME = "OpenMapKit";
+            
     private String formId;
     private String instanceId;
     private String instanceDir;
@@ -33,6 +36,7 @@ public class ODKCollectData {
     
     private String editedXml;
     private String osmClassName;
+    private String appVersion;
     private long osmId;
     
     public ODKCollectData ( String formId, 
@@ -44,6 +48,7 @@ public class ODKCollectData {
         this.instanceId = instanceId;
         this.instanceDir = instanceDir;
         this.requiredTags = requiredTags;
+        this.appVersion = MapActivity.getVersion();
         findEditedOSMForForm(formFileName);
     }
 
@@ -128,7 +133,7 @@ public class ODKCollectData {
     public void consumeOSMElement(OSMElement el) throws IOException {
         osmClassName = el.getClass().getSimpleName();
         osmId = el.getId();
-        editedXml = OSMXmlWriter.elementToString(el, "theoutpost");
+        editedXml = OSMXmlWriter.elementToString(el, "theoutpost", APP_NAME + " " + appVersion);
     }
     
     public void writeXmlToOdkCollectInstanceDir() throws IOException {
