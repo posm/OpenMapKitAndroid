@@ -85,7 +85,7 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         String query = composeQuery();
         String url = OVERPASS_API_URL + query;
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDestinationInExternalPublicDir(ExternalStorage.getOSMDir(), fileName);
+        request.setDestinationInExternalPublicDir(ExternalStorage.getOSMDirRelativeToExternalDir(), fileName);
         downloadId = downloadManager.enqueue(request);
         pollDownloadManager();
         return downloadId;

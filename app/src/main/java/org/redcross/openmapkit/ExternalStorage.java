@@ -48,6 +48,10 @@ public class ExternalStorage {
                 + OSM_DIR + "/";
     }
     
+    public static String getOSMDirRelativeToExternalDir() {
+        return "/" + APP_DIR + "/" + OSM_DIR + "/";
+    }
+    
     public static File[] fetchOSMXmlFiles() {
         String dirPath = getOSMDir();
         File dir = new File(dirPath);
