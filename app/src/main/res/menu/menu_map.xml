@@ -4,6 +4,7 @@
 
     <item android:id="@+id/osmdownloader"
         android:title="@string/action_osmdownloader"
+        android:icon="@drawable/ic_cog"
         app:showAsAction="always" />
     
     <item android:id="@+id/osmsettings"
