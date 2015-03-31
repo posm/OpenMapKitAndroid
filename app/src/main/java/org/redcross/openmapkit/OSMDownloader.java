@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 
@@ -22,9 +24,11 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
     
     private String queryTemplate = "(way[building]({{bbox}});way[highway]({{bbox}}););out meta;>;out meta qt;";
     private String fileName = "overpass.osm";
+    private String statusMessage = "";
 
-    private long downloadId;
+    private long downloadId = -1;
     private boolean downloading = true;
+    private int status = -1;
     
     private Activity activity;
     private BoundingBox bbox;
@@ -59,12 +63,14 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
     }
 
     public void cancel() {
-
+        if (downloadId > -1) {
+            downloadManager.remove(downloadId);
+        }
     }
     
     @Override
     protected void onPreExecute() {
-        setupProgressDialog();    
+        setupProgressDialog();  
     }
 
     /**
@@ -93,7 +99,13 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
 
     @Override
     protected void onPostExecute(Long downloadId) {
-        
+        if(progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        if (status != DownloadManager.STATUS_SUCCESSFUL) {
+            Toast toast = Toast.makeText(activity, statusMessage, Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
     private String composeQuery() {
@@ -114,10 +126,6 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         progressDialog.show();        
     }
     
-    private void setupBroadcastReceiver() {
-                
-    }
-    
     private void pollDownloadManager() {
         while (downloading) {
             DownloadManager.Query q = new DownloadManager.Query();
@@ -127,8 +135,10 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
             final int bytesDownloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
             final String msg = PROGRESS_MSG + ((double)bytesDownloaded) / 1000000.0 + " MB";
             publishProgress(msg);
-            statusMessage(cursor, bytesDownloaded);
-            if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+            status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            statusMessage = statusMessage(cursor, bytesDownloaded);
+            Log.d("OSMDownloader", statusMessage);
+            if (status != DownloadManager.STATUS_PENDING && status != DownloadManager.STATUS_RUNNING) {
                 downloading = false;
             }
             // throttle the thread
