@@ -325,8 +325,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     
     private void downloadOSM() {
         BoundingBox bbox = mapView.getBoundingBox();
-        OSMDownloader downloader = new OSMDownloader(bbox);
-        downloader.start();
+        OSMDownloader downloader = new OSMDownloader(this, bbox);
+        downloader.execute();
     }
 
     /**

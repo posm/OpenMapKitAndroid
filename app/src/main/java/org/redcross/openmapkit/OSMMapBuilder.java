@@ -180,7 +180,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         progressDialog.setTitle("Loading OSM Data");
         progressDialog.setMessage("");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//        progressDialog.setProgressNumberFormat("%1d MB / %2d MB");
+        progressDialog.setCancelable(false);
         progressDialog.setProgress(0);
         progressDialog.setMax(100);
         progressDialog.show();
