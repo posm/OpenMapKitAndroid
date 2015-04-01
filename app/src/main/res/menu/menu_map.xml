@@ -2,19 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MapActivity">
 
+    <item android:id="@+id/mbtilessettings"
+          android:title="@string/action_mbtilessettings"
+          android:icon="@drawable/icon_basemap"
+          app:showAsAction="always" />
+    
     <item android:id="@+id/osmdownloader"
         android:title="@string/action_osmdownloader"
-        android:icon="@drawable/ic_cog"
+        android:icon="@drawable/icon_downloader"
         app:showAsAction="always" />
     
     <item android:id="@+id/osmsettings"
         android:title="@string/action_osmsettings"
-        android:icon="@drawable/ic_cog"
+        android:icon="@drawable/icon_layers"
         app:showAsAction="always" />
 
-    <item android:id="@+id/mbtilessettings"
-        android:title="@string/action_mbtilessettings"
-        android:icon="@drawable/ic_cog"
-        app:showAsAction="always" />
+    
 
 </menu>
