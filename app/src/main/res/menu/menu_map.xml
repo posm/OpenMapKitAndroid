@@ -17,4 +17,9 @@
         android:icon="@drawable/ic_cog"
         app:showAsAction="always" />
 
+    <item android:id="@+id/controlpanel"
+          android:title="@string/action_controlpanel"
+          android:icon="@drawable/ic_cog"
+          app:showAsAction="always" />
+
 </menu>

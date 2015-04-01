@@ -117,6 +117,79 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         saveMapPosition();        
     }
 
+    /**
+     * For adding action items to the action bar
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return true;
+    }
+
+    /**
+     * For handling when a user taps on a menu item (top right)
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        super.onOptionsItemSelected(item);
+
+        int id = item.getItemId();
+
+        if (id == R.id.controlpanel) {
+            launchControlPanel();
+            return true;
+        } else if (id == R.id.osmdownloader) {
+            downloadOSM();
+            return true;
+        } else if (id == R.id.mbtilessettings) {
+            basemap.presentMBTilesOptions();
+            return true;
+        } else if (id == R.id.osmsettings) {
+            presentOSMOptions();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
+        if (selectedElements != null && selectedElements.size() > 0) {
+//            tagsButton.setVisibility(View.VISIBLE);
+
+            //fetch the tapped feature
+            OSMElement tappedOSMElement = selectedElements.get(0);
+
+            //present OSM Feature tags in bottom ListView
+            identifyOSMFeature(tappedOSMElement);
+
+        }
+    }
+
+    /**
+     * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
+            if(resultCode == RESULT_OK) {
+                String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
+                String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
+                resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
+            }
+        }
+    }
+
     protected void saveMapPosition() {
         LatLng c = mapView.getCenter();
         float lat = (float) c.getLatitude();
@@ -147,6 +220,10 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             mapView.setCenter(c);
             mapView.setZoom(z);
         }
+    }
+    
+    protected void launchControlPanel() {
+                
     }
     
     /**
@@ -269,8 +346,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
         });
     }
-    
-
 
     /**
      * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
@@ -328,76 +403,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         OSMDownloader downloader = new OSMDownloader(this, bbox);
         downloader.execute();
     }
-
-    /**
-     * For adding action items to the action bar
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_map, menu);
-        return true;
-    }
-
-    /**
-     * For handling when a user taps on a menu item (top right)
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        super.onOptionsItemSelected(item);
-                
-        int id = item.getItemId();
-
-        if (id == R.id.osmdownloader) {
-            downloadOSM();
-            return true;
-        } else if (id == R.id.mbtilessettings) {
-            basemap.presentMBTilesOptions();
-            return true;
-        } else if (id == R.id.osmsettings) {
-            presentOSMOptions();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
-        if (selectedElements != null && selectedElements.size() > 0) {
-//            tagsButton.setVisibility(View.VISIBLE);
-
-            //fetch the tapped feature
-            OSMElement tappedOSMElement = selectedElements.get(0);
-
-            //present OSM Feature tags in bottom ListView
-            identifyOSMFeature(tappedOSMElement);
-
-        }
-    }
-
-    /**
-     * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
-            if(resultCode == RESULT_OK) {
-                String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
-                String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
-                resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
-            }
-        }
-    }
     
     public MapView getMapView() {
         return mapView;
@@ -415,4 +420,5 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     public static String getVersion() {
         return version;
     }
+    
 }
