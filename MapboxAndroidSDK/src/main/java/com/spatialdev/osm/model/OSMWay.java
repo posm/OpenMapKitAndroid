@@ -10,6 +10,7 @@ import com.spatialdev.osm.renderer.OSMPath;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,13 @@ import java.util.Set;
 
 public class OSMWay extends OSMElement {
 
+    /**
+     * Used to keep track of the IDs of modified ways. This can be used
+     * to check to see if we are already using a modified way.
+     * * * *
+     */
+    private static Set<Long> modifiedWayIdSet = new HashSet<>();
+    
     /**
      * As the XML document is being parsed, ways have references to nodes' IDs.
      * The node itself may not yet be parsed, so we create a list of Node IDs
@@ -37,6 +45,9 @@ public class OSMWay extends OSMElement {
      */
     private boolean closed = false;
 
+    public static boolean containsModifiedWay(long wayId) {
+        return modifiedWayIdSet.contains(wayId);
+    }
     
     public OSMWay(String idStr,
                   String versionStr,
@@ -191,4 +202,9 @@ public class OSMWay extends OSMElement {
         }
     }
 
+    @Override
+    protected void setAsModified() {
+        super.setAsModified();
+        modifiedWayIdSet.add(id);
+    }
 }

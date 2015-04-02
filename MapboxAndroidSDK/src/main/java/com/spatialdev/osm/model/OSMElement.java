@@ -222,7 +222,7 @@ public abstract class OSMElement {
      * survey instances.
      * * * * 
      */
-    private void setAsModified() {
+    protected void setAsModified() {
         modified = true;
         modifiedElements.add(this);
     }
