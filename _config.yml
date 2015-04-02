@@ -1,0 +1,14 @@
+# Site settings
+title: OpenMapKit
+email: admin@openmapkit.org
+description: > # this means to ignore newlines until "baseurl:"
+  OpenMapKit is a mobile Android application for browsing and editing tags of
+  OpenStreetMap features. It is designed to work in conjunction with
+  OpenDataKit.
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://openmapkit.org" # the base hostname & protocol for your site
+twitter_username: jekyllrb
+github_username:  hallahan
+
+# Build settings
+markdown: kramdown
