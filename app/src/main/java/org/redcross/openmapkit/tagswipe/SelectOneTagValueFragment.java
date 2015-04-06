@@ -70,6 +70,7 @@ public class SelectOneTagValueFragment extends Fragment {
         Activity activity = getActivity();
         ODKTag odkTag = tagEdit.getODKTag();
         if (odkTag == null) return;
+        String prevTagVal = tagEdit.getTagVal();
         Collection<ODKTagItem> odkTagItems = odkTag.getItems();
         for (ODKTagItem item : odkTagItems) {
             String label = item.getLabel();
@@ -85,6 +86,9 @@ public class SelectOneTagValueFragment extends Fragment {
             } else {
                 button.setText(value);
                 textView.setText("");
+            }
+            if (prevTagVal != null && value.equals(prevTagVal)) {
+                button.setChecked(true);
             }
             tagValueRadioGroup.addView(button);
             int buttonId = button.getId();
