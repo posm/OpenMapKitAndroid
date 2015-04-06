@@ -87,10 +87,10 @@ public class SelectOneTagValueFragment extends Fragment {
                 button.setText(value);
                 textView.setText("");
             }
-            if (prevTagVal != null && value.equals(prevTagVal)) {
-                button.setChecked(true);
-            }
             tagValueRadioGroup.addView(button);
+            if (prevTagVal != null && value.equals(prevTagVal)) {
+                button.toggle();
+            }
             int buttonId = button.getId();
             odkTag.putRadioButtonIdToTagItemHash(buttonId, item);
             tagValueRadioGroup.addView(textView);
