@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -75,7 +76,7 @@ public class SelectOneTagValueFragment extends Fragment {
         for (ODKTagItem item : odkTagItems) {
             String label = item.getLabel();
             String value = item.getValue();
-            RadioButton button = new RadioButton(activity);
+            ToggleableRadioButton button = new ToggleableRadioButton(activity);
             button.setTextSize(18);
             TextView textView = new TextView(activity);
             textView.setPadding(66, 0, 0, 25);
@@ -164,4 +165,27 @@ public class SelectOneTagValueFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    /**
+     * Allows the user to toggle off a previously checked radio button.
+     * * * *
+     * http://stackoverflow.com/questions/15836789/android-radio-button-uncheck
+     * https://github.com/AmericanRedCross/OpenMapKit/issues/9
+     * * * * 
+     */
+    public class ToggleableRadioButton extends RadioButton {
+        public ToggleableRadioButton(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void toggle() {
+            if(isChecked()) {
+                if(getParent() instanceof RadioGroup) {
+                    ((RadioGroup)getParent()).clearCheck();
+                }
+            } else {
+                setChecked(true);
+            }
+        }
+    }
 }

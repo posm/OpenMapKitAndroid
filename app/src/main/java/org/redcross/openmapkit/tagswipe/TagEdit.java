@@ -144,6 +144,8 @@ public class TagEdit {
             if (checkedId != -1) {
                 tagVal = odkTag.getTagItemValueFromRadioButtonId(checkedId);
                 osmElement.addOrEditTag(tagKey, tagVal);
+            } else {
+                osmElement.deleteTag(tagKey);
             }
         } else if (editText != null) {
             tagVal = editText.getText().toString();
