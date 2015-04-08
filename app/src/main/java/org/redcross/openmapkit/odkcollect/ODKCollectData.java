@@ -145,7 +145,7 @@ public class ODKCollectData {
         }
         String path = instanceDir + '/' + previousOSMEditFileName;
         File f = new File(path);
-        if (!f.exists()) {
+        if (f.exists()) {
             f.delete();
         }
     }
