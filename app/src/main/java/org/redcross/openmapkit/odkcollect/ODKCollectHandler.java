@@ -33,8 +33,14 @@ public class ODKCollectHandler {
                     String formFileName = extras.getString("FORM_FILE_NAME");
                     String instanceId = extras.getString("INSTANCE_ID");
                     String instanceDir = extras.getString("INSTANCE_DIR");
+                    String previousOSMEditFileName = extras.getString("OSM_EDIT_FILE_NAME");
                     LinkedHashMap<String, ODKTag> requiredTags = generateRequiredOSMTagsFromBundle(extras);
-                    odkCollectData = new ODKCollectData(formId, formFileName, instanceId, instanceDir, requiredTags);
+                    odkCollectData = new ODKCollectData(formId, 
+                                                        formFileName,
+                                                        instanceId,
+                                                        instanceDir,
+                                                        previousOSMEditFileName,
+                                                        requiredTags);
                 }
             }
         }
@@ -67,6 +73,7 @@ public class ODKCollectHandler {
     public static String saveXmlInODKCollect(OSMElement el) {
         try {
             odkCollectData.consumeOSMElement(el);
+            odkCollectData.deleteOldOSMEdit();
             odkCollectData.writeXmlToOdkCollectInstanceDir();
             return odkCollectData.getOSMFileFullPath();
         } catch (IOException e) {

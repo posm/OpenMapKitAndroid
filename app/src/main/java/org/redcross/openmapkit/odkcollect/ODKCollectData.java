@@ -31,6 +31,7 @@ public class ODKCollectData {
     private String formId;
     private String instanceId;
     private String instanceDir;
+    private String previousOSMEditFileName;
     private LinkedHashMap<String, ODKTag> requiredTags;
     private List<File> editedOSM = new ArrayList<>();
     
@@ -43,10 +44,12 @@ public class ODKCollectData {
                             String formFileName,
                             String instanceId, 
                             String instanceDir,
+                            String previousOSMEditFileName,
                             LinkedHashMap<String, ODKTag> requiredTags ) {
         this.formId = formId;
         this.instanceId = instanceId;
         this.instanceDir = instanceDir;
+        this.previousOSMEditFileName = previousOSMEditFileName;
         this.requiredTags = requiredTags;
         this.appVersion = MapActivity.getVersion();
         findEditedOSMForForm(formFileName);
@@ -134,6 +137,17 @@ public class ODKCollectData {
         osmClassName = el.getClass().getSimpleName();
         osmId = el.getId();
         editedXml = OSMXmlWriter.elementToString(el, "theoutpost", APP_NAME + " " + appVersion);
+    }
+    
+    public void deleteOldOSMEdit() {
+        if (previousOSMEditFileName == null) {
+            return;
+        }
+        String path = instanceDir + '/' + previousOSMEditFileName;
+        File f = new File(path);
+        if (!f.exists()) {
+            f.delete();
+        }
     }
     
     public void writeXmlToOdkCollectInstanceDir() throws IOException {
