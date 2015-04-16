@@ -12,6 +12,10 @@ import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by Nicholas Hallahan on 3/24/15.
  * nhallahan@spatialdev.com
@@ -102,13 +106,18 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         if(progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+        // Download failed.
         if (status != DownloadManager.STATUS_SUCCESSFUL) {
             Toast toast = Toast.makeText(activity, statusMessage, Toast.LENGTH_LONG);
             toast.show();
+        } 
+        // Download successful, put it on the map.
+        else {
+            putCompletedDownloadOnMap();
         }
     }
 
-    private String composeQuery() {
+    protected String composeQuery() {
         String bboxStr = bbox.getLatSouth() + "," +
                 bbox.getLonWest()  + "," +
                 bbox.getLatNorth() + "," +
@@ -116,7 +125,7 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         return queryTemplate.replaceAll("\\{\\{bbox\\}\\}", bboxStr);
     }
     
-    private void setupProgressDialog() {
+    protected void setupProgressDialog() {
         progressDialog = new ProgressDialog(activity);
         progressDialog.setTitle("Downloading OSM Data");
         progressDialog.setMessage("Starting download...");
@@ -126,7 +135,7 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         progressDialog.show();        
     }
     
-    private void pollDownloadManager() {
+    protected void pollDownloadManager() {
         while (downloading) {
             DownloadManager.Query q = new DownloadManager.Query();
             q.setFilterById(downloadId);
@@ -150,7 +159,7 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         } 
     }
 
-    private String statusMessage(Cursor c, int bytesDownloaded) {
+    protected String statusMessage(Cursor c, int bytesDownloaded) {
         String msg;
         switch (c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
             case DownloadManager.STATUS_FAILED:
@@ -178,5 +187,16 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
                 break;
         }
         return (msg);
+    }
+    
+    protected void putCompletedDownloadOnMap() {
+        DownloadManager.Query q = new DownloadManager.Query();
+        q.setFilterById(downloadId);
+        Cursor cursor = downloadManager.query(q);
+        cursor.moveToFirst();
+        String localFilename = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+        Set<File> fileSet = new HashSet<>();
+        fileSet.add(new File(localFilename));
+        OSMMapBuilder.addOSMFilesToModel(fileSet);
     }
 }

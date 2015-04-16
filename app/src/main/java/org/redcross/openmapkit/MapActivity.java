@@ -294,7 +294,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             mTagListView.setAdapter(tagListAdapter);
 
             //show the ListView under the map
-            proportionMapAndList(60, 40);
+            proportionMapAndList(50, 50);
         }
     }
 

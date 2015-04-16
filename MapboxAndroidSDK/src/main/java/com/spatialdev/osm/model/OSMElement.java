@@ -186,13 +186,17 @@ public abstract class OSMElement {
      * @param v
      */
     public void addOrEditTag(String k, String v) {
-        String origVal = tags.get(k);
+        // OSM requires tag keys and values to not have trailing whitespaces.
+        String trimKey = k.trim();
+        String trimVal = v.trim();
+        
+        String origVal = tags.get(trimKey);
         // if the original tag is the same as this, we're not really editing anything.
-        if (v.equals(origVal)) {
+        if (trimVal.equals(origVal)) {
             return;
         }
         setAsModifiedInInstance();
-        tags.put(k, v);
+        tags.put(trimKey, trimVal);
     }
 
     /**
@@ -218,7 +222,7 @@ public abstract class OSMElement {
      * survey instances.
      * * * * 
      */
-    private void setAsModified() {
+    protected void setAsModified() {
         modified = true;
         modifiedElements.add(this);
     }

@@ -203,19 +203,25 @@ public class JTSModel {
 
     private void addOSMClosedWays(OSMDataSet ds) {
         List<OSMWay> closedWays = ds.getClosedWays();
-        for (OSMWay closedWay : closedWays) {
-            List<OSMNode> nodes = closedWay.getNodes();
+        for (OSMWay w : closedWays) {
+            if (!w.isModified() && OSMWay.containsModifiedWay(w.getId())) {
+                continue;    
+            }
+            List<OSMNode> nodes = w.getNodes();
             Coordinate[] coords = coordArrayFromNodeList(nodes);
             Polygon poly = geometryFactory.createPolygon(coords);
-            closedWay.setJTSGeom(poly);
+            w.setJTSGeom(poly);
             Envelope envelope = poly.getEnvelopeInternal();
-            spatialIndex.insert(envelope, closedWay);
+            spatialIndex.insert(envelope, w);
         }
     }
 
     private void addOSMOpenWays(OSMDataSet ds) {
         List<OSMWay> openWays = ds.getOpenWays();
         for (OSMWay w : openWays) {
+            if (!w.isModified() && OSMWay.containsModifiedWay(w.getId())) {
+                continue;
+            }
             List<OSMNode> nodes = w.getNodes();
             Coordinate[] coords = coordArrayFromNodeList(nodes);
             LineString line = geometryFactory.createLineString(coords);
