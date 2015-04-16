@@ -66,5 +66,11 @@
     <string name="standalone_fragment_title">Add or Confirm</string>
     <string name="standalone_fragment_question1">Add tag?</string>
     <string name="standalone_fragment_question2">Save tag edits?</string>
+    <string name="title_activity_control_panel">ControlPanelActivity</string>
+
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>

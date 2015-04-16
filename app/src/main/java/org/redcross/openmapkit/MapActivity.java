@@ -30,6 +30,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 
+import org.redcross.openmapkit.controlpanel.ControlPanelActivity;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
@@ -223,7 +224,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
     
     protected void launchControlPanel() {
-                
+        Intent controlPanelIntent = new Intent(getApplicationContext(), ControlPanelActivity.class);
+        startActivity(controlPanelIntent);
     }
     
     /**
