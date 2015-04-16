@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
-public class ControlPanelActivity extends ActionBarActivity {
+public class ControlPanelActivity extends ActionBarActivity implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -50,6 +50,18 @@ public class ControlPanelActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        // legacy way to setup tabs
+        // http://developer.android.com/training/implementing-navigation/lateral.html
+        // http://www.androidhive.info/2013/10/android-tab-layout-with-swipeable-views-1/
+        // http://stackoverflow.com/questions/27577667/pagertabstrip-tabs-alignment-to-left
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        for (int i = 0; i < 3; i++) {
+//            actionBar.addTab(
+//                    actionBar.newTab()
+//                            .setText("Tab " + (i + 1))
+//                            .setTabListener(this));
+//        }
     }
 
 
@@ -73,6 +85,21 @@ public class ControlPanelActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
     }
 
 
