@@ -56,6 +56,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.redcross.openmapkit.MapActivity" />
         </activity>
+        <activity
+            android:name=".controlpanel.ControlPanel2Activity"
+            android:label="@string/title_activity_control_panel"
+            android:parentActivityName=".MapActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.redcross.openmapkit.MapActivity" />
+        </activity>
     </application>
 
 </manifest>
