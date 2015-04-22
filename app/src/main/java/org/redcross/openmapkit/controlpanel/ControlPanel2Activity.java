@@ -55,7 +55,7 @@ public class ControlPanel2Activity extends ActionBarActivity {
 
     public class ControlPanelFragmentPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 3;
-        private String tabTitles[] = new String[] { "Tab1", "Tab2", "Tab3" };
+        private String tabTitles[] = new String[] { "Basemaps", "OSM Layers", "Download OSM" };
 
         public ControlPanelFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
