@@ -13,6 +13,16 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import org.redcross.openmapkit.R;
 
+/**
+ * Note that we are using a 3rd party library PagerSlidingTagStrip
+ * for the Play Store-like tabs.
+ *
+ * https://github.com/AmericanRedCross/OpenMapKit/issues/51
+ * * *
+ * https://guides.codepath.com/android/Sliding-Tabs-with-PagerSlidingTabStrip#install-pagerslidingtabstrip
+ * https://github.com/astuetz/PagerSlidingTabStrip/blob/master/sample/src/com/astuetz/viewpager/extensions/sample/MainActivity.java
+ * * ** * * * * *
+ */
 public class ControlPanelActivity extends ActionBarActivity {
 
     @Override
