@@ -22,14 +22,38 @@
             android:textColor="@color/osm_dark_green"
             android:paddingBottom="1dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/desc_osm_layers_tab"
-            android:id="@+id/textView"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/toggle_buildings"
+                android:id="@+id/toggleBuildings"
+                android:textOff="@string/toggle_buildings"
+                android:textOn="@string/toggle_buildings"
+                android:checked="true"/>
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/toggle_roads"
+                android:id="@+id/toggleRoads"
+                android:textOff="@string/toggle_roads"
+                android:textOn="@string/toggle_roads"
+                android:checked="true"/>
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/toggle_other"
+                android:id="@+id/toggleOther"
+                android:textOff="@string/toggle_other"
+                android:textOn="@string/toggle_other"
+                android:checked="true"/>
+        </LinearLayout>
 
         <ListView
             android:id="@android:id/list"

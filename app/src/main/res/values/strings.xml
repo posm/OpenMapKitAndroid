@@ -68,7 +68,9 @@
     <string name="standalone_fragment_question2">Save tag edits?</string>
     <string name="title_activity_control_panel">Control Panel</string>
     <string name="title_osm_layers_tab">OSM XML Layers</string>
-    <string name="desc_osm_layers_tab">Select from the following the OSM XML data sets you would like selectable on the map.</string>
+    <string name="toggle_buildings">Buildings</string>
+    <string name="toggle_roads">Roads</string>
+    <string name="toggle_other">Other</string>
 
 
     <string name="title_section1">Section 1</string>
