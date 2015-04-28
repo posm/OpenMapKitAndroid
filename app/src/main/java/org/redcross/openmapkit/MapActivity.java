@@ -224,6 +224,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
     
     protected void launchControlPanel() {
+        // Static setter. Control panel modifies this MapActivity.
+        ControlPanelActivity.setMapActivity(this);
+
         Intent controlPanelIntent = new Intent(getApplicationContext(), ControlPanelActivity.class);
         startActivity(controlPanelIntent);
     }

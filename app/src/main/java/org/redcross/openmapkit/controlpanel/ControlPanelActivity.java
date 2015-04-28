@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 
+import org.redcross.openmapkit.MapActivity;
 import org.redcross.openmapkit.R;
 
 /**
@@ -24,6 +25,22 @@ import org.redcross.openmapkit.R;
  * * ** * * * * *
  */
 public class ControlPanelActivity extends ActionBarActivity {
+
+    private static MapActivity mapActivity;
+
+    /**
+     * This is a static setter. The Control Panel interacts with one map,
+     * so it gets a reference to the MapActivity in the app with a static setter.
+     *
+     * @param map
+     */
+    public static void setMapActivity(MapActivity map) {
+        mapActivity = map;
+    }
+
+    public static MapActivity getMapActivity() {
+        return mapActivity;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
