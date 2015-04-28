@@ -72,6 +72,8 @@
     <string name="toggle_roads">Roads</string>
     <string name="toggle_other">Other</string>
 
+    <string name="offline">Offline</string>
+
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
