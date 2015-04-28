@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="fill_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/onlineBasemaps"
+        android:id="@+id/sectionTitle"
+        android:paddingLeft="10dp"
+        android:paddingTop="12dp"
+        android:paddingRight="10dp"
+        android:textColor="@color/osm_dark_green"
+        android:paddingBottom="3dp"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/online"
+        android:color="@color/osm_dark_green"
+        android:id="@+id/onlineStatus"
+        android:layout_alignParentRight="true"
+        android:paddingTop="2dp"
+        android:paddingRight="2dp"/>
+</RelativeLayout>

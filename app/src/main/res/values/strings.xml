@@ -72,8 +72,11 @@
     <string name="toggle_roads">Roads</string>
     <string name="toggle_other">Other</string>
 
-    <string name="offline">Offline</string>
+    <string name="online">DEVICE ONLINE</string>
+    <string name="offline">DEVICE OFFLINE</string>
 
+    <string name="onlineBasemaps">Online Basemaps</string>
+    <string name="mbtiles">MBTiles Offline Basemaps</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

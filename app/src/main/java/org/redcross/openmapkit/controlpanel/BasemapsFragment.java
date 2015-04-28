@@ -47,7 +47,7 @@ public class BasemapsFragment extends Fragment implements AbsListView.OnItemClic
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private BasemapsAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
     public static BasemapsFragment newInstance(String param1, String param2) {
@@ -76,9 +76,18 @@ public class BasemapsFragment extends Fragment implements AbsListView.OnItemClic
         }
 
         // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
-//        mAdapter = new BasemapsAdapter(getActivity());
+//        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+//                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+
+
+        mAdapter = new BasemapsAdapter(getActivity());
+        for (int i = 1; i < 50; i++) {
+            mAdapter.addBasemap("basemap " + i);
+            if (i % 4 == 0) {
+                mAdapter.addSection("separator " + i);
+            }
+        }
+
     }
 
     @Override
