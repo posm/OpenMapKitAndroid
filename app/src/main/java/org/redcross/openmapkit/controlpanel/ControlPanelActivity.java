@@ -80,13 +80,13 @@ public class ControlPanelActivity extends ActionBarActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return BasemapsFragment.newInstance("param1", "param2");
+                    return new BasemapsFragment();
                 case 1:
                     return OSMLayersFragment.newInstance("param1", "param2");
                 case 2:
                     return OSMLayersFragment.newInstance("param1", "param2");
             }
-            return BasemapsFragment.newInstance("param1", "param2");
+            return new BasemapsFragment();
         }
 
         @Override

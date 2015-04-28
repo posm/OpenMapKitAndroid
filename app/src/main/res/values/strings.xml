@@ -66,8 +66,13 @@
     <string name="standalone_fragment_title">Add or Confirm</string>
     <string name="standalone_fragment_question1">Add tag?</string>
     <string name="standalone_fragment_question2">Save tag edits?</string>
+
     <string name="title_activity_control_panel">Control Panel</string>
     <string name="title_osm_layers_tab">OSM XML Layers</string>
+    <string name="title_basemaps_tab">Basemaps</string>
+    <string name="title_layers_tab">OSM Layers</string>
+    <string name="title_download_tab">Download OSM</string>
+
     <string name="toggle_buildings">Buildings</string>
     <string name="toggle_roads">Roads</string>
     <string name="toggle_other">Other</string>
