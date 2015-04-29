@@ -11,8 +11,7 @@ import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * Created by Nicholas Hallahan on 4/27/15.
@@ -20,49 +19,32 @@ import java.util.TreeSet;
  */
 public class BasemapsAdapter extends BaseAdapter {
 
-    private static final int TYPE_SECTION = 0;
-    private static final int TYPE_BASEMAP = 1;
-    private static final int TYPE_COUNT = TYPE_BASEMAP + 1;
-
-    private ArrayList<String> mData = new ArrayList<>();
+    private List<BasemapsModel> mBasemapItems;
     private LayoutInflater mInflater;
-
-    private TreeSet<Integer> mSeparatorsSet = new TreeSet<Integer>();
 
     public BasemapsAdapter(Activity activity) {
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-    public void addBasemap(final String item) {
-        mData.add(item);
-        notifyDataSetChanged();
-    }
-
-    public void addSection(final String item) {
-        mData.add(item);
-        // save separator position
-        mSeparatorsSet.add(mData.size() - 1);
-        notifyDataSetChanged();
+        mBasemapItems = BasemapsModel.getItems();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return mSeparatorsSet.contains(position) ? TYPE_SECTION : TYPE_BASEMAP;
+        return mBasemapItems.get(position).getType();
     }
 
     @Override
     public int getViewTypeCount() {
-        return TYPE_COUNT;
+        return 2;
     }
 
     @Override
     public int getCount() {
-        return mData.size();
+        return mBasemapItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mData.get(position);
+        return mBasemapItems.get(position);
     }
 
     @Override
@@ -74,7 +56,8 @@ public class BasemapsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         int type = getItemViewType(position);
         switch (type) {
-            case TYPE_BASEMAP:
+            case BasemapsModel.TYPE_ONLINE:
+            case BasemapsModel.TYPE_MBTILES:
                 BasemapViewHolder holder;
                 if (convertView == null) {
                     holder = new BasemapViewHolder();
@@ -87,12 +70,18 @@ public class BasemapsAdapter extends BaseAdapter {
                 } else {
                     holder = (BasemapViewHolder) convertView.getTag();
                 }
-                holder.name.setText(mData.get(position));
-                holder.desc1.setText("desc1");
-                holder.desc2.setText("desc2");
+                holder.name.setText(mBasemapItems.get(position).getName());
+                holder.desc1.setText(mBasemapItems.get(position).getDesc1());
+                String desc2 = mBasemapItems.get(position).getDesc2();
+                if (desc2 == null) {
+                    holder.desc2.setVisibility(View.GONE);
+                } else {
+                    holder.desc2.setVisibility(View.VISIBLE);
+                    holder.desc2.setText(desc2);
+                }
                 holder.radioButton.setChecked(false);
                 break;
-            case TYPE_SECTION:
+            case BasemapsModel.TYPE_SECTION:
                 SectionViewHolder sectionViewHolder;
                 if (convertView == null) {
                     sectionViewHolder = new SectionViewHolder();
@@ -103,7 +92,7 @@ public class BasemapsAdapter extends BaseAdapter {
                 } else {
                     sectionViewHolder = (SectionViewHolder) convertView.getTag();
                 }
-                sectionViewHolder.sectionTitle.setText(mData.get(position));
+                sectionViewHolder.sectionTitle.setText(mBasemapItems.get(position).getName());
                 sectionViewHolder.onlineStatus.setText("onlineStatus");
                 break;
         }

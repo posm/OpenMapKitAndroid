@@ -53,13 +53,6 @@ public class BasemapsFragment extends Fragment implements AbsListView.OnItemClic
         super.onCreate(savedInstanceState);
 
         mAdapter = new BasemapsAdapter(getActivity());
-        for (int i = 1; i < 50; i++) {
-            mAdapter.addBasemap("basemap " + i);
-            if (i % 4 == 0) {
-                mAdapter.addSection("separator " + i);
-            }
-        }
-
     }
 
     @Override
