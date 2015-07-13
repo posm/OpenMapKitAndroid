@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,18 +80,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.osm_light_green));
         }
-
-        //Get the boundRadius from the location settings
-        LocationXMLParser locationXMLParser = new LocationXMLParser();
-        HashMap locationSettings = null;
-        try {
-            locationSettings = locationXMLParser.parseXML();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        boundRadius = (double) locationSettings.get(LocationXMLParser.PROXIMITY_RADIUS);
 
         // create directory structure for app if needed
         ExternalStorage.checkOrCreateAppDirs();
@@ -388,11 +377,18 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     @Override
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
+            try {
+                LocationXMLParser.parseXML(this);
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //tagsButton.setVisibility(View.VISIBLE);
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
             boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
-            if (userLocationIsEnabled) {
+            if (userLocationIsEnabled && LocationXMLParser.isProximityEnabled()) {
                 //Checks whether tappedElement is within select range.
                 if (isWithinDistance(tappedOSMElement)) {
                     //present OSM Feature tags in bottom ListView
@@ -424,7 +420,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
          Coordinate cord = new Coordinate(userLong, userLat);
          Geometry geo = geometryFactory.createPoint(cord);
          return tappedOSMElement.getJTSGeom().isWithinDistance(geo, boundRadius);*/
-
+        boundRadius = LocationXMLParser.getProximityRadius();
         return distance(userLat, osmElemLat, userLong, osmElemLong) <= boundRadius;
     }
 
