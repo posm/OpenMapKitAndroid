@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -24,9 +25,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cocoahero.android.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.LocationXMLParser;
+import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
@@ -38,6 +43,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -114,6 +121,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         positionMap();
 
+        addGeojsonOverlay();
+
         initializeListView();
 
         //Initialize location settings.
@@ -155,14 +164,26 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         if (lat == -999 || lng == -999 || z == -999) {
             mapView.setUserLocationEnabled(true);
             mapView.goToUserLocation(true);
-            mapView.setUserLocationRequiredZoom(50);
+            if (z == -999) {
+                mapView.setUserLocationRequiredZoom(50);
+            } else {
+                mapView.setUserLocationRequiredZoom(z);
+            }
         }
         // there is a shared pref
         else {
             LatLng c = new LatLng(lat, lng);
             mapView.setCenter(c);
             mapView.setZoom(z);
+            mapView.setUserLocationEnabled(true);
         }
+    }
+
+    protected void addGeojsonOverlay() {
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/buffers.json?target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/targetareas.json?target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/spraydays.json?spray_date=&target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/districts.json?district=Milenge");
     }
 
     /**
@@ -273,17 +294,12 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //instantiate location button
         final ImageButton locationButton = (ImageButton) findViewById(R.id.locationButton);
 
-        //set tap event
+        //set tap event - centres map on the user location.
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
-                if (userLocationIsEnabled) {
-                    mapView.setUserLocationEnabled(false);
-                } else {
-                    mapView.setUserLocationEnabled(true);
-                    mapView.goToUserLocation(true);
-                }
+                mapView.setUserLocationEnabled(true);
+                mapView.goToUserLocation(true);
             }
         });
     }
@@ -425,7 +441,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
 
     /**
-     *
      * @param lat1
      * @param lat2
      * @param lng1
@@ -436,17 +451,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         double earthRadius = 6371000; //meters
         double dLat = Math.toRadians(lat2 - lat1);
         double dLng = Math.toRadians(lng2 - lng1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double dist = (double) (earthRadius * c);
 
         return dist;
     }
 
     /**
-     *
      * @return current location of user.
      */
     public LatLng getUserLocation() {

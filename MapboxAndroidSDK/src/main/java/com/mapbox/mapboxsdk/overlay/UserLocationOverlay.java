@@ -186,30 +186,28 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
 
         canvas.scale(mapScale, mapScale, mMapCoords.x, mMapCoords.y);
 
-        if (mDrawAccuracyEnabled) {
-            canvas.save();
-            // Rotate the icon
-            canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
-            // Counteract any scaling that may be happening so the icon stays the same size
-            float radius = (float) LocationXMLParser.getProximityRadius();
-            //If proximity check is true and the GPS is not enabled, don't show user location else
-            //draw circle of provided radius around the user.
-            if (!(LocationXMLParser.getProximityCheck() && !isGPSEnabled())) {
-                radius = radius / (float) Projection.groundResolution(
-                        lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
-                mCirclePaint.setAlpha(50);
-                mCirclePaint.setStyle(Style.FILL);
-                canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
+        canvas.save();
+        // Rotate the icon
+        canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
+        // Counteract any scaling that may be happening so the icon stays the same size
+        float radius = (float) LocationXMLParser.getProximityRadius();
+        //If proximity check is true and the GPS is not enabled, don't show user location else
+        //draw circle of provided radius around the user.
+        if (!(LocationXMLParser.getProximityCheck() && !isGPSEnabled())) {
+            radius = radius / (float) Projection.groundResolution(
+                    lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
+            mCirclePaint.setAlpha(50);
+            mCirclePaint.setStyle(Style.FILL);
+            canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
 
-                mCirclePaint.setAlpha(150);
-                mCirclePaint.setStyle(Style.STROKE);
-                canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
-                LocationXMLParser.setProximityEnabled(true);
-            } else {
-                LocationXMLParser.setProximityEnabled(false);
-            }
-            canvas.restore();
+            mCirclePaint.setAlpha(150);
+            mCirclePaint.setStyle(Style.STROKE);
+            canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
+            LocationXMLParser.setProximityEnabled(true);
+        } else {
+            LocationXMLParser.setProximityEnabled(false);
         }
+        canvas.restore();
 
         if (UtilConstants.DEBUGMODE) {
             final float tx = (mMapCoords.x + 50);
