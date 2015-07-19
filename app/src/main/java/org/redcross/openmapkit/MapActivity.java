@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -24,26 +25,37 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cocoahero.android.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.LocationXMLParser;
+import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
+import com.vividsolutions.jts.geom.Point;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
+    private static double boundRadius;
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
     protected static final String PREVIOUS_ZOOM = "org.redcross.openmapkit.PREVIOUS_ZOOM";
-    
+
     private static String version = "";
 
     protected MapView mapView;
@@ -55,6 +67,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected Basemap basemap;
     protected TagListAdapter tagListAdapter;
 
+
     /**
      * intent request codes
      */
@@ -65,8 +78,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         super.onCreate(savedInstanceState);
 
         determineVersion();
-        
-        if(android.os.Build.VERSION.SDK_INT >= 21) {
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -75,7 +88,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         // create directory structure for app if needed
         ExternalStorage.checkOrCreateAppDirs();
-        
+
         // Register the intent to the ODKCollect handler
         // This will determine if we are in ODK Collect Mode or not.
         ODKCollectHandler.registerIntent(getIntent());
@@ -84,20 +97,20 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         setContentView(R.layout.activity_map);
 
         //get the layout the ListView is nested in
-        mBottomLinearLayout = (LinearLayout)findViewById(R.id.bottomLinearLayout);
+        mBottomLinearLayout = (LinearLayout) findViewById(R.id.bottomLinearLayout);
 
         //the ListView from layout
-        mTagListView = (ListView)findViewById(R.id.tagListView);
+        mTagListView = (ListView) findViewById(R.id.tagListView);
 
         //the ListView close image button
-        mCloseListViewButton = (ImageButton)findViewById(R.id.imageViewCloseList);
+        mCloseListViewButton = (ImageButton) findViewById(R.id.imageViewCloseList);
 
         //get the layout the Map is nested in
-        mTopLinearLayout = (LinearLayout)findViewById(R.id.topLinearLayout);
+        mTopLinearLayout = (LinearLayout) findViewById(R.id.topLinearLayout);
 
         //get map from layout
-        mapView = (MapView)findViewById(R.id.mapView);
-        
+        mapView = (MapView) findViewById(R.id.mapView);
+
         // initialize basemap object
         basemap = new Basemap(this);
 
@@ -108,13 +121,24 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         positionMap();
 
+        addGeojsonOverlay();
+
         initializeListView();
+
+        //Initialize location settings.
+        try {
+            LocationXMLParser.parseXML(this);
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
-        saveMapPosition();        
+        saveMapPosition();
     }
 
     protected void saveMapPosition() {
@@ -135,27 +159,40 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         double lat = (double) pref.getFloat(PREVIOUS_LAT, -999);
         double lng = (double) pref.getFloat(PREVIOUS_LNG, -999);
         float z = pref.getFloat(PREVIOUS_ZOOM, -999);
-        
+
         // no shared pref
         if (lat == -999 || lng == -999 || z == -999) {
             mapView.setUserLocationEnabled(true);
             mapView.goToUserLocation(true);
-        } 
+            if (z == -999) {
+                mapView.setUserLocationRequiredZoom(50);
+            } else {
+                mapView.setUserLocationRequiredZoom(z);
+            }
+        }
         // there is a shared pref
         else {
             LatLng c = new LatLng(lat, lng);
             mapView.setCenter(c);
             mapView.setZoom(z);
+            mapView.setUserLocationEnabled(true);
         }
     }
-    
+
+    protected void addGeojsonOverlay() {
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/buffers.json?target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/targetareas.json?target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/spraydays.json?spray_date=&target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/districts.json?district=Milenge");
+    }
+
     /**
      * For initializing the ListView of tags
      */
     protected void initializeListView() {
 
         //the ListView title
-        mTagTextView = (TextView)findViewById(R.id.tagTextView);
+        mTagTextView = (TextView) findViewById(R.id.tagTextView);
         mTagTextView.setText(R.string.tagListViewTitle);
 
         //hide the ListView by default
@@ -206,13 +243,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     /**
      * For identifying an OSM element and presenting it's tags in the ListView
+     *
      * @param osmElement The target OSMElement.
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
-        
-        if(!tagListAdapter.isEmpty()) {
+
+        if (!tagListAdapter.isEmpty()) {
             //set the ListView's adapter
             mTagListView.setAdapter(tagListAdapter);
 
@@ -223,13 +261,14 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     /**
      * For setting the proportions of the Map weight and the ListView weight for dual display
-     * @param topWeight Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
+     *
+     * @param topWeight    Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
      * @param bottomWeight Referes to the layotu height.  Note, bottomWeight + topWeight must equal the weight sum of 100
      */
     protected void proportionMapAndList(int topWeight, int bottomWeight) {
 
-        LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams)mTopLinearLayout.getLayoutParams();
-        LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams)mBottomLinearLayout.getLayoutParams();
+        LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams) mTopLinearLayout.getLayoutParams();
+        LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams) mBottomLinearLayout.getLayoutParams();
 
         //update weight of top and bottom linear layouts
         mTopLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(topLayoutParams.width, topLayoutParams.height, topWeight));
@@ -246,30 +285,24 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             e.printStackTrace();
         }
     }
-    
+
     /**
      * For instantiating the location button and setting up its tap event handler
      */
     protected void initializeLocationButton() {
 
         //instantiate location button
-        final ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
+        final ImageButton locationButton = (ImageButton) findViewById(R.id.locationButton);
 
-        //set tap event
+        //set tap event - centres map on the user location.
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
-                if (userLocationIsEnabled) {
-                    mapView.setUserLocationEnabled(false);
-                } else {
-                    mapView.setUserLocationEnabled(true);
-                    mapView.goToUserLocation(true);
-                }
+                mapView.setUserLocationEnabled(true);
+                mapView.goToUserLocation(true);
             }
         });
     }
-    
 
 
     /**
@@ -322,7 +355,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             prompt.show();
         }
     }
-    
+
     private void downloadOSM() {
         BoundingBox bbox = mapView.getBoundingBox();
         OSMDownloader downloader = new OSMDownloader(this, bbox);
@@ -348,7 +381,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         super.onOptionsItemSelected(item);
-                
+
         int id = item.getItemId();
 
         if (id == R.id.osmdownloader) {
@@ -367,27 +400,84 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     @Override
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
-//            tagsButton.setVisibility(View.VISIBLE);
-
+            //tagsButton.setVisibility(View.VISIBLE);
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
-
-            //present OSM Feature tags in bottom ListView
-            identifyOSMFeature(tappedOSMElement);
-
+            boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
+            if (userLocationIsEnabled && LocationXMLParser.isProximityEnabled()) {
+                //Checks whether tappedElement is within select range.
+                if (isWithinDistance(tappedOSMElement)) {
+                    //present OSM Feature tags in bottom ListView
+                    identifyOSMFeature(tappedOSMElement);
+                } else {
+                    //Ignore points outside proximity boundary.
+                    tappedOSMElement.deselectAll();
+                }
+            } else {
+                //If GPS is disabled, user can select any point.
+                identifyOSMFeature(tappedOSMElement);
+            }
         }
     }
 
     /**
+     * @param tappedOSMElement selected point
+     * @return true if the element is within specified radius.
+     */
+    private boolean isWithinDistance(OSMElement tappedOSMElement) {
+        LatLng userPos = getUserLocation();
+        double userLat = userPos.getLatitude();
+        double userLong = userPos.getLongitude();
+        Point cPoint = tappedOSMElement.getJTSGeom().getCentroid();
+        double osmElemLat = cPoint.getY();
+        double osmElemLong = cPoint.getX();
+
+        /**GeometryFactory geometryFactory = new GeometryFactory();
+         Coordinate cord = new Coordinate(userLong, userLat);
+         Geometry geo = geometryFactory.createPoint(cord);
+         return tappedOSMElement.getJTSGeom().isWithinDistance(geo, boundRadius);*/
+        boundRadius = LocationXMLParser.getProximityRadius();
+        return distance(userLat, osmElemLat, userLong, osmElemLong) <= boundRadius;
+    }
+
+    /**
+     * @param lat1
+     * @param lat2
+     * @param lng1
+     * @param lng2
+     * @return distance between 2 points in map.
+     */
+    public double distance(double lat1, double lat2, double lng1, double lng2) {
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double dist = (double) (earthRadius * c);
+
+        return dist;
+    }
+
+    /**
+     * @return current location of user.
+     */
+    public LatLng getUserLocation() {
+        return mapView.getUserLocation();
+    }
+
+    /**
      * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
+     *
      * @param requestCode
      * @param resultCode
      * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE) {
+            if (resultCode == RESULT_OK) {
                 String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
                 String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
                 Intent resultIntent = new Intent();
@@ -398,11 +488,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
         }
     }
-    
+
     public MapView getMapView() {
         return mapView;
     }
-    
+
     private void determineVersion() {
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -411,7 +501,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             e.printStackTrace();
         }
     }
-    
+
     public static String getVersion() {
         return version;
     }
