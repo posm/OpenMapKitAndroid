@@ -1,4 +1,4 @@
-package com.mapbox.mapboxsdk.overlay;
+package com.mapbox.mapboxsdk.proximity;
 
 import android.content.Context;
 import android.os.Environment;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by coder on 7/10/15.
+ * Created by @imwongela on 7/10/15.
  */
 
 public class LocationXMLParser {
