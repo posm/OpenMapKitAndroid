@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Environment;
 import android.widget.Toast;
 
+import com.mapbox.mapboxsdk.customsettings.Settings;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -34,7 +36,7 @@ public class LocationXMLParser {
             pullParserFactory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = pullParserFactory.newPullParser();
 
-            final File file = new File(getSettingsDir()+FILENAME);
+            final File file = new File(Settings.getSettingsDir()+FILENAME);
             InputStream in_s = new FileInputStream(file);
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(in_s, null);
@@ -46,7 +48,7 @@ public class LocationXMLParser {
             // TODO Auto-generated catch block
             //e.printStackTrace();
         }
-        Toast.makeText(ctx, "Add the file " + FILENAME + " in the dir " + getSettingsDir(), Toast.LENGTH_LONG).show();
+        Toast.makeText(ctx, "Add the file " + FILENAME + " in the dir " + Settings.getSettingsDir(), Toast.LENGTH_LONG).show();
         return null;
     }
 
@@ -120,31 +122,5 @@ public class LocationXMLParser {
      */
     public static boolean isProximityEnabled() {
         return proximityEnabled;
-    }
-
-    /**
-     *
-     * @return the path to the settings directory.
-     */
-    public static String getSettingsDir() {
-        createSettingsDir();
-        return Environment.getExternalStorageDirectory() + "/"
-                + APP_DIR + "/"
-                + SETTINGS_DIR + "/";
-    }
-
-    /**
-     * Create settings dir if it does not exist.
-     * @return true if successfully created.
-     */
-    public static boolean createSettingsDir() {
-        File folder = new File(Environment.getExternalStorageDirectory() + "/"
-                + APP_DIR + "/"
-                + SETTINGS_DIR);
-        boolean createStatus = true;
-        if (!folder.exists()) {
-            createStatus = folder.mkdirs() ? true : false;
-        }
-        return createStatus;
     }
 }
