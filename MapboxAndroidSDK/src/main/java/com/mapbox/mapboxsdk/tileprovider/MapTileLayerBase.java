@@ -171,6 +171,8 @@ public abstract class MapTileLayerBase implements IMapTileProviderCallback, Tile
             msg.obj = pState.getMapTile().getTileRect();
             msg.what = MapTile.MAPTILE_SUCCESS_ID;
             mTileRequestCompleteHandler.sendMessage(msg);
+        } else {
+            Log.e(TAG, "Failed to send map update request because mTileRequestCompleteHandler == null");
         }
 
         if (DEBUG_TILE_PROVIDERS) {

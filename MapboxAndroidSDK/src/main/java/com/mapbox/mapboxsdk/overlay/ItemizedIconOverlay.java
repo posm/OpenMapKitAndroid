@@ -5,9 +5,11 @@ import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.Projection;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -105,7 +107,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
         return false;
     }
 
-    public boolean addItems(final List items) {
+    public boolean addItems(final List<Marker> items) {
         for (Object item : items) {
             if (item instanceof Marker) {
                 ((Marker) item).setParentHolder(this);
@@ -137,11 +139,18 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
 
     public boolean removeItem(final Marker item) {
         final boolean result = mItemList.remove(item);
+        if (getFocus() == item) {
+            setFocus(null);
+        }
         if (result) {
             onItemRemoved(item);
         }
         populate();
         return result;
+    }
+
+    public void clearFocus() {
+        setFocus(null);
     }
 
     public Marker removeItem(final int position) {

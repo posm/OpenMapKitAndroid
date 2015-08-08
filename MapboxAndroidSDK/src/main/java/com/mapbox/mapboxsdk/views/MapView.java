@@ -2,15 +2,12 @@ package com.mapbox.mapboxsdk.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
@@ -24,6 +21,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Scroller;
+
 import com.almeros.android.multitouch.RotateGestureDetector;
 import com.cocoahero.android.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.R;
@@ -34,6 +32,7 @@ import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.ClusterMarker;
 import com.mapbox.mapboxsdk.overlay.GeoJSONPainter;
 import com.mapbox.mapboxsdk.overlay.GpsLocationProvider;
 import com.mapbox.mapboxsdk.overlay.ItemizedIconOverlay;
@@ -51,7 +50,6 @@ import com.mapbox.mapboxsdk.tileprovider.constants.TileLayerConstants;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.ITileLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MapboxTileLayer;
 import com.mapbox.mapboxsdk.tileprovider.util.SimpleInvalidationHandler;
-import com.mapbox.mapboxsdk.util.BitmapUtils;
 import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 import com.mapbox.mapboxsdk.util.GeometryMath;
 import com.mapbox.mapboxsdk.util.MapboxUtils;
@@ -63,7 +61,9 @@ import com.mapbox.mapboxsdk.views.util.TileLoadedListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewConstants;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewLayouts;
+
 import org.json.JSONException;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -77,6 +77,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * and interaction code.
  */
 public class MapView extends ViewGroup implements MapViewConstants, MapEventsReceiver, MapboxConstants {
+
+    private static final String TAG = "Mapbox MapView";
+
     /**
      * The default marker Overlay, automatically added to the view to add markers directly.
      */
@@ -98,7 +101,6 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
      */
     private boolean firstMarker = true;
 
-    private static final String TAG = "MapBox MapView";
     private static Method sMotionEventTransformMethod;
 
     /**
@@ -143,7 +145,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     protected PointF mMultiTouchScalePoint = new PointF();
     protected Matrix mInvTransformMatrix = new Matrix();
 
-    protected List<MapListener> mListeners = new ArrayList<MapListener>();
+    protected List<MapListener> mListeners = new ArrayList<>();
 
     private float mapOrientation = 0;
     private final float[] mRotatePoints = new float[2];
@@ -169,11 +171,12 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     TileLoadedListener tileLoadedListener;
     private InfoWindow currentTooltip;
 
-    private int mDefaultPinRes = R.drawable.defpin;
-    private Drawable mDefaultPinDrawable;
-    private PointF mDefaultPinAnchor = DEFAULT_PIN_ANCHOR;
-
     private UserLocationOverlay mLocationOverlay;
+
+    private boolean mIsClusteringEnabled = false;
+    private ClusterMarker.OnDrawClusterListener mOnDrawClusterListener = null;
+    private float mMinZoomForClustering = 22;
+    private boolean mShouldDisplayBubble = true;
 
     /**
      * Constructor for XML layout calls. Should not be used programmatically.
@@ -215,6 +218,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
         this.mRotateGestureDetector =
                 new RotateGestureDetector(aContext, new MapViewRotateGestureDetectorListener(this));
         this.context = aContext;
+        MapboxUtils.setVersionNumber(context.getResources().getString(R.string.mapboxAndroidSDKVersion));
         eventsOverlay = new MapEventsOverlay(aContext, this);
         this.getOverlays().add(eventsOverlay);
 
@@ -260,6 +264,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Add a new MapListener that observes changes in this map.
+     *
      * @param listener
      */
     public void addListener(final MapListener listener) {
@@ -270,6 +275,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Remove a listener object that observed changes in this map.
+     *
      * @param listener
      */
     public void removeListener(MapListener listener) {
@@ -282,6 +288,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
      * Add an overlay to this map. If the overlay is already included,
      * does nothing. After adding the overlay, invalidates the map to
      * redraw it.
+     *
      * @param overlay
      */
     public void addOverlay(final Overlay overlay) {
@@ -297,6 +304,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     /**
      * Remove an overlay from displaying in this map and invalidates
      * the map to trigger a redraw.
+     *
      * @param overlay
      */
     public void removeOverlay(final Overlay overlay) {
@@ -323,9 +331,20 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     }
 
     /**
+     * Set Mapbox Access Token for this MapView.
+     *
+     * @param accessToken String
+     * @see <a href="https://www.mapbox.com/developers/api/#access-tokens">https://www.mapbox.com/developers/api/#access-tokens</a>
+     */
+    public void setAccessToken(final String accessToken) {
+        MapboxUtils.setAccessToken(accessToken);
+    }
+
+    /**
      * Set the tile source of this map as an array of tile layers,
      * which will be presented on top of each other.
-     * @param value
+     *
+     * @param value Array of TileLayer
      */
     public void setTileSource(final ITileLayer[] value) {
         if (value != null && mTileProvider != null && mTileProvider instanceof MapTileLayerBasic) {
@@ -337,7 +356,8 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     /**
      * Set the tile source of this map as a single source, and trigger
      * an update.
-     * @param aTileSource
+     *
+     * @param aTileSource TileLayer to use
      */
     public void setTileSource(final ITileLayer aTileSource) {
         if (aTileSource != null && mTileProvider != null && mTileProvider instanceof MapTileLayerBasic) {
@@ -385,11 +405,32 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
             defaultMarkerList.add(marker);
             setDefaultItemizedOverlay();
         } else {
+            if (!getOverlays().contains(defaultMarkerOverlay)) {
+                addItemizedOverlay(defaultMarkerOverlay);
+            }
             defaultMarkerOverlay.addItem(marker);
         }
         marker.addTo(this);
+
         firstMarker = false;
+        invalidate();
         return marker;
+    }
+
+    public void addMarkers(final List<Marker> markers) {
+        if (firstMarker) {
+            defaultMarkerList.addAll(markers);
+            setDefaultItemizedOverlay();
+        } else {
+            if (!getOverlays().contains(defaultMarkerOverlay)) {
+                addItemizedOverlay(defaultMarkerOverlay);
+            }
+            defaultMarkerOverlay.addItems(markers);
+        }
+        for (Marker marker : markers) {
+            marker.addTo(this);
+        }
+        firstMarker = false;
     }
 
     /**
@@ -401,6 +442,12 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
         this.invalidate();
     }
 
+    public void removeMarkers(final List<Marker> markers) {
+        defaultMarkerList.removeAll(markers);
+        defaultMarkerOverlay.removeItems(markers);
+        this.invalidate();
+    }
+
     /**
      * Remove all markers from the map's display.
      */
@@ -409,6 +456,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
         if (defaultMarkerOverlay != null) {
             defaultMarkerOverlay.removeAllItems();
         }
+
         this.invalidate();
     }
 
@@ -416,6 +464,14 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
      * Select a marker, showing a tooltip if the marker has content that would appear within it.
      */
     public void selectMarker(final Marker marker) {
+        selectMarker(marker, true);
+    }
+
+    /**
+     * Select a marker, showing a tooltip if display_bubble is set to true and
+     * the marker has content that would appear within it.
+     */
+    public void selectMarker(final Marker marker, final boolean displayBubble) {
         InfoWindow toolTip = marker.getToolTip(MapView.this);
 
         if (mMapViewListener != null) {
@@ -427,7 +483,15 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
                 mMapViewListener.onShowMarker(MapView.this, marker);
             }
             currentTooltip = toolTip;
-            marker.showBubble(currentTooltip, MapView.this, true);
+            if (mShouldDisplayBubble && displayBubble) {
+                marker.showBubble(currentTooltip, MapView.this, true);
+            }
+        }
+    }
+
+    public void clearMarkerFocus() {
+        if (defaultMarkerOverlay != null) {
+            defaultMarkerOverlay.clearFocus();
         }
     }
 
@@ -445,12 +509,18 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
             }
         }
 
+        if (itemizedOverlay.isClusteringEnabled()) {
+            addListener(itemizedOverlay);
+            itemizedOverlay.onZoom(new ZoomEvent(this, getZoomLevel(), false));
+        }
+
         this.getOverlays().add(itemizedOverlay);
     }
 
     /**
      * Get all itemized overlays on the map as an ArrayList.
-     * @return
+     *
+     * @return ArrayList<ItemizedIconOverlay> ArrayList of ItemizedIconOverlays
      */
     public ArrayList<ItemizedIconOverlay> getItemizedOverlays() {
         ArrayList<ItemizedIconOverlay> list = new ArrayList<ItemizedIconOverlay>();
@@ -475,6 +545,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Parse a GeoJSON file at a given URL
+     *
      * @param url The URL of GeoJSON string to parse
      * @return FeatureCollection Parsed GeoJSON
      */
@@ -497,6 +568,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Get the current tooltip of this map if there is one being displayed.
+     *
      * @return
      */
     public InfoWindow getCurrentTooltip() {
@@ -522,7 +594,37 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
                     }
                 }
         );
+        addListener(defaultMarkerOverlay);
+        defaultMarkerOverlay.setClusteringEnabled(mIsClusteringEnabled, mOnDrawClusterListener, mMinZoomForClustering);
         addItemizedOverlay(defaultMarkerOverlay);
+    }
+
+    /**
+     * Enable or disable clustering
+     *
+     * @param enabled
+     * @param onDrawClusterListener A listener that allows the modification of the cluster's drawable
+     * @param minimumZoomLevel      minimum zoom level to do clustering. 0 to use default value (always clustering)
+     */
+    public void setClusteringEnabled(boolean enabled, ClusterMarker.OnDrawClusterListener onDrawClusterListener, float minimumZoomLevel) {
+        mIsClusteringEnabled = enabled;
+        mOnDrawClusterListener = onDrawClusterListener;
+        if (minimumZoomLevel > 0) {
+            mMinZoomForClustering = minimumZoomLevel;
+        }
+
+        if (defaultMarkerOverlay != null) {
+            defaultMarkerOverlay.setClusteringEnabled(enabled, onDrawClusterListener, minimumZoomLevel);
+        }
+    }
+
+    public void recomputeCluster() {
+        if (mListeners.size() > 0) {
+            final ZoomEvent event = new ZoomEvent(this, mZoomLevel, false);
+            for (MapListener listener : mListeners) {
+                listener.onZoom(event);
+            }
+        }
     }
 
     /**
@@ -944,6 +1046,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     protected float getAnimatedZoom() {
         return Float.intBitsToFloat(mTargetZoomLevel.get());
     }
+
     protected void setAnimatedZoom(float value) {
         mTargetZoomLevel.set(Float.floatToIntBits(value));
     }
@@ -953,7 +1056,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     }
 
     protected boolean isAnimatedZoomSet() {
-        return  Float.intBitsToFloat(mTargetZoomLevel.get()) != -1;
+        return Float.intBitsToFloat(mTargetZoomLevel.get()) != -1;
     }
 
     /**
@@ -1097,6 +1200,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Gets the mapView onMapOrientationChangeListener
+     *
      * @return the onMapOrientationChangeListener
      */
     public OnMapOrientationChangeListener getOnMapOrientationChangeListener() {
@@ -1105,6 +1209,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Gets the mapView onMapOrientationChangeListener
+     *
      * @param l the onMapOrientationChangeListener
      */
     public void setOnMapOrientationChangeListener(OnMapOrientationChangeListener l) {
@@ -1806,7 +1911,9 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     }
 
     /**
-     * Show or hide the user location overlay
+     * Get status of user location overlay
+     *
+     * @return boolean true if enabled, false if not enabled
      */
     public final boolean getUserLocationEnabled() {
         if (mLocationOverlay != null) {
@@ -1901,8 +2008,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
 
     /**
      * Determines if maps are animating a zoom operation. Useful for overlays to avoid
-     * recalculating
-     * during an animation sequence.
+     * recalculating during an animation sequence.
      *
      * @return boolean indicating whether view is animating.
      */
@@ -2013,29 +2119,12 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
         return "MapView {" + getTileProvider() + "}";
     }
 
-    public void setDefaultPinRes(int res) {
-        mDefaultPinRes = res;
-    }
-
-    public void setDefaultPinDrawable(Drawable drawable) {
-        mDefaultPinDrawable = drawable;
-    }
-
-    public Drawable getDefaultPinDrawable() {
-        if (mDefaultPinDrawable == null && mDefaultPinRes != 0) {
-            BitmapFactory.Options opts =
-                    BitmapUtils.getBitmapOptions(getResources().getDisplayMetrics());
-            mDefaultPinDrawable = new BitmapDrawable(getResources(),
-                    BitmapFactory.decodeResource(context.getResources(), mDefaultPinRes, opts));
-        }
-        return mDefaultPinDrawable;
-    }
-
-    public void setDefaultPinAnchor(PointF point) {
-        mDefaultPinAnchor = point;
-    }
-
-    public PointF getDefaultPinAnchor() {
-        return mDefaultPinAnchor;
+    /**
+     * Allows to disable the tooltip displayed on marker click.
+     * @param enable
+     */
+    public void setBubbleEnabled(boolean enable) {
+        closeCurrentTooltip();
+        mShouldDisplayBubble = enable;
     }
 }

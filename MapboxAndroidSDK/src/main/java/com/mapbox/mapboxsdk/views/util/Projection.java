@@ -407,7 +407,7 @@ public class Projection implements GeoConstants {
         out.y = (float) clip(y * mapSize, 0, mapSize - 1);
         return out;
     }
-    
+
     public static double[] latLongToPixelXY(double latitude, double longitude) {
         latitude = wrap(latitude, -90, 90, 180);
         longitude = wrap(longitude, -180, 180, 360);

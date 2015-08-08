@@ -25,6 +25,8 @@ public class MapTileLayerBasic extends MapTileLayerArray implements IMapTileProv
         this.mContext = pContext;
         this.mMapView = mapView;
 
+        this.setTileRequestCompleteHandler(mMapView.getTileRequestCompleteHandler());
+
         final MapTileDownloader downloaderProvider =
                 new MapTileDownloader(pTileSource, mTileCache, mNetworkAvailabilityCheck, mMapView);
 

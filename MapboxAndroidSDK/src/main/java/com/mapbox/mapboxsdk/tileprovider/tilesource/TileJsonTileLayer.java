@@ -2,17 +2,14 @@ package com.mapbox.mapboxsdk.tileprovider.tilesource;
 
 import android.os.AsyncTask;
 import android.util.Log;
-
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.util.NetworkUtils;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import com.squareup.okhttp.Cache;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +23,8 @@ import java.util.UUID;
  * with the <a href='https://github.com/mapbox/tilejson-spec'>TileJSON</a> standard.
  */
 public class TileJsonTileLayer extends WebSourceTileLayer {
+
+    private static final String TAG = "TileJsonTileLayer";
 
     private JSONObject tileJSON;
     private Cache cache;
@@ -52,9 +51,7 @@ public class TileJsonTileLayer extends WebSourceTileLayer {
         if (aTileJSON != null) {
             if (this.tileJSON.has("tiles")) {
                 try {
-                    this.setURL(this.tileJSON.getJSONArray("tiles")
-                            .getString(0)
-                            .replace(".png", "{2x}.png"));
+                    setURL(this.tileJSON.getJSONArray("tiles").getString(0).replace(".png", "{2x}.png"));
                 } catch (JSONException e) {
                     Log.e(TAG, "Couldn't set tile url", e);
                 }
@@ -180,6 +177,4 @@ public class TileJsonTileLayer extends WebSourceTileLayer {
             }
         }
     }
-
-    private static final String TAG = "TileJsonTileLayer";
 }

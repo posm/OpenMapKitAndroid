@@ -5,16 +5,19 @@ import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
+
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
 import com.mapbox.mapboxsdk.tileprovider.MapTile;
 import com.mapbox.mapboxsdk.tileprovider.modules.MBTilesFileArchive;
 import com.mapbox.mapboxsdk.tileprovider.modules.MapTileDownloader;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewConstants;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import uk.co.senab.bitmapcache.CacheableBitmapDrawable;
 
 /**
@@ -29,7 +32,7 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
     /**
      * Initialize a new tile layer, represented by a MBTiles file.
      *
-     * @param url path to a MBTiles file
+     * @param url     path to a MBTiles file
      * @param context the graphics drawing context
      */
     public MBTilesLayer(final Context context, final String url) {
@@ -70,6 +73,7 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
 
     /**
      * Get the filename of this layer based on the full path
+     *
      * @param path
      * @return the filename of the backing mbtiles file
      */
@@ -104,6 +108,7 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
 
     /**
      * Reads and opens a MBTiles file and loads its tiles into this layer.
+     *
      * @param file
      */
     private void initialize(File file) {
@@ -155,8 +160,14 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
             InputStream inputStream;
             try {
                 inputStream = am.open(url);
-                return createFileFromInputStream(inputStream,
-                        Environment.getExternalStorageDirectory() + File.separator + url);
+                final File mbTilesDir;
+                if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                        || (!Environment.isExternalStorageRemovable())) {
+                    mbTilesDir = new File(context.getExternalFilesDir(null), url);
+                } else {
+                    mbTilesDir = new File(context.getFilesDir(), url);
+                }
+                return createFileFromInputStream(inputStream, mbTilesDir.getPath());
             } catch (IOException e) {
                 Log.e(TAG, "MBTiles file not found in assets: " + e.toString());
                 return null;
@@ -180,7 +191,7 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
 
     @Override
     public CacheableBitmapDrawable getDrawableFromTile(final MapTileDownloader downloader,
-            final MapTile aTile, boolean hdpi) {
+                                                       final MapTile aTile, boolean hdpi) {
         if (mbTilesFileArchive != null) {
             InputStream stream = mbTilesFileArchive.getInputStream(this, aTile);
             if (stream != null) {

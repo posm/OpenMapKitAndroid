@@ -161,17 +161,14 @@ public abstract class MapTileModuleLayerBase implements TileLayerConstants {
      */
     public void loadMapTileAsync(final MapTileRequestState pState) {
         synchronized (mQueueLockObject) {
-                Log.d(TAG, "MapTileModuleLayerBase.loadMaptileAsync() on provider: "
-                        + getName()
-                        + " for tile: "
-                        + pState.getMapTile());
+/*
+                Log.d(TAG, "MapTileModuleLayerBase.loadMaptileAsync() on provider: " + getName() + " for tile: " + pState.getMapTile());
                 if (mPending.containsKey(pState.getMapTile())) {
-                    Log.d(TAG,
-                            "MapTileModuleLayerBase.loadMaptileAsync() tile already exists in request queue for modular provider. Moving to front of queue.");
+                    Log.d(TAG, "MapTileModuleLayerBase.loadMaptileAsync() tile already exists in request queue for modular provider. Moving to front of queue.");
                 } else {
-                    Log.d(TAG,
-                            "MapTileModuleLayerBase.loadMaptileAsync() adding tile to request queue for modular provider.");
+                    Log.d(TAG, "MapTileModuleLayerBase.loadMaptileAsync() adding tile to request queue for modular provider.");
                 }
+*/
             // this will put the tile in the queue, or move it to the front of
             // the queue if it's already present
             mPending.put(pState.getMapTile(), pState);

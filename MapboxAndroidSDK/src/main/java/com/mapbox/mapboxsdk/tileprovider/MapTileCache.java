@@ -8,10 +8,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
+
 import com.mapbox.mapboxsdk.tileprovider.constants.TileLayerConstants;
 import com.mapbox.mapboxsdk.util.BitmapUtils;
+
 import java.io.File;
 import java.io.InputStream;
+
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapDrawable;
 
@@ -95,7 +98,7 @@ public class MapTileCache implements TileLayerConstants {
     }
 
     public CacheableBitmapDrawable putTileStream(final MapTile aTile, final InputStream inputStream,
-            final BitmapFactory.Options decodeOpts) {
+                                                 final BitmapFactory.Options decodeOpts) {
         return getCache().put(getCacheKey(aTile), inputStream, decodeOpts);
     }
 
@@ -132,7 +135,7 @@ public class MapTileCache implements TileLayerConstants {
     }
 
     public CacheableBitmapDrawable putTileInMemoryCache(final MapTile aTile,
-            final Drawable aDrawable) {
+                                                        final Drawable aDrawable) {
         if (aDrawable != null && aDrawable instanceof BitmapDrawable) {
             String key = getCacheKey(aTile);
             if (aDrawable instanceof CacheableBitmapDrawable) {
@@ -145,7 +148,7 @@ public class MapTileCache implements TileLayerConstants {
     }
 
     public CacheableBitmapDrawable putTileInDiskCache(final MapTile aTile,
-            final Drawable aDrawable) {
+                                                      final Drawable aDrawable) {
         if (aDrawable != null && aDrawable instanceof BitmapDrawable) {
             String key = getCacheKey(aTile);
             if (getCache().isDiskCacheEnabled() && !getCache().containsInDiskCache(key)) {
@@ -195,7 +198,7 @@ public class MapTileCache implements TileLayerConstants {
     }
 
     public Bitmap decodeBitmap(final BitmapLruCache.InputStreamProvider ip,
-            final BitmapFactory.Options opts) {
+                               final BitmapFactory.Options opts) {
         return getCache().decodeBitmap(ip, opts);
     }
 
@@ -207,10 +210,10 @@ public class MapTileCache implements TileLayerConstants {
         // Check if media is mounted or storage is built-in, if so, try and use external cache dir
         // otherwise use internal cache dir
         final String cachePath =
-                Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                        || (!Environment.isExternalStorageRemovable())
-                        ? Environment.getExternalStorageDirectory().getPath()
-                        : context.getFilesDir().getPath();
+                context.getExternalCacheDir() != null && (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                        || (!Environment.isExternalStorageRemovable()))
+                        ? context.getExternalCacheDir().getPath()
+                        : context.getCacheDir().getPath();
         Log.i(TAG, "cachePath: '" + cachePath + "'");
 
         return new File(cachePath, uniqueName);

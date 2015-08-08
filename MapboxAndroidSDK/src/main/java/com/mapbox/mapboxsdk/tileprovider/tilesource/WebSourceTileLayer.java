@@ -105,11 +105,17 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
         if (downloader.isNetworkAvailable()) {
             TilesLoadedListener listener = downloader.getTilesLoadedListener();
 
-            String[] urls = getTileURLs(aTile, hdpi);
+            boolean tempHDPI = hdpi;
+            if (this instanceof MapboxTileLayer) {
+                tempHDPI = false;
+            }
+
+            String[] urls = getTileURLs(aTile, tempHDPI);
             CacheableBitmapDrawable result = null;
             Bitmap resultBitmap = null;
+            MapTileCache cache = downloader.getCache();
+
             if (urls != null) {
-                MapTileCache cache = downloader.getCache();
                 if (listener != null) {
                     listener.onTilesLoadStarted();
                 }
@@ -124,10 +130,7 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
                         resultBitmap = compositeBitmaps(bitmap, resultBitmap);
                     }
                 }
-                if (resultBitmap != null) {
-                    //get drawable by putting it into cache (memory and disk)
-                    result = cache.putTileBitmap(aTile, resultBitmap);
-                }
+
                 if (checkThreadControl()) {
                     if (listener != null) {
                         listener.onTilesLoaded();
@@ -135,14 +138,35 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
                 }
             }
 
-            if (result != null) {
-                TileLoadedListener listener2 = downloader.getTileLoadedListener();
-                result = listener2 != null ? listener2.onTileLoaded(result) : result;
+            TileLoadedListener listener2 = downloader.getTileLoadedListener();
+            if (listener2 != null) {
+                //create the CacheableBitmapDrawable object from the bitmap
+                result = cache.createCacheableBitmapDrawable(resultBitmap, aTile);
+
+                //pass it to onTileLoaded callback for customization, and return the customized CacheableBitmapDrawable object
+                result = listener2.onTileLoaded(result);
+
+                //null pointer checking
+                if (result != null) {
+                    int resultWidth = result.getIntrinsicWidth();
+                    int resultHeight = result.getIntrinsicHeight();
+
+                    //convert the drawable updated in onTileLoaded callback to a bitmap
+                    Bitmap bitmapToCache = Bitmap.createBitmap(resultWidth, resultHeight, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmapToCache);
+                    result.setBounds(0, 0, resultWidth, resultHeight);
+                    result.draw(canvas);
+
+                    cache.putTileBitmap(aTile, bitmapToCache);
+                }
+            } else {
+                if (resultBitmap != null) {
+                    //get drawable by putting it into cache (memory and disk)
+                    result = cache.putTileBitmap(aTile, resultBitmap);
+                }
             }
 
             return result;
-        } else {
-            Log.d(TAG, "Skipping tile " + aTile.toString() + " due to NetworkAvailabilityCheck.");
         }
         return null;
     }
@@ -158,7 +182,6 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
      */
     public Bitmap getBitmapFromURL(MapTile mapTile, final String url, final MapTileCache aCache) {
         // We track the active threads here, every exit point should decrement this value.
-        Log.d(getClass().getCanonicalName(), "getBitmapFormURL() called with url = '" + url + "'");
         activeThreads.incrementAndGet();
 
         if (TextUtils.isEmpty(url)) {

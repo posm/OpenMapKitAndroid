@@ -24,16 +24,6 @@ public class MapboxTileLayer extends TileJsonTileLayer implements MapViewConstan
         this(mapId, true);
     }
 
-    /**
-     * Initialize a new Mapbox tile layer using V4 API requiring Access Tokens*
-     * @param mapId MapID
-     * @param accessToken Access Token
-     */
-    public MapboxTileLayer(String mapId,  String accessToken) {
-        this(mapId);
-        MapboxUtils.setAccessToken(accessToken);
-    }
-
     public MapboxTileLayer(String mapId, boolean enableSSL) {
         super(mapId, mapId, enableSSL);
     }
@@ -46,13 +36,8 @@ public class MapboxTileLayer extends TileJsonTileLayer implements MapViewConstan
 
     @Override
     public TileLayer setURL(final String aUrl) {
-        if (!TextUtils.isEmpty(aUrl) && !aUrl.toLowerCase(Locale.US).contains("http://")
-                && !aUrl.toLowerCase(Locale.US).contains("https://")) {
-            if (!TextUtils.isEmpty(MapboxUtils.getAccessToken())) {
-                super.setURL(MAPBOX_BASE_URL_V4 + aUrl + "/{z}/{x}/{y}{2x}.png?access_token=" + MapboxUtils.getAccessToken());
-            } else {
-                super.setURL(MAPBOX_BASE_URL_V3 + aUrl + "/{z}/{x}/{y}{2x}.png");
-            }
+        if (!TextUtils.isEmpty(aUrl) && !aUrl.toLowerCase(Locale.US).contains("http://") && !aUrl.toLowerCase(Locale.US).contains("https://")) {
+            super.setURL(MAPBOX_BASE_URL_V4 + aUrl + "/{z}/{x}/{y}{2x}.png?access_token=" + MapboxUtils.getAccessToken());
         } else {
             super.setURL(aUrl);
         }
@@ -61,13 +46,13 @@ public class MapboxTileLayer extends TileJsonTileLayer implements MapViewConstan
 
     @Override
     protected String getBrandedJSONURL() {
-        if (!TextUtils.isEmpty(MapboxUtils.getAccessToken())) {
-            return String.format(MAPBOX_LOCALE, "http%s://api.tiles.mapbox.com/v4/%s.json?access_token=%s%s", (mEnableSSL ? "s" : ""),
-                    mId, MapboxUtils.getAccessToken(), (mEnableSSL ? "&secure" : ""));
+        String url = String.format(MAPBOX_LOCALE, MAPBOX_BASE_URL_V4 + "%s.json?access_token=%s&secure=1", mId, MapboxUtils.getAccessToken());
+        if (!mEnableSSL) {
+            url = url.replace("https://", "http://");
+            url = url.replace("&secure=1", "");
         }
 
-        return String.format(MAPBOX_LOCALE, "http%s://api.tiles.mapbox.com/v3/%s.json%s", (mEnableSSL ? "s" : ""),
-                mId, (mEnableSSL ? "?secure" : ""));
+        return url;
     }
 
     public String getCacheKey() {
