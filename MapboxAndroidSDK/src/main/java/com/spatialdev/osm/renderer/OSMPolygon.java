@@ -21,6 +21,7 @@ import java.util.Map;
 public class OSMPolygon extends OSMPath {
 
     private static ArrayList<ColorElement> colorElements = new ArrayList<>();
+    private static boolean hasColorSettings = true;
     private static boolean initializedColors = false;
 
     // OSM LAVENDER
@@ -72,20 +73,22 @@ public class OSMPolygon extends OSMPath {
         }
 
         // Color polygon according to values in tags if provided by user.
-        Map<String, String> tags = w.getTags();
-        loadColorElements(mv);
-        String colorCode;
-        for (ColorElement el : colorElements) {
-            String key = el.getKey();
-            if (tags.containsKey(key)) {
-                if (tags.get(key).equals(el.getValue())) {
-                    //Choose highest priority coloring and exit loop.
-                    colorCode = el.getColorCode();
-                    a = DEFAULT_SELECTED_A;
-                    r = Integer.parseInt(colorCode.substring(1,3), HEX_RADIX);
-                    g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
-                    b = Integer.parseInt(colorCode.substring(5,7), HEX_RADIX);
-                    break;
+        if (hasColorSettings) {
+            Map<String, String> tags = w.getTags();
+            loadColorElements(mv);
+            String colorCode;
+            for (ColorElement el : colorElements) {
+                String key = el.getKey();
+                if (tags.containsKey(key)) {
+                    if (tags.get(key).equals(el.getValue())) {
+                        //Choose highest priority coloring and exit loop.
+                        colorCode = el.getColorCode();
+                        a = DEFAULT_SELECTED_A;
+                        r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
+                        g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
+                        b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
+                        break;
+                    }
                 }
             }
         }
@@ -134,10 +137,13 @@ public class OSMPolygon extends OSMPath {
             try {
                 colorElements = ColorXmlParser.parseXML(mv.getContext());
                 initializedColors = true;
+                if (colorElements.size() == 0) {
+                    hasColorSettings = false;
+                }
             } catch (XmlPullParserException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
