@@ -64,6 +64,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         mapActivity = ma;
         sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
         persistedOSMFiles = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
+        // Allows selected files to be reloaded when map is recreated.
+        loadedOSMFiles.clear();
 
         // load the previously selected OSM files in OpenMapKit
         for (String absPath : persistedOSMFiles) {
