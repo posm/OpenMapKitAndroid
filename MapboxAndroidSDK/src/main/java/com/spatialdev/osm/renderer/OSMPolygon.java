@@ -3,14 +3,26 @@ package com.spatialdev.osm.renderer;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import com.spatialdev.osm.coloring.ColorElement;
+import com.spatialdev.osm.coloring.ColorXmlParser;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.model.OSMWay;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by Nicholas Hallahan on 1/22/15.
  * nhallahan@spatialdev.com 
  */
 public class OSMPolygon extends OSMPath {
+
+    private static ArrayList<ColorElement> colorElements = new ArrayList<>();
+    private static boolean hasColorSettings = true;
+    private static boolean initializedColors = false;
 
     // OSM LAVENDER
     private static final int DEFAULT_A = 50;
@@ -29,6 +41,9 @@ public class OSMPolygon extends OSMPath {
     private static final int DEFAULT_EDITED_R = 245;
     private static final int DEFAULT_EDITED_G = 17;
     private static final int DEFAULT_EDITED_B = 135;
+
+    //Hexadecimal radix for color code format.
+    private static final int HEX_RADIX = 16;
 
     private int a;
     private int r;
@@ -55,6 +70,27 @@ public class OSMPolygon extends OSMPath {
             this.r = DEFAULT_R;
             this.g = DEFAULT_G;
             this.b = DEFAULT_B;
+        }
+
+        // Color polygon according to values in tags if provided by user.
+        if (hasColorSettings) {
+            Map<String, String> tags = w.getTags();
+            loadColorElements(mv);
+            String colorCode;
+            for (ColorElement el : colorElements) {
+                String key = el.getKey();
+                if (tags.containsKey(key)) {
+                    if (tags.get(key).equals(el.getValue())) {
+                        //Choose highest priority coloring and exit loop.
+                        colorCode = el.getColorCode();
+                        a = DEFAULT_SELECTED_A;
+                        r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
+                        g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
+                        b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
+                        break;
+                    }
+                }
+            }
         }
 
         paint.setStyle(Paint.Style.FILL);
@@ -93,6 +129,22 @@ public class OSMPolygon extends OSMPath {
         } else {
             path.moveTo( (float) screenPoint[0], (float) screenPoint[1] );
             pathLineToReady = true;
+        }
+    }
+
+    private static void loadColorElements(MapView mv) {
+        if (!initializedColors) {
+            try {
+                colorElements = ColorXmlParser.parseXML(mv.getContext());
+                initializedColors = true;
+                if (colorElements.size() == 0) {
+                    hasColorSettings = false;
+                }
+            } catch (XmlPullParserException e) {
+                //e.printStackTrace();
+            } catch (IOException e) {
+                //e.printStackTrace();
+            }
         }
     }
 }
