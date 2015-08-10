@@ -1,0 +1,26 @@
+<coloring>
+ <color>
+  <tag>spray_status</tag>
+  <value>no</value>
+  <color_code>#FF4136</color_code>
+  <priority>5</priority>
+ </color>
+ <color>
+  <tag>spray_status</tag>
+  <value>yes</value>
+  <color_code>#2ECC40</color_code>
+  <priority>5</priority>
+ </color>
+ <color>
+  <tag>spray_status</tag>
+  <value>refused</value>
+  <color_code>#FF851B</color_code>
+  <priority>5</priority>
+ </color>
+ <color>
+  <tag>building</tag>
+  <value>yes</value>
+  <color_code>#FFDC00</color_code>
+  <priority>3</priority>
+ </color>
+</coloring>
