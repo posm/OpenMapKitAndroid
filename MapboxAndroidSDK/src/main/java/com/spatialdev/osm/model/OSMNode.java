@@ -5,6 +5,7 @@
 package com.spatialdev.osm.model;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.Marker;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -18,6 +19,9 @@ public class OSMNode extends OSMElement {
     private double lng;
 
     private LinkedList<OSMRelation> linkedRelations = new LinkedList<>();
+
+    // This is only for standalone nodes.
+    private Marker marker;
 
     public OSMNode(String idStr,
                    String latStr,
@@ -53,6 +57,28 @@ public class OSMNode extends OSMElement {
 
     public List<OSMRelation> getRelations() {
         return linkedRelations;
+    }
+
+    /**
+     * We want a reference to a marker when the node is a standalone node.
+     * This is a reference held when the marker is created
+     * in JTSModel#addOSMStandaloneNodes
+     *
+     * @param marker
+     */
+    public void setMarker(Marker marker) {
+        this.marker = marker;
+    }
+
+    /**
+     * We will get a marker only if the node is standalone.
+     * This is a reference held when the marker is created
+     * in JTSModel#addOSMStandaloneNodes
+     *
+     * @return
+     */
+    public Marker getMarker() {
+        return marker;
     }
 
     @Override
