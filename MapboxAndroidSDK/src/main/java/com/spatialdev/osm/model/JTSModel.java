@@ -8,6 +8,7 @@ package com.spatialdev.osm.model;
 import android.util.Log;
 
 import com.mapbox.mapboxsdk.api.ILatLng;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -246,6 +247,8 @@ public class JTSModel {
     private void addOSMStandaloneNodes(OSMDataSet ds) {
         List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
         for (OSMNode n : standaloneNodes) {
+            OSMMarker marker = new OSMMarker(n);
+            n.setMarker(marker);
             double lat = n.getLat();
             double lng = n.getLng();
             Coordinate coord = new Coordinate(lng, lat);
