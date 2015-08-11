@@ -1,7 +1,7 @@
 package com.spatialdev.osm.marker;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.model.OSMNode;
 
 /**
@@ -13,11 +13,11 @@ public class OSMMarker extends Marker {
 
     private OSMNode node;
 
-    public OSMMarker(OSMNode node) {
+    public OSMMarker(MapView mapView, OSMNode node) {
         // We don't care about title and description in
         // markers, because we have more detailed tags
         // in the OSMNode itself.
-        super("", "", node.getLatLng());
+        super(mapView, "", "", node.getLatLng());
         this.node = node;
     }
 

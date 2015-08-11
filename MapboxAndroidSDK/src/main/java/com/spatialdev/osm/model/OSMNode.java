@@ -62,7 +62,7 @@ public class OSMNode extends OSMElement {
     /**
      * We want a reference to a marker when the node is a standalone node.
      * This is a reference held when the marker is created
-     * in JTSModel#addOSMStandaloneNodes
+     * in OSMOverlay#renderMarker
      *
      * @param marker
      */
@@ -73,7 +73,7 @@ public class OSMNode extends OSMElement {
     /**
      * We will get a marker only if the node is standalone.
      * This is a reference held when the marker is created
-     * in JTSModel#addOSMStandaloneNodes
+     * in OSMOverlay#renderMarker
      *
      * @return
      */

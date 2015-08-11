@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMElement;
@@ -101,8 +102,9 @@ public class OSMOverlay extends Overlay {
                 }
                 continue;
             }
-            // if it isn't a Way, it's a Node.
-            viewPortNodes.add((OSMNode) el);
+            // If it isn't a Way, it's a Node.
+            // We need to render the marker...
+            renderMarker(mapView, (OSMNode) el);
         }
         
         // Draw polygons
@@ -113,6 +115,15 @@ public class OSMOverlay extends Overlay {
         // Draw lines
         for (OSMWay w : lines) {
             w.getOSMPath(mapView).draw(c);
+        }
+    }
+
+    private void renderMarker(MapView mapView, OSMNode node) {
+        viewPortNodes.add(node);
+        if (node.getMarker() == null) {
+            OSMMarker marker = new OSMMarker(mapView, node);
+            node.setMarker(marker);
+            mapView.addMarker(marker);
         }
     }
 

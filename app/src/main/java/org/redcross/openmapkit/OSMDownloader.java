@@ -25,8 +25,7 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
 
     private static final String OVERPASS_API_URL = "http://overpass-api.de/api/interpreter?data=";
     private static final String PROGRESS_MSG = "Downloading OSM XML from Overpass API:\n\n";
-    
-    private String queryTemplate = "(way[building]({{bbox}});way[highway]({{bbox}}););out%20meta;>;out%20meta%20qt;";
+    private String queryTemplate = "(way[building]({{bbox}});node[shop]({{bbox}});node[amenity]({{bbox}}););out%20meta;>;out%20meta%20qt;";
     private String fileName = "overpass.osm";
     private String statusMessage = "";
 

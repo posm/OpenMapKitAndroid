@@ -247,8 +247,6 @@ public class JTSModel {
     private void addOSMStandaloneNodes(OSMDataSet ds) {
         List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
         for (OSMNode n : standaloneNodes) {
-            OSMMarker marker = new OSMMarker(n);
-            n.setMarker(marker);
             double lat = n.getLat();
             double lng = n.getLng();
             Coordinate coord = new Coordinate(lng, lat);
