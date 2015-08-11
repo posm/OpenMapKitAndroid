@@ -29,6 +29,8 @@ public class OSMColorOverlay extends Overlay {
     private static boolean hasColorSettings = true;
     private static boolean initializedColors = false;
 
+    protected Paint paint = new Paint();
+
     //Hexadecimal radix for color code format.
     private static final int HEX_RADIX = 16;
     private static final int DEFAULT_A = 200;
@@ -38,6 +40,7 @@ public class OSMColorOverlay extends Overlay {
     private int g;
     private int b;
 
+    // Index lower than points and lines overlays.
     private static final int DEFAULT_OVERLAY_INDEX = 3;
 
     private JTSModel model;
@@ -72,7 +75,6 @@ public class OSMColorOverlay extends Overlay {
         }
 
         List<OSMWay> polys = new ArrayList<>();
-
         List<OSMElement> viewPortElements = model.queryFromEnvelope(envelope);
 
         // Select the polygons from the OSMElements
@@ -87,35 +89,41 @@ public class OSMColorOverlay extends Overlay {
         }
 
         // Draw colored polygons
-        for (OSMWay ocp : polys) {
-            OSMPolygon polygon = (OSMPolygon) ocp.getOSMPath(mapView);
+        for (OSMWay osmWay : polys) {
+            OSMPolygon polygon = (OSMPolygon) osmWay.getOSMPath(mapView);
             // Color polygon according to values in tags if provided by user.
             if (hasColorSettings) {
-                Map<String, String> tags = ocp.getTags();
+                Map<String, String> tags = osmWay.getTags();
                 loadColorElements(mapView);
                 String colorCode;
                 for (ColorElement el : colorElements) {
                     String key = el.getKey();
-                    if (tags.containsKey(key)) {
-                        if (tags.get(key).equals(el.getValue())) {
-                            //Choose highest priority coloring and exit loop.
-                            colorCode = el.getColorCode();
-                            a = DEFAULT_A;
-                            r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
-                            g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
-                            b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
-                            break;
-                        }
+                    if (tags.containsKey(key) && tags.get(key).equals(el.getValue())) {
+                        //Choose highest priority coloring and exit loop.
+                        colorCode = el.getColorCode();
+                        a = DEFAULT_A;
+                        r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
+                        g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
+                        b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
+                        colorPolygon(polygon, c);
+                        break;
                     }
                 }
             }
-
-            polygon.getPaint().setStyle(Paint.Style.FILL);
-            polygon.getPaint().setARGB(a, r, g, b);
-            polygon.draw(c);
         }
     }
 
+    private void colorPolygon(OSMPolygon polygon, Canvas c) {
+        paint.setStyle(Paint.Style.FILL);
+        paint.setARGB(a, r, g, b);
+        polygon.setPaint(paint);
+        polygon.draw(c);
+    }
+
+    /**
+     * Initialize the colors from xml file for painting the map.
+     * @param mv
+     */
     private static void loadColorElements(MapView mv) {
         if (!initializedColors) {
             try {

@@ -35,7 +35,6 @@ public class ExternalStorage {
         if (!osmDir.exists()) {
             osmDir.mkdirs();
         }
-
         File settingsDir = new File(appDir, SETTINGS_DIR);
         if (!settingsDir.exists()) {
             settingsDir.mkdirs();

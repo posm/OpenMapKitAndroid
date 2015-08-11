@@ -51,7 +51,7 @@ public class ColorXmlParser {
         String input;
         //Add the default settings.
         XmlPullParser parser = createPullParser(ctx);
-        if (parser == null) {
+        if (!hasColorXmlFile() || parser == null) {
             return colorElementList;
         }
         int eventType = parser.getEventType();
@@ -94,5 +94,10 @@ public class ColorXmlParser {
         //Sort the elements according to priority
         Collections.sort(colorElementList);
         return colorElementList;
+    }
+
+    public static boolean hasColorXmlFile() {
+        File file = new File(ExternalStorage.getSettingsDir()+"/"+FILENAME);
+        return file.exists();
     }
 }
