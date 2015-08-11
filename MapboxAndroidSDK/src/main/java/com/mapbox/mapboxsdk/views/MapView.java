@@ -61,6 +61,8 @@ import com.mapbox.mapboxsdk.views.util.TileLoadedListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewConstants;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewLayouts;
+import com.spatialdev.osm.marker.OSMItemizedIconOverlay;
+import com.spatialdev.osm.marker.OSMMarker;
 
 import org.json.JSONException;
 
@@ -403,7 +405,11 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     public Marker addMarker(final Marker marker) {
         if (firstMarker) {
             defaultMarkerList.add(marker);
-            setDefaultItemizedOverlay();
+            if (marker instanceof OSMMarker) {
+                setDefaultOSMItemizedOverlay();
+            } else {
+                setDefaultItemizedOverlay();
+            }
         } else {
             if (!getOverlays().contains(defaultMarkerOverlay)) {
                 addItemizedOverlay(defaultMarkerOverlay);
@@ -580,6 +586,27 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
      */
     private void setDefaultItemizedOverlay() {
         defaultMarkerOverlay = new ItemizedIconOverlay(getContext(), defaultMarkerList,
+                new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
+                    public boolean onItemSingleTapUp(final int index, final Marker item) {
+                        selectMarker(item);
+                        return true;
+                    }
+
+                    public boolean onItemLongPress(final int index, final Marker item) {
+                        if (mMapViewListener != null) {
+                            mMapViewListener.onLongPressMarker(MapView.this, item);
+                        }
+                        return true;
+                    }
+                }
+        );
+        addListener(defaultMarkerOverlay);
+        defaultMarkerOverlay.setClusteringEnabled(mIsClusteringEnabled, mOnDrawClusterListener, mMinZoomForClustering);
+        addItemizedOverlay(defaultMarkerOverlay);
+    }
+
+    private void setDefaultOSMItemizedOverlay() {
+        defaultMarkerOverlay = new OSMItemizedIconOverlay(getContext(), defaultMarkerList,
                 new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
                     public boolean onItemSingleTapUp(final int index, final Marker item) {
                         selectMarker(item);
