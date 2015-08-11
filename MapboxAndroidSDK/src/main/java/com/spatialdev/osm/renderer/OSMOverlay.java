@@ -123,7 +123,7 @@ public class OSMOverlay extends Overlay {
         if (node.getMarker() == null) {
             OSMMarker marker = new OSMMarker(mapView, node);
             node.setMarker(marker);
-            mapView.addMarker(marker);
+            mapView.addOSMMarker(this, marker);
         }
     }
 

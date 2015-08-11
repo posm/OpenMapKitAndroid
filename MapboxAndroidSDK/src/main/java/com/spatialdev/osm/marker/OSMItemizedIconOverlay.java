@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.mapbox.mapboxsdk.overlay.ItemizedIconOverlay;
 import com.mapbox.mapboxsdk.overlay.Marker;
+import com.spatialdev.osm.model.OSMNode;
+import com.spatialdev.osm.renderer.OSMOverlay;
 
 import java.util.List;
 
@@ -14,12 +16,17 @@ import java.util.List;
  * of markers set from a QuadTree in OSMOverlay#draw.
  */
 public class OSMItemizedIconOverlay extends ItemizedIconOverlay {
-    public OSMItemizedIconOverlay(Context pContext, List<Marker> pList, OnItemGestureListener<Marker> pOnItemGestureListener) {
+
+    List<OSMNode> viewPortNodes;
+
+    public OSMItemizedIconOverlay(OSMOverlay osmOverlay, Context pContext, List<Marker> pList, OnItemGestureListener<Marker> pOnItemGestureListener) {
         super(pContext, pList, pOnItemGestureListener);
+        viewPortNodes = osmOverlay.getViewPortNodes();
     }
 
 //    @Override
 //    protected void populate() {
 //        // no op
 //    }
+
 }

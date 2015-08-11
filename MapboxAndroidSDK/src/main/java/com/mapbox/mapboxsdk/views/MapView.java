@@ -63,6 +63,7 @@ import com.mapbox.mapboxsdk.views.util.constants.MapViewConstants;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewLayouts;
 import com.spatialdev.osm.marker.OSMItemizedIconOverlay;
 import com.spatialdev.osm.marker.OSMMarker;
+import com.spatialdev.osm.renderer.OSMOverlay;
 
 import org.json.JSONException;
 
@@ -405,11 +406,24 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
     public Marker addMarker(final Marker marker) {
         if (firstMarker) {
             defaultMarkerList.add(marker);
-            if (marker instanceof OSMMarker) {
-                setDefaultOSMItemizedOverlay();
-            } else {
-                setDefaultItemizedOverlay();
+            setDefaultItemizedOverlay();
+        } else {
+            if (!getOverlays().contains(defaultMarkerOverlay)) {
+                addItemizedOverlay(defaultMarkerOverlay);
             }
+            defaultMarkerOverlay.addItem(marker);
+        }
+        marker.addTo(this);
+
+        firstMarker = false;
+        invalidate();
+        return marker;
+    }
+
+    public Marker addOSMMarker(OSMOverlay osmOverlay, Marker marker) {
+        if (firstMarker) {
+            defaultMarkerList.add(marker);
+            setDefaultOSMItemizedOverlay(osmOverlay);
         } else {
             if (!getOverlays().contains(defaultMarkerOverlay)) {
                 addItemizedOverlay(defaultMarkerOverlay);
@@ -605,8 +619,8 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
         addItemizedOverlay(defaultMarkerOverlay);
     }
 
-    private void setDefaultOSMItemizedOverlay() {
-        defaultMarkerOverlay = new OSMItemizedIconOverlay(getContext(), defaultMarkerList,
+    private void setDefaultOSMItemizedOverlay(OSMOverlay osmOverlay) {
+        defaultMarkerOverlay = new OSMItemizedIconOverlay(osmOverlay, getContext(), defaultMarkerList,
                 new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
                     public boolean onItemSingleTapUp(final int index, final Marker item) {
                         selectMarker(item);
