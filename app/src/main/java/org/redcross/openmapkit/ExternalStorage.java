@@ -16,6 +16,7 @@ public class ExternalStorage {
     public static final String APP_DIR = "openmapkit";
     public static final String MBTILES_DIR = "mbtiles";
     public static final String OSM_DIR = "osm";
+    public static final String SETTINGS_DIR = "settings";
 
     /**
      * Creating the application directory structure.
@@ -34,6 +35,11 @@ public class ExternalStorage {
         if (!osmDir.exists()) {
             osmDir.mkdirs();
         }
+
+        File settingsDir = new File(appDir, SETTINGS_DIR);
+        if (!settingsDir.exists()) {
+            settingsDir.mkdirs();
+        }
     }
 
     public static String getMBTilesDir() {
@@ -46,6 +52,12 @@ public class ExternalStorage {
         return Environment.getExternalStorageDirectory() + "/"
                 + APP_DIR + "/"
                 + OSM_DIR + "/";
+    }
+
+    public static String getSettingsDir() {
+        return Environment.getExternalStorageDirectory() + "/"
+                + APP_DIR + "/"
+                + SETTINGS_DIR + "/";
     }
     
     public static String getOSMDirRelativeToExternalDir() {
@@ -70,6 +82,12 @@ public class ExternalStorage {
     
     public static File[] fetchMBTilesFiles() {
         String dirPath = getMBTilesDir();
+        File dir = new File(dirPath);
+        return dir.listFiles();
+    }
+
+    public static File[] fetchSettingsFiles() {
+        String dirPath = getSettingsDir();
         File dir = new File(dirPath);
         return dir.listFiles();
     }
