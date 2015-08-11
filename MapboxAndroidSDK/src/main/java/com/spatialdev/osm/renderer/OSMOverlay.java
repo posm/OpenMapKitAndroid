@@ -29,6 +29,8 @@ public class OSMOverlay extends Overlay {
     private float minVectorRenderZoom = 0;
     private float zoom = 0; // current zoom of map
 
+    private List<OSMNode> viewPortNodes = new ArrayList<>();
+
     /**
      * This should only be created by OSMMap.
      * * *
@@ -66,6 +68,10 @@ public class OSMOverlay extends Overlay {
     public void updateZoom(float zoom) {
         this.zoom = zoom;
     }
+
+    public List<OSMNode> getViewPortNodes() {
+        return viewPortNodes;
+    }
     
     @Override
     protected void draw(Canvas c, MapView mapView, boolean shadow) {
@@ -76,7 +82,10 @@ public class OSMOverlay extends Overlay {
 
         List<OSMWay> polys = new ArrayList<>();
         List<OSMWay> lines = new ArrayList<>();
-        List<OSMNode> points = new ArrayList<>();
+
+        // We want to always be referring to the same list so external sources
+        // do not reference stale lists.
+        viewPortNodes.clear();
         
         List<OSMElement> viewPortElements = model.queryFromEnvelope(envelope);
         
@@ -93,7 +102,7 @@ public class OSMOverlay extends Overlay {
                 continue;
             }
             // if it isn't a Way, it's a Node.
-            points.add((OSMNode)el);
+            viewPortNodes.add((OSMNode) el);
         }
         
         // Draw polygons
@@ -106,5 +115,5 @@ public class OSMOverlay extends Overlay {
             w.getOSMPath(mapView).draw(c);
         }
     }
-    
+
 }
