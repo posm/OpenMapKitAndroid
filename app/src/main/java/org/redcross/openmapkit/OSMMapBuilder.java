@@ -11,7 +11,6 @@ import com.spatialdev.osm.model.JTSModel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +27,7 @@ import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.mapcoloring.CustomColoredOSMMap;
 
 /**
  * Created by Nicholas Hallahan on 1/28/15.
@@ -236,6 +236,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             finishAndResetStaticState();
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
         }
+        new CustomColoredOSMMap(mapActivity.getMapView(), model);
     }
     
     private void finishAndResetStaticState() {
