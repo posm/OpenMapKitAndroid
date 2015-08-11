@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.mapcoloring;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.Overlay;
@@ -9,17 +10,35 @@ import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMWay;
+import com.spatialdev.osm.renderer.OSMOverlay;
+import com.spatialdev.osm.renderer.OSMPolygon;
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by coder on 8/11/15.
  */
 public class OSMColorOverlay extends Overlay {
+    private static ArrayList<ColorElement> colorElements = new ArrayList<>();
+    private static boolean hasColorSettings = true;
+    private static boolean initializedColors = false;
 
-    private static final int DEFAULT_OVERLAY_INDEX = 4;
+    //Hexadecimal radix for color code format.
+    private static final int HEX_RADIX = 16;
+    private static final int DEFAULT_A = 200;
+
+    private int a;
+    private int r;
+    private int g;
+    private int b;
+
+    private static final int DEFAULT_OVERLAY_INDEX = 3;
 
     private JTSModel model;
     private Envelope envelope;
@@ -53,36 +72,63 @@ public class OSMColorOverlay extends Overlay {
         }
 
         List<OSMWay> polys = new ArrayList<>();
-        List<OSMWay> lines = new ArrayList<>();
-        List<OSMNode> points = new ArrayList<>();
 
         List<OSMElement> viewPortElements = model.queryFromEnvelope(envelope);
 
-        // Sort the elements into their geom types so we can draw
-        // points on top of lines on top of polys.
+        // Select the polygons from the OSMElements
         for (OSMElement el : viewPortElements) {
             if (el instanceof OSMWay) {
                 OSMWay w = (OSMWay) el;
                 if (w.isClosed()) {
                     polys.add(w);
-                } else {
-                    lines.add(w);
                 }
                 continue;
             }
-            // if it isn't a Way, it's a Node.
-            points.add((OSMNode)el);
         }
 
-        // Draw polygons
-        for (OSMWay w : polys) {
-            w.getOSMPath(mapView).draw(c);
-        }
+        // Draw colored polygons
+        for (OSMWay ocp : polys) {
+            OSMPolygon polygon = (OSMPolygon) ocp.getOSMPath(mapView);
+            // Color polygon according to values in tags if provided by user.
+            if (hasColorSettings) {
+                Map<String, String> tags = ocp.getTags();
+                loadColorElements(mapView);
+                String colorCode;
+                for (ColorElement el : colorElements) {
+                    String key = el.getKey();
+                    if (tags.containsKey(key)) {
+                        if (tags.get(key).equals(el.getValue())) {
+                            //Choose highest priority coloring and exit loop.
+                            colorCode = el.getColorCode();
+                            a = DEFAULT_A;
+                            r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
+                            g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
+                            b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
+                            break;
+                        }
+                    }
+                }
+            }
 
-        // Draw lines
-        for (OSMWay w : lines) {
-            w.getOSMPath(mapView).draw(c);
+            polygon.getPaint().setStyle(Paint.Style.FILL);
+            polygon.getPaint().setARGB(a, r, g, b);
+            polygon.draw(c);
         }
     }
 
+    private static void loadColorElements(MapView mv) {
+        if (!initializedColors) {
+            try {
+                colorElements = ColorXmlParser.parseXML(mv.getContext());
+                initializedColors = true;
+                if (colorElements.size() == 0) {
+                    hasColorSettings = false;
+                }
+            } catch (XmlPullParserException e) {
+                //e.printStackTrace();
+            } catch (IOException e) {
+                //e.printStackTrace();
+            }
+        }
+    }
 }
