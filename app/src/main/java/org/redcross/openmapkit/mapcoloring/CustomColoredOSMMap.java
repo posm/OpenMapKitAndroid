@@ -5,7 +5,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.model.JTSModel;
 
 /**
- * Created by coder on 8/11/15.
+ * Created by imwongela on 8/11/15.
  */
 public class CustomColoredOSMMap {
     private MapView mapView;

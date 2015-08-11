@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by coder on 8/11/15.
+ * Created by imwongela on 8/11/15.
  */
 public class OSMColorOverlay extends Overlay {
     private static ArrayList<ColorElement> colorElements = new ArrayList<>();
@@ -35,7 +35,6 @@ public class OSMColorOverlay extends Overlay {
     private static final int HEX_RADIX = 16;
     private static final int DEFAULT_A = 200;
 
-    private int a;
     private int r;
     private int g;
     private int b;
@@ -88,10 +87,10 @@ public class OSMColorOverlay extends Overlay {
             }
         }
 
-        // Draw colored polygons
         for (OSMWay osmWay : polys) {
             OSMPolygon polygon = (OSMPolygon) osmWay.getOSMPath(mapView);
-            // Color polygon according to values in tags if provided by user.
+
+            //Determine the color to apply on polygon
             if (hasColorSettings) {
                 Map<String, String> tags = osmWay.getTags();
                 loadColorElements(mapView);
@@ -100,12 +99,15 @@ public class OSMColorOverlay extends Overlay {
                     String key = el.getKey();
                     if (tags.containsKey(key) && tags.get(key).equals(el.getValue())) {
                         //Choose highest priority coloring and exit loop.
-                        colorCode = el.getColorCode();
-                        a = DEFAULT_A;
-                        r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
-                        g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
-                        b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
-                        colorPolygon(polygon, c);
+                        try {
+                            colorCode = el.getColorCode();
+                            r = Integer.parseInt(colorCode.substring(1, 3), HEX_RADIX);
+                            g = Integer.parseInt(colorCode.substring(3, 5), HEX_RADIX);
+                            b = Integer.parseInt(colorCode.substring(5, 7), HEX_RADIX);
+                            colorPolygon(polygon, c);
+                        } catch (Exception e) {
+                            // Suppress color code format exceptions.
+                        }
                         break;
                     }
                 }
@@ -113,9 +115,10 @@ public class OSMColorOverlay extends Overlay {
         }
     }
 
+    // Color polygon depending on tag values.
     private void colorPolygon(OSMPolygon polygon, Canvas c) {
         paint.setStyle(Paint.Style.FILL);
-        paint.setARGB(a, r, g, b);
+        paint.setARGB(DEFAULT_A, r, g, b);
         polygon.setPaint(paint);
         polygon.draw(c);
     }
