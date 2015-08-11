@@ -95,7 +95,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
         final Projection projection = mapView.getProjection();
         final float x = event.getX();
         final float y = event.getY();
-        for (int i = 0; i < this.mItemList.size(); ++i) {
+        for (int i = 0; i < size(); ++i) {
             final Marker item = getItem(i);
             if (markerHitTest(item, projection, x, y)) {
                 if (task.run(i)) {

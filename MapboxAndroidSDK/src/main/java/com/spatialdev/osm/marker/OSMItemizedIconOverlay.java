@@ -28,5 +28,20 @@ public class OSMItemizedIconOverlay extends ItemizedIconOverlay {
 //    protected void populate() {
 //        // no op
 //    }
-
+//
+//    /**
+//     * Returns the Item at the given index.
+//     *
+//     * @param position the position of the item to return
+//     * @return the Item of the given index.
+//     */
+//    @Override
+//    public Marker getItem(final int position) {
+//        return viewPortNodes.get(position).getMarker();
+//    }
+//
+//    @Override
+//    public int size() {
+//        return viewPortNodes.size();
+//    }
 }

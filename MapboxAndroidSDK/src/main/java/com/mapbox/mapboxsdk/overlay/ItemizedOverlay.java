@@ -121,7 +121,7 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
         mPendingFocusChangedEvent = false;
 
         final Projection pj = mapView.getProjection();
-        final int size = this.mInternalItemList.size() - 1;
+        final int size = size() - 1;
 
         final RectF bounds =
                 new RectF(0, 0, mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
@@ -184,7 +184,7 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
      * @param position the position of the item to return
      * @return the Item of the given index.
      */
-    public final Marker getItem(final int position) {
+    public Marker getItem(final int position) {
         return mInternalItemList.get(position);
     }
 
