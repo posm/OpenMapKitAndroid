@@ -190,7 +190,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
                 if (that.mOnItemGestureListener == null) {
                     return false;
                 }
-                return onSingleTapUpHelper(index, that.mItemList.get(index), mapView);
+                return onSingleTapUpHelper(index, getItem(index), mapView);
             }
         }));
     }

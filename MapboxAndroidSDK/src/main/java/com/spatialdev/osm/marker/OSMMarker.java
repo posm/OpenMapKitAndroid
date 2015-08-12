@@ -13,11 +13,14 @@ public class OSMMarker extends Marker {
 
     private OSMNode node;
 
+    private static int i = 0;
+
     public OSMMarker(MapView mapView, OSMNode node) {
         // We don't care about title and description in
         // markers, because we have more detailed tags
         // in the OSMNode itself.
-        super(mapView, "", "", node.getLatLng());
+        super(mapView, "test" + i, "testd" + i, node.getLatLng());
+        ++i;
         this.node = node;
     }
 
