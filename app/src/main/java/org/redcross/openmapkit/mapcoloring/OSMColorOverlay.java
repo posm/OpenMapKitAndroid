@@ -44,11 +44,8 @@ public class OSMColorOverlay extends Overlay {
     private JTSModel model;
     private Envelope envelope;
 
-    private float minVectorRenderZoom = 0;
-    private float zoom = 0; // current zoom of map
-
     /**
-     * This should only be created by OSMMap.
+     * This should only be created by CustomColoredOSMMap.
      * * *
      *
      * @param model
@@ -68,8 +65,8 @@ public class OSMColorOverlay extends Overlay {
 
     @Override
     protected void draw(Canvas c, MapView mapView, boolean shadow) {
-        // no shadow support & need a bounding box to query rtree & at or above min render zoom
-        if (shadow || envelope == null || zoom < minVectorRenderZoom) {
+        // no shadow support & need a bounding box to query rtree
+        if (shadow || envelope == null) {
             return;
         }
 
