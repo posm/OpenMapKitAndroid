@@ -120,6 +120,8 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
         }
         mPendingFocusChangedEvent = false;
 
+        sortListByLatitude();
+
         final Projection pj = mapView.getProjection();
         final int size = size() - 1;
 
@@ -187,6 +189,8 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
     public Marker getItem(final int position) {
         return mInternalItemList.get(position);
     }
+
+    protected abstract void sortListByLatitude();
 
     /**
      * Draws an item located at the provided screen coordinates to the canvas.

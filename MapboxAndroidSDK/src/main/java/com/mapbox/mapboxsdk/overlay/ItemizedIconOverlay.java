@@ -45,7 +45,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
     /**
      * Sorts List of Marker by Latitude
      */
-    private void sortListByLatitude() {
+    protected void sortListByLatitude() {
         Collections.sort(mItemList, new Comparator<Marker>() {
             public int compare(Marker a, Marker b) {
                 return Double.valueOf(a.getPoint().getLatitude()).compareTo(b.getPoint().getLatitude());

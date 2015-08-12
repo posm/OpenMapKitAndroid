@@ -44,7 +44,7 @@ public class OSMItemizedIconOverlay extends ItemizedIconOverlay {
     /**
      * Sorts List of Marker by Latitude
      */
-    private void sortListByLatitude() {
+    protected void sortListByLatitude() {
         Collections.sort(viewPortNodes, new Comparator<OSMNode>() {
             public int compare(OSMNode a, OSMNode b) {
                 return Double.valueOf(a.getLat()).compareTo(b.getLat());
