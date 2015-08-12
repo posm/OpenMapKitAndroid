@@ -27,7 +27,6 @@ import java.util.Map;
 public class OSMColorOverlay extends Overlay {
     private static ArrayList<ColorElement> colorElements = new ArrayList<>();
     private static boolean hasColorSettings = true;
-    private static boolean initializedColors = false;
 
     protected Paint paint = new Paint();
 
@@ -51,6 +50,7 @@ public class OSMColorOverlay extends Overlay {
     /**
      * This should only be created by OSMMap.
      * * *
+     *
      * @param model
      */
     public OSMColorOverlay(JTSModel model) {
@@ -87,13 +87,15 @@ public class OSMColorOverlay extends Overlay {
             }
         }
 
-        for (OSMWay osmWay : polys) {
-            OSMPolygon polygon = (OSMPolygon) osmWay.getOSMPath(mapView);
+        // Initialize colors
+        loadColorElements(mapView);
 
-            //Determine the color to apply on polygon
-            if (hasColorSettings) {
+        if (hasColorSettings) {
+            for (OSMWay osmWay : polys) {
+                OSMPolygon polygon = (OSMPolygon) osmWay.getOSMPath(mapView);
+
+                //Determine the color to apply on polygon
                 Map<String, String> tags = osmWay.getTags();
-                loadColorElements(mapView);
                 String colorCode;
                 for (ColorElement el : colorElements) {
                     String key = el.getKey();
@@ -125,21 +127,19 @@ public class OSMColorOverlay extends Overlay {
 
     /**
      * Initialize the colors from xml file for painting the map.
+     *
      * @param mv
      */
     private static void loadColorElements(MapView mv) {
-        if (!initializedColors) {
-            try {
-                colorElements = ColorXmlParser.parseXML(mv.getContext());
-                initializedColors = true;
-                if (colorElements.size() == 0) {
-                    hasColorSettings = false;
-                }
-            } catch (XmlPullParserException e) {
-                //e.printStackTrace();
-            } catch (IOException e) {
-                //e.printStackTrace();
+        try {
+            colorElements = ColorXmlParser.parseXML(mv.getContext());
+            if (colorElements.size() == 0) {
+                hasColorSettings = false;
             }
+        } catch (XmlPullParserException e) {
+            //e.printStackTrace();
+        } catch (IOException e) {
+            //e.printStackTrace();
         }
     }
 }
