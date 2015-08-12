@@ -3,8 +3,7 @@ package org.redcross.openmapkit.proximity;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.mapbox.mapboxsdk.util.ExternalStorage;
-
+import org.redcross.openmapkit.ExternalStorage;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;

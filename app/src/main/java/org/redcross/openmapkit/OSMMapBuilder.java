@@ -28,6 +28,7 @@ import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.proximity.LocationXMLParser;
 
 /**
  * Created by Nicholas Hallahan on 1/28/15.
@@ -235,6 +236,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         if (completedFiles == totalFiles) {
             finishAndResetStaticState();
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
+            if (LocationXMLParser.isProximityEnabled()) {
+                //new OSMMap();
+            }
         }
     }
     
