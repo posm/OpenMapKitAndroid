@@ -14,6 +14,7 @@ import com.mapbox.mapboxsdk.events.RotateEvent;
 import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
@@ -95,9 +96,17 @@ public class OSMMap implements MapViewListener, MapListener {
 
     }
 
+    /**
+     * When the user selects a marker on the map, we want to pan
+     * the map to where the marker is for selection.
+     *
+     * @param pMapView the map
+     * @param pMarker  the marker
+     */
     @Override
     public void onTapMarker(MapView pMapView, Marker pMarker) {
-
+        LatLng latLng = pMarker.getPoint();
+        pMapView.getController().animateTo(latLng);
     }
 
     @Override
