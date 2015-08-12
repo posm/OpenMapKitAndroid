@@ -236,9 +236,11 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         if (completedFiles == totalFiles) {
             finishAndResetStaticState();
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
-        }
-        if(ColorXmlParser.hasColorXmlFile()) {
-            new CustomColoredOSMMap(mapActivity.getMapView(), model);
+
+            // Apply user defined colors on OSMElements.
+            if(ColorXmlParser.hasColorXmlFile()) {
+                new CustomColoredOSMMap(mapActivity.getMapView(), model);
+            }
         }
     }
     

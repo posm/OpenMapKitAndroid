@@ -97,7 +97,7 @@ public class ColorXmlParser {
     }
 
     public static boolean hasColorXmlFile() {
-        File file = new File(ExternalStorage.getSettingsDir()+"/"+FILENAME);
+        File file = new File(ExternalStorage.getSettingsDir() + FILENAME);
         return file.exists();
     }
 }
