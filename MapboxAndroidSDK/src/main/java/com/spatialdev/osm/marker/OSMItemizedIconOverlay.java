@@ -7,6 +7,8 @@ import com.mapbox.mapboxsdk.overlay.Marker;
 import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.renderer.OSMOverlay;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -24,24 +26,29 @@ public class OSMItemizedIconOverlay extends ItemizedIconOverlay {
         viewPortNodes = osmOverlay.getViewPortNodes();
     }
 
-//    @Override
-//    protected void populate() {
-//        // no op
-//    }
-//
-//    /**
-//     * Returns the Item at the given index.
-//     *
-//     * @param position the position of the item to return
-//     * @return the Item of the given index.
-//     */
-//    @Override
-//    public Marker getItem(final int position) {
-//        return viewPortNodes.get(position).getMarker();
-//    }
-//
-//    @Override
-//    public int size() {
-//        return viewPortNodes.size();
-//    }
+    @Override
+    protected void populate() {
+        // no op
+    }
+
+    @Override
+    public Marker getItem(final int position) {
+        return viewPortNodes.get(position).getMarker();
+    }
+
+    @Override
+    public int size() {
+        return viewPortNodes.size();
+    }
+
+    /**
+     * Sorts List of Marker by Latitude
+     */
+    private void sortListByLatitude() {
+        Collections.sort(viewPortNodes, new Comparator<OSMNode>() {
+            public int compare(OSMNode a, OSMNode b) {
+                return Double.valueOf(a.getLat()).compareTo(b.getLat());
+            }
+        });
+    }
 }
