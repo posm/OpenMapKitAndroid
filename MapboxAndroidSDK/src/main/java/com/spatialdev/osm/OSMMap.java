@@ -21,8 +21,10 @@ import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.spatialdev.osm.events.OSMSelectionListener;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.renderer.OSMOverlay;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -107,6 +109,11 @@ public class OSMMap implements MapViewListener, MapListener {
     public void onTapMarker(MapView pMapView, Marker pMarker) {
         LatLng latLng = pMarker.getPoint();
         pMapView.getController().animateTo(latLng);
+        OSMNode node = ((OSMMarker)pMarker).getNode();
+        node.select();
+        if (OSMElement.hasSelectedElementsChanged() && selectionListener != null) {
+            selectionListener.selectedElementsChanged(OSMElement.getSelectedElements());
+        }
     }
 
     @Override
