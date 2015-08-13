@@ -59,6 +59,17 @@
                 android:paddingTop="12dp"
                 android:paddingBottom="15dp"/>
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button3"
+                android:src="@mipmap/greenstarmarkermedium"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:background="@null"
+                android:padding="10dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"/>
+
         </RelativeLayout>
 
     </LinearLayout>
