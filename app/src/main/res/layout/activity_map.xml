@@ -39,19 +39,25 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="75dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginEnd="8dp" />
-    
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/tags"
-                android:id="@+id/tagsButton"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:visibility="invisible" />
+                android:text="+"
+                android:background="@drawable/roundedbutton"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:id="@+id/addNodeButton"
+                android:layout_alignParentBottom="true"
+                android:layout_alignRight="@+id/locationButton"
+                android:layout_alignEnd="@+id/locationButton"
+                android:layout_alignLeft="@+id/locationButton"
+                android:layout_alignStart="@+id/locationButton"
+                android:layout_marginBottom="8dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="15dp"/>
 
         </RelativeLayout>
 
