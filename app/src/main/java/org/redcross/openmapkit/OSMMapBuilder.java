@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.model.JTSModel;
@@ -29,6 +30,7 @@ import com.spatialdev.osm.model.OSMDataSet;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.proximity.LocationXMLParser;
+import org.redcross.openmapkit.proximity.OSMProximityMap;
 
 /**
  * Created by Nicholas Hallahan on 1/28/15.
@@ -237,7 +239,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             finishAndResetStaticState();
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
             if (LocationXMLParser.isProximityEnabled()) {
-                //new OSMMap();
+                new OSMProximityMap(mapActivity.getMapView());
             }
         }
     }

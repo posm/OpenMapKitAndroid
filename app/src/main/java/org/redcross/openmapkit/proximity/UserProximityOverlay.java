@@ -3,6 +3,7 @@ package org.redcross.openmapkit.proximity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -102,7 +103,8 @@ public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, 
         mMapView = mapView;
         mMapController = mapView.getController();
         mContext = mapView.getContext();
-        mCirclePaint.setColor(0x776464FF);
+        //mCirclePaint.setColor(0x776464FF);
+        mCirclePaint.setColor(Color.RED);
         mCirclePaint.setAntiAlias(true);
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(true);

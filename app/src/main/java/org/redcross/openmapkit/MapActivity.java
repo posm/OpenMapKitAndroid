@@ -102,7 +102,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         mTopLinearLayout = (LinearLayout) findViewById(R.id.topLinearLayout);
 
         //get map from layout
-        mapView = (MapView) findViewById(R.id.mapView);
+        mapView = (ProximityMapView) findViewById(R.id.mapView);
 
         // initialize basemap object
         basemap = new Basemap(this);

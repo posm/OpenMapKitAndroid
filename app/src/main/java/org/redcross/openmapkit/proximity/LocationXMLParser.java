@@ -23,7 +23,7 @@ public class LocationXMLParser {
     public static final String PROXIMITY_RADIUS = "proximity_radius";
     private static double radius = 50;
     public static boolean check = false;
-    public static boolean proximityEnabled = false;
+    public static boolean proximityEnabled = true;
 
     public static XmlPullParser createPullParser(Context ctx) {
         XmlPullParserFactory pullParserFactory;
