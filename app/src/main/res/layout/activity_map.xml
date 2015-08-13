@@ -62,13 +62,28 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/button3"
+                android:id="@+id/addPOIMarkerBtn"
                 android:src="@mipmap/greenstarmarkermedium"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:background="@null"
-                android:padding="10dp"
                 android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="15dp"/>
+
+            <Button
+                android:background="@drawable/roundedbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+  Add POI"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:id="@+id/addPOIBtn"
+                android:layout_above="@+id/addPOIMarkerBtn"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"/>
 
         </RelativeLayout>
 
