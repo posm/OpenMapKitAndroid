@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -54,6 +55,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected TextView mTagTextView;
     protected Basemap basemap;
     protected TagListAdapter tagListAdapter;
+
+    private boolean nodeMode = false;
 
     /**
      * intent request codes
@@ -105,6 +108,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         //add user location toggle button
         initializeLocationButton();
+
+        initializeAddNodeButton();
 
         positionMap();
 
@@ -251,8 +256,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * For instantiating the location button and setting up its tap event handler
      */
     protected void initializeLocationButton() {
-
-        //instantiate location button
         final ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
 
         //set tap event
@@ -270,7 +273,34 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         });
     }
     
+    protected void initializeAddNodeButton() {
+        final Button nodeModeButton = (Button)findViewById(R.id.nodeModeButton);
 
+        nodeModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleNodeMode();
+            }
+        });
+    }
+
+    private void toggleNodeMode() {
+        Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
+        ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+
+        if (nodeMode) {
+            addNodeBtn.setVisibility(View.VISIBLE);
+            addNodeMarkerBtn.setVisibility(View.VISIBLE);
+        } else {
+            addNodeBtn.setVisibility(View.GONE);
+            addNodeMarkerBtn.setVisibility(View.GONE);
+        }
+        nodeMode = !nodeMode;
+    }
+
+    private void addNode() {
+
+    }
 
     /**
      * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
