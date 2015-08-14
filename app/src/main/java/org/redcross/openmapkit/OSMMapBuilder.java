@@ -234,7 +234,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         // do this when everything is done loading
         if (completedFiles == totalFiles) {
             finishAndResetStaticState();
-            new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
+            OSMMap osmMap = new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
+            mapActivity.setOSMMap(osmMap);
         }
     }
     

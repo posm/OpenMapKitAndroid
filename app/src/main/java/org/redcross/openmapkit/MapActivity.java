@@ -28,8 +28,10 @@ import android.widget.Toast;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMNode;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
@@ -48,6 +50,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private static String version = "";
 
     protected MapView mapView;
+    protected OSMMap osmMap;
     protected ListView mTagListView;
     protected ImageButton mCloseListViewButton;
     protected LinearLayout mTopLinearLayout;
@@ -109,7 +112,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //add user location toggle button
         initializeLocationButton();
 
-        initializeAddNodeButton();
+        initializeNodeModeButton();
+        initializeAddNodeButtons();
 
         positionMap();
 
@@ -273,9 +277,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         });
     }
     
-    protected void initializeAddNodeButton() {
+    protected void initializeNodeModeButton() {
         final Button nodeModeButton = (Button)findViewById(R.id.nodeModeButton);
-
         nodeModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -284,10 +287,22 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         });
     }
 
-    private void toggleNodeMode() {
-        Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
-        ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+    protected void initializeAddNodeButtons() {
+        final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
+        final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                osmMap.addNode();
+            }
+        };
+        addNodeMarkerBtn.setOnClickListener(listener);
+        addNodeBtn.setOnClickListener(listener);
+    }
 
+    private void toggleNodeMode() {
+        final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
+        final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
         if (nodeMode) {
             addNodeBtn.setVisibility(View.VISIBLE);
             addNodeMarkerBtn.setVisibility(View.VISIBLE);
@@ -296,10 +311,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             addNodeMarkerBtn.setVisibility(View.GONE);
         }
         nodeMode = !nodeMode;
-    }
-
-    private void addNode() {
-
     }
 
     /**
@@ -357,6 +368,15 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         BoundingBox bbox = mapView.getBoundingBox();
         OSMDownloader downloader = new OSMDownloader(this, bbox);
         downloader.execute();
+    }
+
+    /**
+     * OSMMapBuilder sets a reference to OSMMap in this class.
+     *
+     * @param osmMap
+     */
+    public void setOSMMap(OSMMap osmMap) {
+        this.osmMap = osmMap;
     }
 
     /**

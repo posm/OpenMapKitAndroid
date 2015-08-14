@@ -204,5 +204,10 @@ public class OSMMap implements MapViewListener, MapListener {
             osmOverlay.updateBoundingBox(bbox);
         }
     }
-    
+
+    public void addNode() {
+        LatLng center = mapView.getCenter();
+        OSMNode node = new OSMNode(center);
+        jtsModel.addOSMStandaloneNode(node);
+    }
 }
