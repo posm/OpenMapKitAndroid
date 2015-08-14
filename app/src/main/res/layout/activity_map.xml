@@ -64,14 +64,13 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/addNodeMarkerBtn"
                 android:src="@mipmap/greenstarmarkermedium"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:background="@null"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="15dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="30dp"
                 android:visibility="gone"/>
 
             <Button

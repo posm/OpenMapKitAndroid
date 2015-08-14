@@ -209,5 +209,6 @@ public class OSMMap implements MapViewListener, MapListener {
         LatLng center = mapView.getCenter();
         OSMNode node = new OSMNode(center);
         jtsModel.addOSMStandaloneNode(node);
+        mapView.invalidate();
     }
 }
