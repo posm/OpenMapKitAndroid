@@ -122,7 +122,6 @@ public class OSMOverlay extends Overlay {
         viewPortNodes.add(node);
         if (node.getMarker() == null) {
             OSMMarker marker = new OSMMarker(mapView, node);
-            node.setMarker(marker);
             mapView.addOSMMarker(this, marker);
         }
     }

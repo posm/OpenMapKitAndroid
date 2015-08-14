@@ -103,7 +103,10 @@ public abstract class OSMElement {
             el.deselect();
         }
     }
-    
+
+    /**
+     * This constructor is used by OSMDataSet in the XML parsing process.
+     */
     public OSMElement(String idStr,
                       String versionStr,
                       String timestampStr,
@@ -144,6 +147,15 @@ public abstract class OSMElement {
         if (action != null && action.equals("modify")) {
             setAsModified();
         }
+    }
+
+    /**
+     * This constructor is used when we are creating an new OSMElement,
+     * such as when a new Node is created. This constructor assumes
+     * that we are creating a NEW element in the current survey.
+     */
+    public OSMElement() {
+        setAsModifiedInInstance();
     }
 
     void xml(XmlSerializer xmlSerializer) throws IOException {

@@ -23,6 +23,9 @@ public class OSMNode extends OSMElement {
     // This is only for standalone nodes.
     private Marker marker;
 
+    /**
+     * This constructor is used by OSMDataSet in the XML parsing process.
+     */
     public OSMNode(String idStr,
                    String latStr,
                    String lonStr,
@@ -37,6 +40,17 @@ public class OSMNode extends OSMElement {
 
         lat = Double.valueOf(latStr);
         lng = Double.valueOf(lonStr);
+    }
+
+    /**
+     * This constructor is used when we are creating an new OSMElement,
+     * such as when a new Node is created. This constructor assumes
+     * that we are creating a NEW element in the current survey.
+     */
+    public OSMNode(LatLng latLng) {
+        super(); // super sets the element to be modified
+        lat = latLng.getLatitude();
+        lng = latLng.getLongitude();
     }
 
     public LatLng getLatLng() {

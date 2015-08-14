@@ -19,6 +19,7 @@ public class OSMMarker extends Marker {
         // in the OSMNode itself.
         super(mapView, "", "", node.getLatLng());
         this.node = node;
+        node.setMarker(this);
     }
 
     public OSMNode getNode() {
