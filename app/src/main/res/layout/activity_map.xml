@@ -71,7 +71,8 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="2dp"
-                android:paddingBottom="15dp"/>
+                android:paddingBottom="15dp"
+                android:visibility="gone"/>
 
             <Button
                 android:background="@drawable/roundedbutton"
@@ -83,7 +84,8 @@
                 android:layout_above="@+id/addNodeMarkerBtn"
                 android:layout_centerHorizontal="true"
                 android:paddingLeft="25dp"
-                android:paddingRight="25dp"/>
+                android:paddingRight="25dp"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 

@@ -304,11 +304,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
         final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
         if (nodeMode) {
-            addNodeBtn.setVisibility(View.VISIBLE);
-            addNodeMarkerBtn.setVisibility(View.VISIBLE);
-        } else {
             addNodeBtn.setVisibility(View.GONE);
             addNodeMarkerBtn.setVisibility(View.GONE);
+        } else {
+            addNodeBtn.setVisibility(View.VISIBLE);
+            addNodeMarkerBtn.setVisibility(View.VISIBLE);
         }
         nodeMode = !nodeMode;
     }
