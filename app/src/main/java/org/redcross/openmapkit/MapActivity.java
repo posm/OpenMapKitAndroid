@@ -221,13 +221,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
         
-        if(!tagListAdapter.isEmpty()) {
-            //set the ListView's adapter
-            mTagListView.setAdapter(tagListAdapter);
+        //set the ListView's adapter
+        mTagListView.setAdapter(tagListAdapter);
 
-            //show the ListView under the map
-            proportionMapAndList(50, 50);
-        }
+        //show the ListView under the map
+        proportionMapAndList(50, 50);
     }
 
     /**
