@@ -110,6 +110,7 @@ public class OSMMap implements MapViewListener, MapListener {
         LatLng latLng = pMarker.getPoint();
         pMapView.getController().animateTo(latLng);
         OSMNode node = ((OSMMarker)pMarker).getNode();
+        OSMElement.deselectAll();
         node.select();
         if (OSMElement.hasSelectedElementsChanged() && selectionListener != null) {
             selectionListener.selectedElementsChanged(OSMElement.getSelectedElements());
