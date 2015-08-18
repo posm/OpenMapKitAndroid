@@ -53,6 +53,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected OSMMap osmMap;
     protected ListView mTagListView;
     protected ImageButton mCloseListViewButton;
+    protected ImageButton tagButton;
+    protected Button addTagsButton;
     protected LinearLayout mTopLinearLayout;
     protected LinearLayout mBottomLinearLayout;
     protected TextView mTagTextView;
@@ -199,16 +201,21 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
         });
 
-        // tag button
-        ImageButton tagButton = (ImageButton)findViewById(R.id.tagButton);
-        tagButton.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener tagSwipeLaunchListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //launch the TagSwipeActivity
                 Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
                 startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
             }
-        });
+        };
+        // tag button
+        tagButton = (ImageButton)findViewById(R.id.tagButton);
+        tagButton.setOnClickListener(tagSwipeLaunchListener);
+
+        // add tags button
+        addTagsButton = (Button)findViewById(R.id.addTagsBtn);
+        addTagsButton.setOnClickListener(tagSwipeLaunchListener);
 
         //handle list view item taps
         mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -229,6 +236,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * @param osmElement The target OSMElement.
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
+
+        int tagCount = osmElement.getTags().size();
+        if (tagCount > 0) {
+            mTagListView.setVisibility(View.VISIBLE);
+            addTagsButton.setVisibility(View.GONE);
+        } else {
+            mTagListView.setVisibility(View.GONE);
+            addTagsButton.setVisibility(View.VISIBLE);
+        }
+
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
         

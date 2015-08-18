@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="100"
+        android:layout_weight="50"
         android:orientation="vertical"
         android:id="@+id/topLinearLayout" >
         
@@ -94,7 +94,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0"
+        android:layout_weight="50"
         android:orientation="vertical"
         android:id="@+id/bottomLinearLayout">
 
@@ -151,8 +151,18 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/tagListView">
-        </ListView>
+            android:id="@+id/tagListView"
+            android:visibility="gone"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="+  Add Tags"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:id="@+id/addTagsBtn"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:background="#44ffffff"/>
 
     </LinearLayout>
 
