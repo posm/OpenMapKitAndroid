@@ -199,6 +199,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
         });
 
+        // tag button
+        ImageButton tagButton = (ImageButton)findViewById(R.id.tagButton);
+        tagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //launch the TagSwipeActivity
+                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
+            }
+        });
+
         //handle list view item taps
         mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
