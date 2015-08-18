@@ -239,7 +239,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 
             // Apply user defined colors on OSMElements.
             if(SettingsXmlParser.hasColorXmlFile()) {
-                new ColoredOSMMap(mapActivity.getMapView(), model);
+                new ColoredOSMMap(mapActivity.getMapView(), model, SettingsXmlParser.getMinVectorRenderZoom());
             }
         }
     }

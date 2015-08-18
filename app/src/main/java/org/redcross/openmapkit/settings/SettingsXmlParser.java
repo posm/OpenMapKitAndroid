@@ -21,12 +21,14 @@ import java.util.Collections;
 public class SettingsXmlParser {
     public static final String FILENAME = "settings.xml";
     // Color settings parameters
+    public static final String MINIMUM_COLOR_ZOOM = "minimum_color_zoom";
     public static final String COLOR = "color";
     public static final String KEY = "tag";
     public static final String VALUE = "value";
     public static final String COLOR_CODE = "color_code";
     public static final String PRIORITY = "priority";
 
+    private static float minVectorRenderZoom = 18;
     private static ArrayList<ColorElement> colorElementList = new ArrayList<>();
 
     public static XmlPullParser createPullParser(Context ctx) {
@@ -82,6 +84,12 @@ public class SettingsXmlParser {
                     } else if (name.equals(PRIORITY)) {
                         input = parser.nextText().trim();
                         colorElement.setPriority(Integer.parseInt(input));
+                    } else if (name.equals(MINIMUM_COLOR_ZOOM)) {
+                        input = parser.nextText().trim();
+                        try {
+                            minVectorRenderZoom = Float.parseFloat(input);
+                        } catch (NumberFormatException ex) {
+                        }
                     }
                     break;
                 case XmlPullParser.END_TAG:
@@ -96,6 +104,10 @@ public class SettingsXmlParser {
         }
         //Sort the elements according to priority
         Collections.sort(colorElementList);
+    }
+
+    public static float getMinVectorRenderZoom() {
+        return minVectorRenderZoom;
     }
 
     public static ArrayList<ColorElement> getColorElementList() {
