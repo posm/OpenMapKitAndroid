@@ -54,6 +54,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected ListView mTagListView;
     protected ImageButton mCloseListViewButton;
     protected ImageButton tagButton;
+    protected ImageButton deleteButton;
+    protected ImageButton moveButton;
     protected Button addTagsButton;
     protected LinearLayout mTopLinearLayout;
     protected LinearLayout mBottomLinearLayout;
@@ -111,8 +113,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         initializeOsmXml();
 
-        //add user location toggle button
+        // add user location toggle button
         initializeLocationButton();
+
+        // setup delete and move buttons
+        initializeDeleteAndMoveButtons();
 
         initializeNodeModeButton();
         initializeAddNodeButtons();
@@ -246,6 +251,18 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             addTagsButton.setVisibility(View.VISIBLE);
         }
 
+        /**
+         * If we have a node that is selected, we want to activate the
+         * delete and move buttons. Ways should not be editable.
+         */
+        if (osmElement instanceof OSMNode) {
+            deleteButton.setVisibility(View.VISIBLE);
+            moveButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+            moveButton.setVisibility(View.GONE);
+        }
+
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
         
@@ -299,6 +316,23 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     mapView.setUserLocationEnabled(true);
                     mapView.goToUserLocation(true);
                 }
+            }
+        });
+    }
+
+    protected void initializeDeleteAndMoveButtons() {
+        deleteButton = (ImageButton)findViewById(R.id.deleteBtn);
+        moveButton = (ImageButton)findViewById(R.id.moveBtn);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        moveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
