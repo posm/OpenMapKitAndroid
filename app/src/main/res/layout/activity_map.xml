@@ -111,7 +111,7 @@
                 android:gravity="left"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:textSize="10pt"
+                android:textSize="24dp"
                 android:textColor="#7ebc6f"
                 android:id="@+id/tagTextView"/>
 
@@ -119,11 +119,24 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="2dp"
                 android:layout_centerHorizontal="true"
                 android:id="@+id/imageViewCloseList"
                 android:background="@null"
                 android:src="@drawable/arrow"/>
+
+            <!--tag button-->
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tagButton"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_local_offer_black_36dp"
+                android:background="@drawable/roundedbutton"
+                android:padding="10dp"
+                android:layout_marginRight="8dp"/>
 
         </RelativeLayout>
 
@@ -132,7 +145,7 @@
             android:layout_width="fill_parent"
             android:layout_height="2dp"
             android:background="#7ebc6f"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="2dp" />
 
         <!-- list of tags -->
         <ListView
