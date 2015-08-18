@@ -1,4 +1,4 @@
-package org.redcross.openmapkit.mapcoloring;
+package org.redcross.openmapkit.color;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -8,12 +8,11 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMElement;
-import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMWay;
-import com.spatialdev.osm.renderer.OSMOverlay;
 import com.spatialdev.osm.renderer.OSMPolygon;
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.redcross.openmapkit.settings.SettingsXmlParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class OSMColorOverlay extends Overlay {
     private Envelope envelope;
 
     /**
-     * This should only be created by CustomColoredOSMMap.
+     * This should only be created by ColoredOSMMap.
      * * *
      *
      * @param model
@@ -128,15 +127,9 @@ public class OSMColorOverlay extends Overlay {
      * @param mv
      */
     private static void loadColorElements(MapView mv) {
-        try {
-            colorElements = ColorXmlParser.parseXML(mv.getContext());
-            if (colorElements.size() == 0) {
-                hasColorSettings = false;
-            }
-        } catch (XmlPullParserException e) {
-            //e.printStackTrace();
-        } catch (IOException e) {
-            //e.printStackTrace();
+        colorElements = SettingsXmlParser.getColorElementList();
+        if (colorElements.size() == 0) {
+            hasColorSettings = false;
         }
     }
 }

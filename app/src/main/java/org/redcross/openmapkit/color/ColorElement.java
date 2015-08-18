@@ -1,4 +1,4 @@
-package org.redcross.openmapkit.mapcoloring;
+package org.redcross.openmapkit.color;
 
 /**
  * Created by imwongela on 7/30/15.

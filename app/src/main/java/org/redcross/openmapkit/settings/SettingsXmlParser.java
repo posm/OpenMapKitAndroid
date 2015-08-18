@@ -1,8 +1,9 @@
-package org.redcross.openmapkit.mapcoloring;
+package org.redcross.openmapkit.settings;
 
 import android.content.Context;
 
 import org.redcross.openmapkit.ExternalStorage;
+import org.redcross.openmapkit.color.ColorElement;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -15,15 +16,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by imwongela on 7/30/15.
+ * Created by coder on 8/18/15.
  */
-public class ColorXmlParser {
-    public static final String FILENAME = "coloring.xml";
+public class SettingsXmlParser {
+    public static final String FILENAME = "settings.xml";
+    // Color settings parameters
     public static final String COLOR = "color";
     public static final String KEY = "tag";
     public static final String VALUE = "value";
     public static final String COLOR_CODE = "color_code";
     public static final String PRIORITY = "priority";
+
+    private static ArrayList<ColorElement> colorElementList = new ArrayList<>();
 
     public static XmlPullParser createPullParser(Context ctx) {
         XmlPullParserFactory pullParserFactory;
@@ -46,13 +50,12 @@ public class ColorXmlParser {
         return null;
     }
 
-    public static ArrayList<ColorElement> parseXML(Context ctx) throws XmlPullParserException, IOException {
-        ArrayList<ColorElement> colorElementList = new ArrayList<>();
+    public static void parseXML(Context ctx) throws XmlPullParserException, IOException {
         String input;
         //Add the default settings.
         XmlPullParser parser = createPullParser(ctx);
         if (!hasColorXmlFile() || parser == null) {
-            return colorElementList;
+            return;
         }
         int eventType = parser.getEventType();
         ColorElement colorElement = new ColorElement();
@@ -93,6 +96,9 @@ public class ColorXmlParser {
         }
         //Sort the elements according to priority
         Collections.sort(colorElementList);
+    }
+
+    public static ArrayList<ColorElement> getColorElementList() {
         return colorElementList;
     }
 

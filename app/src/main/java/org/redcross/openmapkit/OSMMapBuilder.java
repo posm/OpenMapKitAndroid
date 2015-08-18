@@ -26,9 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.io.CountingInputStream;
 import com.spatialdev.osm.model.OSMDataSet;
 
-import org.redcross.openmapkit.mapcoloring.ColorXmlParser;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
-import org.redcross.openmapkit.mapcoloring.CustomColoredOSMMap;
+import org.redcross.openmapkit.color.ColoredOSMMap;
+import org.redcross.openmapkit.settings.SettingsXmlParser;
 
 /**
  * Created by Nicholas Hallahan on 1/28/15.
@@ -238,8 +238,8 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             new OSMMap(mapActivity.getMapView(), model, mapActivity, MIN_VECTOR_RENDER_ZOOM);
 
             // Apply user defined colors on OSMElements.
-            if(ColorXmlParser.hasColorXmlFile()) {
-                new CustomColoredOSMMap(mapActivity.getMapView(), model);
+            if(SettingsXmlParser.hasColorXmlFile()) {
+                new ColoredOSMMap(mapActivity.getMapView(), model);
             }
         }
     }
