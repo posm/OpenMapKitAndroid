@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by coder on 8/18/15.
+ * Should process the settings in the settings.xml file for proximity, color etc.
+ *
+ * Created by imwongela on 8/18/15.
  */
 public class SettingsXmlParser {
     public static final String FILENAME = "settings.xml";

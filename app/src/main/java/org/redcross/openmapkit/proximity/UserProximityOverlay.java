@@ -23,7 +23,6 @@ import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Overlay.Snappable;
 import com.mapbox.mapboxsdk.overlay.SafeDrawOverlay;
-import com.mapbox.mapboxsdk.proximity.LocationXMLParser;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import com.mapbox.mapboxsdk.views.MapController;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -31,6 +30,7 @@ import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
 import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
 import com.mapbox.mapboxsdk.views.util.Projection;
 
+import org.redcross.openmapkit.settings.SettingsXmlParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -41,6 +41,7 @@ import java.util.LinkedList;
  * @author Manuel Stahl
  */
 public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, MapListener {
+    private static final int GPS_THRESHOLD_ACCURACY = 50;
 
     public enum TrackingMode {
         NONE, FOLLOW, FOLLOW_BEARING
@@ -121,15 +122,6 @@ public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, 
 
         setMyLocationProvider(myLocationProvider);
         setOverlayIndex(USERLOCATIONOVERLAY_INDEX);
-
-        //Load location settings if location changed.
-        try {
-            LocationXMLParser.parseXML(mContext);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public UserProximityOverlay(GpsProximityProvider myLocationProvider, MapView mapView) {
@@ -194,10 +186,11 @@ public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, 
         // Rotate the icon
         canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
         // Counteract any scaling that may be happening so the icon stays the same size
-        float radius = (float) LocationXMLParser.getProximityRadius();
+        float radius = (float) SettingsXmlParser.getProximityRadius();
         //If proximity check is true and the GPS is not enabled, don't show user location else
         //draw circle of provided radius around the user.
-        if (!(LocationXMLParser.getProximityCheck() && !isGPSEnabled())) {
+        if (mMyLocationProvider.getAccuracy() <= GPS_THRESHOLD_ACCURACY
+                && (!SettingsXmlParser.getProximityCheck() || isGPSEnabled())) {
             radius = radius / (float) Projection.groundResolution(
                     lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
             mCirclePaint.setAlpha(50);
@@ -207,9 +200,9 @@ public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, 
             mCirclePaint.setAlpha(150);
             mCirclePaint.setStyle(Style.STROKE);
             canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
-            LocationXMLParser.setProximityEnabled(true);
+            SettingsXmlParser.setProximityEnabled(true);
         } else {
-            LocationXMLParser.setProximityEnabled(false);
+            SettingsXmlParser.setProximityEnabled(false);
         }
         canvas.restore();
 

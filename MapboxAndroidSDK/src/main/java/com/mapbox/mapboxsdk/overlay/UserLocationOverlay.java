@@ -9,10 +9,8 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.location.Location;
-import android.location.LocationManager;
 import android.util.Log;
 import android.view.MotionEvent;
-
 import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.events.MapListener;
 import com.mapbox.mapboxsdk.events.RotateEvent;
@@ -21,17 +19,12 @@ import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Overlay.Snappable;
-import com.mapbox.mapboxsdk.proximity.LocationXMLParser;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import com.mapbox.mapboxsdk.views.MapController;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
 import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
 import com.mapbox.mapboxsdk.views.util.Projection;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -178,16 +171,14 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
 
         canvas.scale(mapScale, mapScale, mMapCoords.x, mMapCoords.y);
 
-        canvas.save();
-        // Rotate the icon
-        canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
-        // Counteract any scaling that may be happening so the icon stays the same size
-        float radius = (float) LocationXMLParser.getProximityRadius();
-        //If proximity check is true and the GPS is not enabled, don't show user location else
-        //draw circle of provided radius around the user.
-        if (!(LocationXMLParser.getProximityCheck() && !isGPSEnabled())) {
-            radius = radius / (float) Projection.groundResolution(
+        if (mDrawAccuracyEnabled) {
+            final float radius = lastFix.getAccuracy() / (float) Projection.groundResolution(
                     lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
+            canvas.save();
+            // Rotate the icon
+            canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
+            // Counteract any scaling that may be happening so the icon stays the same size
+
             mCirclePaint.setAlpha(50);
             mCirclePaint.setStyle(Style.FILL);
             canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
@@ -195,11 +186,8 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
             mCirclePaint.setAlpha(150);
             mCirclePaint.setStyle(Style.STROKE);
             canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
-            LocationXMLParser.setProximityEnabled(true);
-        } else {
-            LocationXMLParser.setProximityEnabled(false);
+            canvas.restore();
         }
-        canvas.restore();
 
         if (UtilConstants.DEBUGMODE) {
             final float tx = (mMapCoords.x + 50);
@@ -569,17 +557,5 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         if (event.getUserAction()) {
             disableFollowLocation();
         }
-    }
-
-    /**
-     *
-     * @return true if GPS is enabled.
-     */
-    private boolean isGPSEnabled() {
-        LocationManager manager = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
-        if ( manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-            return true;
-        }
-        return false;
     }
 }

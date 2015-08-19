@@ -24,15 +24,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mapbox.mapboxsdk.constants.GeoConstants;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.proximity.LocationXMLParser;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.settings.SettingsXmlParser;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -107,6 +110,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         // initialize basemap object
         basemap = new Basemap(this);
 
+        //Initialize settings
+        initializeSettings();
+
         initializeOsmXml();
 
         //add user location toggle button
@@ -115,15 +121,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         positionMap();
 
         initializeListView();
-
-        //Initialize location settings.
-        try {
-            LocationXMLParser.parseXML(this);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -270,6 +267,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         }
     }
 
+    protected void initializeSettings() {
+        //Initialize location settings.
+        try {
+            SettingsXmlParser.parseXML(this);
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * For instantiating the location button and setting up its tap event handler
      */
@@ -388,9 +396,10 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
             boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
-            if (userLocationIsEnabled && LocationXMLParser.isProximityEnabled()) {
+            if (SettingsXmlParser.isProximityEnabled()) {
                 //Checks whether tappedElement is within select range.
-                if (isWithinDistance(tappedOSMElement)) {
+                Geometry tappedElementGeometry = tappedOSMElement.getJTSGeom();
+                if (isWithinDistance(tappedElementGeometry)) {
                     //present OSM Feature tags in bottom ListView
                     identifyOSMFeature(tappedOSMElement);
                 } else {
@@ -398,50 +407,34 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     tappedOSMElement.deselectAll();
                 }
             } else {
-                //If GPS is disabled, user can select any point.
                 identifyOSMFeature(tappedOSMElement);
             }
         }
     }
 
     /**
-     * @param tappedOSMElement selected point
+     * @param tappedElementGeometry selected point
      * @return true if the element is within specified radius.
      */
-    private boolean isWithinDistance(OSMElement tappedOSMElement) {
+    public boolean isWithinDistance(Geometry tappedElementGeometry) {
+        GeometryFactory geometryFactory = new GeometryFactory();
         LatLng userPos = getUserLocation();
         double userLat = userPos.getLatitude();
         double userLong = userPos.getLongitude();
-        Point cPoint = tappedOSMElement.getJTSGeom().getCentroid();
-        double osmElemLat = cPoint.getY();
-        double osmElemLong = cPoint.getX();
-
-        /**GeometryFactory geometryFactory = new GeometryFactory();
-         Coordinate cord = new Coordinate(userLong, userLat);
-         Geometry geo = geometryFactory.createPoint(cord);
-         return tappedOSMElement.getJTSGeom().isWithinDistance(geo, boundRadius);*/
-        boundRadius = LocationXMLParser.getProximityRadius();
-        return distance(userLat, osmElemLat, userLong, osmElemLong) <= boundRadius;
+        Coordinate cord = new Coordinate(userLong, userLat);
+        Geometry userLocGeo = geometryFactory.createPoint(cord);
+        double proximityRadius = SettingsXmlParser.getProximityRadius();
+        double angleDist = getCentralAngleDistance(proximityRadius);
+        return userLocGeo.isWithinDistance(tappedElementGeometry, angleDist);
     }
 
     /**
-     * @param lat1
-     * @param lat2
-     * @param lng1
-     * @param lng2
-     * @return distance between 2 points in map.
+     *
+     * @param length the distance in meters of the proximity radius.
+     * @return the central angle in degrees formed at centre of earth.
      */
-    public double distance(double lat1, double lat2, double lng1, double lng2) {
-        double earthRadius = 6371000; //meters
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLng = Math.toRadians(lng2 - lng1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double dist = (double) (earthRadius * c);
-
-        return dist;
+    public double getCentralAngleDistance(double length) {
+        return (180 * length) / (Math.PI * GeoConstants.RADIUS_EARTH_METERS);
     }
 
     /**
