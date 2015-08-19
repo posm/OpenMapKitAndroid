@@ -89,7 +89,34 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/moveBtn"
+                android:id="@+id/moveNodeMarkerBtn"
+                android:src="@mipmap/maki_star_orange"
+                android:background="@null"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="30dp"
+                android:visibility="gone"/>
+
+            <Button
+                android:background="@drawable/roundedbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Place Node"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:id="@+id/moveNodeBtn"
+                android:layout_above="@+id/moveNodeMarkerBtn"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/moveNodeModeBtn"
                 android:background="@drawable/roundedbutton"
                 android:src="@drawable/ic_swap_horiz_black_36dp"
                 android:padding="10dp"

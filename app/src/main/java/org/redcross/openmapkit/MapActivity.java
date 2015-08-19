@@ -66,6 +66,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected TagListAdapter tagListAdapter;
 
     private boolean nodeMode = false;
+    private boolean moveNodeMode = false;
 
     /**
      * intent request codes
@@ -326,17 +327,17 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
     protected void initializeDeleteAndMoveButtons() {
         deleteButton = (ImageButton)findViewById(R.id.deleteBtn);
-        moveButton = (ImageButton)findViewById(R.id.moveBtn);
+        moveButton = (ImageButton)findViewById(R.id.moveNodeModeBtn);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                deleteNode();
             }
         });
         moveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                toggleMoveNodeMode();
             }
         });
     }
@@ -380,6 +381,26 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             mapView.invalidate();
         }
         nodeMode = !nodeMode;
+    }
+
+    private void deleteNode() {
+
+    }
+
+    private void toggleMoveNodeMode() {
+        final ImageButton moveNodeModeBtn = (ImageButton)findViewById(R.id.moveNodeModeBtn);
+        final ImageButton moveNodeMarkerBtn = (ImageButton)findViewById(R.id.moveNodeMarkerBtn);
+        final Button moveNodeBtn = (Button)findViewById(R.id.moveNodeBtn);
+        if (moveNodeMode) {
+            moveNodeMarkerBtn.setVisibility(View.GONE);
+            moveNodeBtn.setVisibility(View.GONE);
+            moveNodeModeBtn.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
+        } else {
+            moveNodeMarkerBtn.setVisibility(View.VISIBLE);
+            moveNodeBtn.setVisibility(View.VISIBLE);
+            moveNodeModeBtn.setBackground(getResources().getDrawable(R.drawable.roundedbutton_orange));
+        }
+        moveNodeMode = !moveNodeMode;
     }
 
     /**
