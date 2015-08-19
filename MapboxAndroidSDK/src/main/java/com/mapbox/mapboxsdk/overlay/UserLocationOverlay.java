@@ -118,15 +118,6 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
 
         setMyLocationProvider(myLocationProvider);
         setOverlayIndex(USERLOCATIONOVERLAY_INDEX);
-
-        //Load location settings if location changed.
-        try {
-            LocationXMLParser.parseXML(mContext);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public UserLocationOverlay(GpsLocationProvider myLocationProvider, MapView mapView) {
