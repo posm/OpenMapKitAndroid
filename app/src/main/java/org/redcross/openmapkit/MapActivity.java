@@ -376,6 +376,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             addNodeBtn.setVisibility(View.VISIBLE);
             addNodeMarkerBtn.setVisibility(View.VISIBLE);
             nodeModeButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton_green));
+            OSMElement.deselectAll();
+            mapView.invalidate();
         }
         nodeMode = !nodeMode;
     }
