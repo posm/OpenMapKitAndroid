@@ -6,8 +6,11 @@
 package com.spatialdev.osm.renderer;
 
 import android.graphics.Canvas;
+import android.graphics.PointF;
 
+import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.marker.OSMMarker;
@@ -122,6 +125,15 @@ public class OSMOverlay extends Overlay {
         viewPortNodes.add(node);
         if (node.getMarker() == null) {
             OSMMarker marker = new OSMMarker(mapView, node);
+            marker.setMarker(mapView.getContext().getResources().getDrawable(R.mipmap.maki_star_blue));
+            /**
+             * Issue #81
+             * setMarker doesn't position bitmaps in the same way as setIcon.
+             * By setting the anchor, we bring down the image slightly so that the marker
+             * does indeed point to the point it refers to.
+             */
+            PointF anchor = new PointF(0.5f, 0.8f);
+            marker.setAnchor(anchor);
             mapView.addOSMMarker(this, marker);
         }
     }
