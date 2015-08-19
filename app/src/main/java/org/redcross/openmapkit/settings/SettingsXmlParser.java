@@ -120,4 +120,9 @@ public class SettingsXmlParser {
     public static boolean isProximityEnabled() {
         return proximityEnabled;
     }
+
+    public static boolean hasSettingsXmlFile() {
+        File file = new File(ExternalStorage.getSettingsDir() + FILENAME);
+        return file.exists();
+    }
 }

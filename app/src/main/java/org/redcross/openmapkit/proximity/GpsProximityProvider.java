@@ -6,9 +6,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import com.mapbox.mapboxsdk.overlay.GpsLocationProvider;
 import com.mapbox.mapboxsdk.util.NetworkLocationIgnorer;
 
-public class GpsProximityProvider implements LocationListener {
+public class GpsProximityProvider extends GpsLocationProvider implements LocationListener {
 
     private final LocationManager mLocationManager;
     private Location mLocation;
@@ -19,6 +20,7 @@ public class GpsProximityProvider implements LocationListener {
     private final NetworkLocationIgnorer mIgnorer = new NetworkLocationIgnorer();
 
     public GpsProximityProvider(Context context) {
+        super(context);
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 

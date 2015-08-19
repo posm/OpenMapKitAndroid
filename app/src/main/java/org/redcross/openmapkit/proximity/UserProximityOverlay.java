@@ -23,6 +23,7 @@ import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Overlay.Snappable;
 import com.mapbox.mapboxsdk.overlay.SafeDrawOverlay;
+import com.mapbox.mapboxsdk.overlay.UserLocationOverlay;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import com.mapbox.mapboxsdk.views.MapController;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -40,12 +41,8 @@ import java.util.LinkedList;
  * @author Marc Kurtz
  * @author Manuel Stahl
  */
-public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, MapListener {
+public class UserProximityOverlay extends UserLocationOverlay implements Snappable, MapListener {
     private static final int GPS_THRESHOLD_ACCURACY = 50;
-
-    public enum TrackingMode {
-        NONE, FOLLOW, FOLLOW_BEARING
-    }
 
     private final SafePaint mPaint = new SafePaint();
     private final SafePaint mCirclePaint = new SafePaint();
@@ -101,6 +98,7 @@ public class UserProximityOverlay extends SafeDrawOverlay implements Snappable, 
     }
 
     public UserProximityOverlay(GpsProximityProvider myLocationProvider, MapView mapView, int arrowId, int personId) {
+        super(myLocationProvider, mapView);
         mMapView = mapView;
         mMapController = mapView.getController();
         mContext = mapView.getContext();
