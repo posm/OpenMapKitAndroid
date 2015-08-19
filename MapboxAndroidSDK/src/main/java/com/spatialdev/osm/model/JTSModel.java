@@ -274,6 +274,20 @@ public class JTSModel {
     }
 
     /**
+     * Removes the OSMElement from the Spatial Index
+     * if the element there.
+     *
+     * @param el - any OSMElement
+     */
+    public void removeOSMElement(OSMElement el) {
+        Geometry geom = el.getJTSGeom();
+        if (geom != null) {
+            Envelope env = geom.getEnvelopeInternal();
+            spatialIndex.remove(env, el);
+        }
+    }
+
+    /**
      * This is how degrees wide a given pixel is for a given zoom.
      *
      * @param zoom

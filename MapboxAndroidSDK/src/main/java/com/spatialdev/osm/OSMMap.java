@@ -212,4 +212,11 @@ public class OSMMap implements MapViewListener, MapListener {
         jtsModel.addOSMStandaloneNode(node);
         mapView.invalidate();
     }
+
+    public void moveNode() {
+        LatLng center = mapView.getCenter();
+        OSMNode selectedNode = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        selectedNode.move(jtsModel, center);
+        mapView.invalidate();
+    }
 }

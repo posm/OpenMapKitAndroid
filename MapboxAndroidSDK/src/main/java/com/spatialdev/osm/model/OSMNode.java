@@ -8,6 +8,7 @@ import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.spatialdev.osm.marker.OSMMarker;
+import com.vividsolutions.jts.geom.Envelope;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -65,6 +66,26 @@ public class OSMNode extends OSMElement {
 
     public double getLng() {
         return lng;
+    }
+
+    /**
+     * This moves an OSMNode to a new location on the map.
+     *
+     * The LatLng in the node is reset, the LatLng in the
+     * marker is reset, and the node is removed and replaced
+     * in the JTSModel's spatial index.
+     *
+     * @param jtsModel - the model in which the node is spatially indexed
+     * @param latLng - the new location to move the node to
+     */
+    public void move(JTSModel jtsModel, LatLng latLng) {
+        lat = latLng.getLatitude();
+        lng = latLng.getLongitude();
+        jtsModel.removeOSMElement(this);
+        jtsModel.addOSMStandaloneNode(this);
+        if (marker != null) {
+            marker.setPoint(latLng);
+        }
     }
 
     public void addRelation(OSMRelation relation) {
