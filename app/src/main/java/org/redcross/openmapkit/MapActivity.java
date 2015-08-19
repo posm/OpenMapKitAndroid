@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -56,6 +57,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     protected ImageButton tagButton;
     protected ImageButton deleteButton;
     protected ImageButton moveButton;
+    protected Button nodeModeButton;
     protected Button addTagsButton;
     protected LinearLayout mTopLinearLayout;
     protected LinearLayout mBottomLinearLayout;
@@ -312,9 +314,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
                 if (userLocationIsEnabled) {
                     mapView.setUserLocationEnabled(false);
+                    locationButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
                 } else {
                     mapView.setUserLocationEnabled(true);
                     mapView.goToUserLocation(true);
+                    locationButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton_blue));
                 }
             }
         });
@@ -338,7 +342,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
     
     protected void initializeNodeModeButton() {
-        final Button nodeModeButton = (Button)findViewById(R.id.nodeModeButton);
+        nodeModeButton = (Button)findViewById(R.id.nodeModeButton);
         nodeModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -366,9 +370,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         if (nodeMode) {
             addNodeBtn.setVisibility(View.GONE);
             addNodeMarkerBtn.setVisibility(View.GONE);
+            nodeModeButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
         } else {
             addNodeBtn.setVisibility(View.VISIBLE);
             addNodeMarkerBtn.setVisibility(View.VISIBLE);
+            nodeModeButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton_green));
         }
         nodeMode = !nodeMode;
     }
