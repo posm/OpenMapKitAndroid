@@ -33,6 +33,7 @@ import com.spatialdev.osm.model.OSMElement;
 import com.vividsolutions.jts.geom.Point;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.settings.SettingsXmlParser;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -119,6 +120,15 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         //Initialize location settings.
         try {
             LocationXMLParser.parseXML(this);
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Process all settings including location and color. Should replace the LocationXMLParser above.
+        try {
+            SettingsXmlParser.parseXML(this);
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
