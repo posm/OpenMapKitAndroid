@@ -26,4 +26,7 @@ public class OSMMarker extends Marker {
         return node;
     }
 
+    public MapView getMapView() {
+        return mapView;
+    }
 }

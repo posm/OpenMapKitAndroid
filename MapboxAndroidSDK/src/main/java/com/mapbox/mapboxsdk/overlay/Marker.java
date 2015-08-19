@@ -36,7 +36,7 @@ public class Marker implements MapViewConstants, ClusterItem {
     protected final PointF mCurMapCoords = new PointF();
 
     protected Context context;
-    private MapView mapView;
+    protected MapView mapView;
     private Icon icon;
     private boolean isUsingMakiIcon = true;
 

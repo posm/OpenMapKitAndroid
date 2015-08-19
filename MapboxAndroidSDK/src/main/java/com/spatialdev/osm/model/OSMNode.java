@@ -4,8 +4,10 @@
  */
 package com.spatialdev.osm.model;
 
+import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
+import com.spatialdev.osm.marker.OSMMarker;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -21,7 +23,7 @@ public class OSMNode extends OSMElement {
     private LinkedList<OSMRelation> linkedRelations = new LinkedList<>();
 
     // This is only for standalone nodes.
-    private Marker marker;
+    private OSMMarker marker;
 
     /**
      * This constructor is used by OSMDataSet in the XML parsing process.
@@ -80,7 +82,7 @@ public class OSMNode extends OSMElement {
      *
      * @param marker
      */
-    public void setMarker(Marker marker) {
+    public void setMarker(OSMMarker marker) {
         this.marker = marker;
     }
 
@@ -108,4 +110,19 @@ public class OSMNode extends OSMElement {
         xmlSerializer.endTag(null, "node");
     }
 
+    @Override
+    public void select() {
+        super.select();
+        if (marker != null) {
+            marker.setMarker(marker.getMapView().getContext().getResources().getDrawable(R.mipmap.maki_star_orange));
+        }
+    }
+
+    @Override
+    public void deselect() {
+        super.deselect();
+        if (marker != null) {
+            marker.setMarker(marker.getMapView().getContext().getResources().getDrawable(R.mipmap.maki_star_blue));
+        }
+    }
 }
