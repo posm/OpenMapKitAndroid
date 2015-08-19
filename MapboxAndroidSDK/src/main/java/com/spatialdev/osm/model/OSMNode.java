@@ -8,7 +8,6 @@ import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.spatialdev.osm.marker.OSMMarker;
-import com.vividsolutions.jts.geom.Envelope;
 
 import org.xmlpull.v1.XmlSerializer;
 

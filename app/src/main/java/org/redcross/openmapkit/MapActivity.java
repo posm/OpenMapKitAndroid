@@ -124,6 +124,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         initializeNodeModeButton();
         initializeAddNodeButtons();
+        initializeMoveNodeButtons();
 
         positionMap();
 
@@ -364,6 +365,20 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         };
         addNodeMarkerBtn.setOnClickListener(listener);
         addNodeBtn.setOnClickListener(listener);
+    }
+
+    protected void initializeMoveNodeButtons() {
+        final Button moveNodeBtn = (Button)findViewById(R.id.moveNodeBtn);
+        final ImageButton moveNodeMarkerBtn = (ImageButton)findViewById(R.id.moveNodeMarkerBtn);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                osmMap.moveNode();
+                toggleMoveNodeMode();
+            }
+        };
+        moveNodeBtn.setOnClickListener(listener);
+        moveNodeMarkerBtn.setOnClickListener(listener);
     }
 
     private void toggleNodeMode() {
