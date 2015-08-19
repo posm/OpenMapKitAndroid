@@ -207,7 +207,8 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
         item.updateDrawingPosition();
         final PointF position = item.getPositionOnMap();
         final Point roundedCoords = new Point((int) position.x, (int) position.y);
-        if (!RectF.intersects(mapBounds, item.getDrawingBounds(projection, null))) {
+        if (!RectF.intersects(mapBounds, item.getDrawingBounds(projection, null))
+                || !item.isVisible()) {
             //dont draw item if offscreen
             return;
         }

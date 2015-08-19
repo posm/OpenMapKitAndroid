@@ -31,6 +31,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 
@@ -410,13 +411,27 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             moveNodeMarkerBtn.setVisibility(View.GONE);
             moveNodeBtn.setVisibility(View.GONE);
             moveNodeModeBtn.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
+            showSelectedMarker();
         } else {
             moveNodeMarkerBtn.setVisibility(View.VISIBLE);
             moveNodeBtn.setVisibility(View.VISIBLE);
             moveNodeModeBtn.setBackground(getResources().getDrawable(R.drawable.roundedbutton_orange));
+            hideSelectedMarker();
             proportionMapAndList(100, 0);
         }
         moveNodeMode = !moveNodeMode;
+    }
+
+    private void hideSelectedMarker() {
+        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        node.getMarker().setVisibility(false);
+        mapView.invalidate();
+    }
+
+    private void showSelectedMarker() {
+        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        node.getMarker().setVisibility(true);
+        mapView.invalidate();
     }
 
     /**

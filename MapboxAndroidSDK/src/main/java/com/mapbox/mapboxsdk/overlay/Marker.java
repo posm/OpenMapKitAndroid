@@ -58,6 +58,8 @@ public class Marker implements MapViewConstants, ClusterItem {
     private Drawable mDefaultPinDrawable;
     protected int mDefaultPinRes = R.drawable.defpin;
 
+    private boolean isVisible = true;
+
     /**
      * Construct a new Marker, given title, description, and place
      *
@@ -581,5 +583,13 @@ public class Marker implements MapViewConstants, ClusterItem {
                 mapView.invalidateMapCoordinates(newRect);
             }
         });
+    }
+
+    public void setVisibility(boolean visiblity) {
+        isVisible = visiblity;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
     }
 }
