@@ -358,6 +358,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             @Override
             public void onClick(View v) {
                 osmMap.addNode();
+                toggleNodeMode();
             }
         };
         addNodeMarkerBtn.setOnClickListener(listener);
