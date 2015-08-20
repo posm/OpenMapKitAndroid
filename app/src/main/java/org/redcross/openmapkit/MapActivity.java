@@ -46,13 +46,13 @@ import java.util.LinkedList;
 import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
-    private static double boundRadius;
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
     protected static final String PREVIOUS_ZOOM = "org.redcross.openmapkit.PREVIOUS_ZOOM";
 
     private static String version = "";
+    private static GeometryFactory geometryFactory = new GeometryFactory();
 
     protected MapView mapView;
     protected ListView mTagListView;
@@ -395,7 +395,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             //tagsButton.setVisibility(View.VISIBLE);
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
-            boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
             if (SettingsXmlParser.isProximityEnabled()) {
                 //Checks whether tappedElement is within select range.
                 Geometry tappedElementGeometry = tappedOSMElement.getJTSGeom();
@@ -417,15 +416,11 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * @return true if the element is within specified radius.
      */
     public boolean isWithinDistance(Geometry tappedElementGeometry) {
-        GeometryFactory geometryFactory = new GeometryFactory();
         LatLng userPos = getUserLocation();
-        double userLat = userPos.getLatitude();
-        double userLong = userPos.getLongitude();
-        Coordinate cord = new Coordinate(userLong, userLat);
+        Coordinate cord = new Coordinate(userPos.getLongitude(), userPos.getLatitude());
         Geometry userLocGeo = geometryFactory.createPoint(cord);
         double proximityRadius = SettingsXmlParser.getProximityRadius();
-        double angleDist = getCentralAngleDistance(proximityRadius);
-        return userLocGeo.isWithinDistance(tappedElementGeometry, angleDist);
+        return userLocGeo.isWithinDistance(tappedElementGeometry, getDistance(proximityRadius));
     }
 
     /**
@@ -433,7 +428,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * @param length the distance in meters of the proximity radius.
      * @return the central angle in degrees formed at centre of earth.
      */
-    public double getCentralAngleDistance(double length) {
+    public double getDistance(double length) {
         return (180 * length) / (Math.PI * GeoConstants.RADIUS_EARTH_METERS);
     }
 
