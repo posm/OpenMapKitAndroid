@@ -11,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -43,7 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
+public class MapActivity extends AppCompatActivity implements OSMSelectionListener {
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
@@ -400,7 +402,26 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     }
 
     private void deleteNode() {
+        final ImageButton deleteNodeBtn = (ImageButton)findViewById(R.id.deleteBtn);
+        deleteNodeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                final OSMNode deletedNode = osmMap.deleteNode();
 
+                Snackbar.make(findViewById(R.id.mapActivity),
+                            "Deleted Node",
+                            Snackbar.LENGTH_LONG)
+                        .setAction("UNDO", new View.OnClickListener() {
+                            // undo action
+                            @Override
+                            public void onClick(View v) {
+//                                deletedNode
+                            }
+                        })
+                        .setActionTextColor(Color.rgb(126,188,111))
+                        .show();
+            }
+        });
     }
 
     private void toggleMoveNodeMode() {

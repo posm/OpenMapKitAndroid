@@ -219,4 +219,11 @@ public class OSMMap implements MapViewListener, MapListener {
         selectedNode.move(jtsModel, center);
         mapView.invalidate();
     }
+
+    public OSMNode deleteNode() {
+        OSMNode selectedNode = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        selectedNode.delete(jtsModel);
+        mapView.invalidate();
+        return selectedNode;
+    }
 }

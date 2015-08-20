@@ -87,6 +87,18 @@ public class OSMNode extends OSMElement {
         }
     }
 
+    /**
+     * Deletes this OSMNode from the JTSModel.
+     *
+     * @param jtsModel - the model in which the node is spatially indexed
+     */
+    public void delete(JTSModel jtsModel) {
+        jtsModel.removeOSMElement(this);
+        if (marker != null) {
+            marker = null;
+        }
+    }
+
     public void addRelation(OSMRelation relation) {
         linkedRelations.push(relation);
     }
