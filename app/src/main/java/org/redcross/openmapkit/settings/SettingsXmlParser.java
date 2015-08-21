@@ -45,7 +45,7 @@ public class SettingsXmlParser {
             // TODO Auto-generated catch block
             //e.printStackTrace();
         }
-        Toast.makeText(ctx, "Add the file " + FILENAME + " in the dir " + ExternalStorage.getSettingsDir(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(ctx, "Add the file " + FILENAME + " in the dir " + ExternalStorage.getSettingsDir(), Toast.LENGTH_LONG).show();
         return null;
     }
 
