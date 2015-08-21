@@ -85,6 +85,7 @@ public class ExternalStorage {
         return dir.listFiles();
     }
 
+    @SuppressWarnings("unused")
     public static File[] fetchSettingsFiles() {
         String dirPath = getSettingsDir();
         File dir = new File(dirPath);

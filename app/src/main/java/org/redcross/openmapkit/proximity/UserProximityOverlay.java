@@ -41,7 +41,7 @@ import java.util.LinkedList;
  * @author Marc Kurtz
  * @author Manuel Stahl
  */
-public class UserProximityOverlay extends UserLocationOverlay implements Snappable, MapListener {
+public class UserProximityOverlay extends UserLocationOverlay {
     private static final int GPS_THRESHOLD_ACCURACY = 50;
 
     private final SafePaint mPaint = new SafePaint();
@@ -102,8 +102,7 @@ public class UserProximityOverlay extends UserLocationOverlay implements Snappab
         mMapView = mapView;
         mMapController = mapView.getController();
         mContext = mapView.getContext();
-        //mCirclePaint.setColor(0x776464FF);
-        mCirclePaint.setColor(Color.RED);
+        mCirclePaint.setColor(0x776464FF);
         mCirclePaint.setAntiAlias(true);
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(true);

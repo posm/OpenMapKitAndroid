@@ -9,7 +9,7 @@ import android.os.Bundle;
 import com.mapbox.mapboxsdk.overlay.GpsLocationProvider;
 import com.mapbox.mapboxsdk.util.NetworkLocationIgnorer;
 
-public class GpsProximityProvider extends GpsLocationProvider implements LocationListener {
+public class GpsProximityProvider extends GpsLocationProvider {
 
     private final LocationManager mLocationManager;
     private Location mLocation;

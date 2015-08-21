@@ -16,11 +16,14 @@ import org.redcross.openmapkit.proximity.GpsProximityProvider;
 import org.redcross.openmapkit.proximity.UserProximityOverlay;
 import org.redcross.openmapkit.settings.SettingsXmlParser;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Created by coder on 8/12/15.
  */
 public class CustomMapView extends MapView {
     private UserLocationOverlay mLocationOverlay;
+    private static final String UNUSED = "unused";
 
     public CustomMapView(final Context aContext) {
         super(aContext, 256, null, null, null);
@@ -57,6 +60,7 @@ public class CustomMapView extends MapView {
     /**
      * Show or hide the user location overlay
      */
+    @SuppressWarnings(UNUSED)
     public final boolean getUserProximityEnabled() {
         if (mLocationOverlay != null) {
             return mLocationOverlay.isMyLocationEnabled();
@@ -83,6 +87,7 @@ public class CustomMapView extends MapView {
     /**
      * get the user location tracking mode
      */
+    @SuppressWarnings(UNUSED)
     public UserLocationOverlay.TrackingMode getUserProximityTrackingMode() {
         if (mLocationOverlay != null) {
             return mLocationOverlay.getTrackingMode();
@@ -102,6 +107,7 @@ public class CustomMapView extends MapView {
     /**
      * Get the user location overlay if created
      */
+    @SuppressWarnings(UNUSED)
     public UserLocationOverlay getUserProximityOverlay() {
         return mLocationOverlay;
     }

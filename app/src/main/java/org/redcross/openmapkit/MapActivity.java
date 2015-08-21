@@ -267,14 +267,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         }
     }
 
+    /**
+     * Initialize custom settings for proximity and color..
+     */
     protected void initializeSettings() {
-        //Initialize location settings.
         try {
             SettingsXmlParser.parseXML(this);
         } catch (XmlPullParserException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -403,7 +405,7 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                     identifyOSMFeature(tappedOSMElement);
                 } else {
                     //Ignore points outside proximity boundary.
-                    tappedOSMElement.deselectAll();
+                    OSMElement.deselectAll();
                 }
             } else {
                 identifyOSMFeature(tappedOSMElement);
