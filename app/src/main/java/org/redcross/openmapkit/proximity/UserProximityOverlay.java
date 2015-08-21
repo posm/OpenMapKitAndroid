@@ -1,16 +1,19 @@
-package com.mapbox.mapboxsdk.overlay;
+package org.redcross.openmapkit.proximity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.location.Location;
+import android.location.LocationManager;
 import android.util.Log;
 import android.view.MotionEvent;
+
 import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.events.MapListener;
 import com.mapbox.mapboxsdk.events.RotateEvent;
@@ -19,23 +22,27 @@ import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Overlay.Snappable;
+import com.mapbox.mapboxsdk.overlay.SafeDrawOverlay;
+import com.mapbox.mapboxsdk.overlay.UserLocationOverlay;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import com.mapbox.mapboxsdk.views.MapController;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
 import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
 import com.mapbox.mapboxsdk.views.util.Projection;
+
+import org.redcross.openmapkit.settings.SettingsXmlParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.LinkedList;
 
 /**
  * @author Marc Kurtz
  * @author Manuel Stahl
  */
-public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, MapListener {
-
-    public enum TrackingMode {
-        NONE, FOLLOW, FOLLOW_BEARING
-    }
+public class UserProximityOverlay extends UserLocationOverlay {
+    private static final int GPS_THRESHOLD_ACCURACY = 50;
 
     private final SafePaint mPaint = new SafePaint();
     private final SafePaint mCirclePaint = new SafePaint();
@@ -43,7 +50,7 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
     protected final Context mContext;
 
     private final MapController mMapController;
-    public GpsLocationProvider mMyLocationProvider;
+    public GpsProximityProvider mMyLocationProvider;
 
     private final LinkedList<Runnable> mRunOnFirstFix = new LinkedList<Runnable>();
     private final PointF mMapCoords = new PointF();
@@ -90,7 +97,8 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         mCirclePaint.setColor(newColor);
     }
 
-    public UserLocationOverlay(GpsLocationProvider myLocationProvider, MapView mapView, int arrowId, int personId) {
+    public UserProximityOverlay(GpsProximityProvider myLocationProvider, MapView mapView, int arrowId, int personId) {
+        super(myLocationProvider, mapView);
         mMapView = mapView;
         mMapController = mapView.getController();
         mContext = mapView.getContext();
@@ -113,7 +121,7 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         setOverlayIndex(USERLOCATIONOVERLAY_INDEX);
     }
 
-    public UserLocationOverlay(GpsLocationProvider myLocationProvider, MapView mapView) {
+    public UserProximityOverlay(GpsProximityProvider myLocationProvider, MapView mapView) {
         this(myLocationProvider, mapView, R.drawable.direction_arrow, R.drawable.location_marker);
     }
 
@@ -141,11 +149,11 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         return mDrawAccuracyEnabled;
     }
 
-    public GpsLocationProvider getMyLocationProvider() {
+    public GpsProximityProvider getMyLocationProvider() {
         return mMyLocationProvider;
     }
 
-    protected void setMyLocationProvider(GpsLocationProvider myLocationProvider) {
+    protected void setMyLocationProvider(GpsProximityProvider myLocationProvider) {
 
         if (mMyLocationProvider != null) {
             mMyLocationProvider.stopLocationProvider();
@@ -171,14 +179,17 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
 
         canvas.scale(mapScale, mapScale, mMapCoords.x, mMapCoords.y);
 
-        if (mDrawAccuracyEnabled) {
-            final float radius = lastFix.getAccuracy() / (float) Projection.groundResolution(
+        canvas.save();
+        // Rotate the icon
+        canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
+        // Counteract any scaling that may be happening so the icon stays the same size
+        float radius = (float) SettingsXmlParser.getProximityRadius();
+        //If proximity check is true and the GPS is not enabled, don't show user location else
+        //draw circle of provided radius around the user.
+        if (mMyLocationProvider.getAccuracy() <= GPS_THRESHOLD_ACCURACY
+                && (!SettingsXmlParser.getProximityCheck() || isGPSEnabled())) {
+            radius = radius / (float) Projection.groundResolution(
                     lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
-            canvas.save();
-            // Rotate the icon
-            canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
-            // Counteract any scaling that may be happening so the icon stays the same size
-
             mCirclePaint.setAlpha(50);
             mCirclePaint.setStyle(Style.FILL);
             canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
@@ -186,8 +197,11 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
             mCirclePaint.setAlpha(150);
             mCirclePaint.setStyle(Style.STROKE);
             canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
-            canvas.restore();
+            SettingsXmlParser.setProximityEnabled(true);
+        } else {
+            SettingsXmlParser.setProximityEnabled(false);
         }
+        canvas.restore();
 
         if (UtilConstants.DEBUGMODE) {
             final float tx = (mMapCoords.x + 50);
@@ -403,7 +417,7 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         });
     }
 
-    public void onLocationChanged(Location location, GpsLocationProvider source) {
+    public void onLocationChanged(Location location, GpsProximityProvider source) {
         // If we had a previous location, let's get those bounds
         if (mLocation != null && mLocation.getBearing() == location.getBearing() && mLocation.distanceTo(location) == 0) {
             return;
@@ -419,7 +433,7 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         }
     }
 
-    public boolean enableMyLocation(GpsLocationProvider myLocationProvider) {
+    public boolean enableMyLocation(GpsProximityProvider myLocationProvider) {
         this.setMyLocationProvider(myLocationProvider);
         mIsLocationEnabled = false;
         return enableMyLocation();
@@ -478,7 +492,7 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
     }
 
     /**
-     * Enable receiving location updates from the provided GpsLocationProvider and show your
+     * Enable receiving location updates from the provided GpsProximityProvider and show your
      * location on the maps. You will likely want to call enableMyLocation() from your Activity's
      * Activity.onResume() method, to enable the features of this overlay. Remember to call the
      * corresponding disableMyLocation() in your Activity's Activity.onPause() method to turn off
@@ -536,7 +550,7 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         }
     }
 
-    private static final String TAG = "UserLocationOverlay";
+    private static final String TAG = "UserProximityOverlay";
 
     @Override
     public void onScroll(ScrollEvent event) {
@@ -557,5 +571,17 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         if (event.getUserAction()) {
             disableFollowLocation();
         }
+    }
+
+    /**
+     *
+     * @return true if GPS is enabled.
+     */
+    private boolean isGPSEnabled() {
+        LocationManager manager = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
+        if ( manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            return true;
+        }
+        return false;
     }
 }
