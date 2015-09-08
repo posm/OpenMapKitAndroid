@@ -406,7 +406,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         deleteNodeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                final OSMNode deletedNode = osmMap.deleteNode();
+                final OSMNode deletedNode = osmMap.deleteNode();
 
                 Snackbar.make(findViewById(R.id.mapActivity),
                             "Deleted Node",
