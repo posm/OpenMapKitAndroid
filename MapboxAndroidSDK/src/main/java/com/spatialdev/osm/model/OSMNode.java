@@ -99,6 +99,7 @@ public class OSMNode extends OSMElement {
             // Because that marker is selected, it's also rendered as the focused item in addition
             // to being on the display list. The marker will still appear on the map if we
             // don't do this...
+            marker.setVisibility(false);
             ItemizedOverlay overlay = marker.getParentHolder();
             if (overlay != null) {
                 overlay.setFocus(null);
