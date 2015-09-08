@@ -6,6 +6,7 @@ package com.spatialdev.osm.model;
 
 import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.ItemizedOverlay;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.spatialdev.osm.marker.OSMMarker;
 
@@ -95,7 +96,13 @@ public class OSMNode extends OSMElement {
     public void delete(JTSModel jtsModel) {
         jtsModel.removeOSMElement(this);
         if (marker != null) {
-            marker = null;
+            // Because that marker is selected, it's also rendered as the focused item in addition
+            // to being on the display list. The marker will still appear on the map if we
+            // don't do this...
+            ItemizedOverlay overlay = marker.getParentHolder();
+            if (overlay != null) {
+                overlay.setFocus(null);
+            }
         }
     }
 
