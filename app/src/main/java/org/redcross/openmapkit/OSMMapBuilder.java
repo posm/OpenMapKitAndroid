@@ -89,6 +89,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
 
         if (totalFiles > 0) {
             setupProgressDialog(mapActivity);
+        } else {
+            OSMMap osmMap = new OSMMap(mapActivity.getMapView(), jtsModel, mapActivity, MIN_VECTOR_RENDER_ZOOM);
+            mapActivity.setOSMMap(osmMap);
         }
     }
 
