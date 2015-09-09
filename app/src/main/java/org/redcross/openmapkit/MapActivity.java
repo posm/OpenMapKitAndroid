@@ -402,26 +402,20 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     private void deleteNode() {
-        final ImageButton deleteNodeBtn = (ImageButton)findViewById(R.id.deleteBtn);
-        deleteNodeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final OSMNode deletedNode = osmMap.deleteNode();
+        final OSMNode deletedNode = osmMap.deleteNode();
 
-                Snackbar.make(findViewById(R.id.mapActivity),
-                            "Deleted Node",
-                            Snackbar.LENGTH_LONG)
-                        .setAction("UNDO", new View.OnClickListener() {
-                            // undo action
-                            @Override
-                            public void onClick(View v) {
+        Snackbar.make(findViewById(R.id.mapActivity),
+                "Deleted Node",
+                Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    // undo action
+                    @Override
+                    public void onClick(View v) {
 //                                deletedNode
-                            }
-                        })
-                        .setActionTextColor(Color.rgb(126,188,111))
-                        .show();
-            }
-        });
+                    }
+                })
+                .setActionTextColor(Color.rgb(126,188,111))
+                .show();
     }
 
     private void toggleMoveNodeMode() {
