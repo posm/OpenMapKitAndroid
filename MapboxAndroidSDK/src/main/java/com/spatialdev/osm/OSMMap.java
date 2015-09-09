@@ -213,6 +213,15 @@ public class OSMMap implements MapViewListener, MapListener {
         mapView.invalidate();
     }
 
+    public void addNode(OSMNode node) {
+        Marker marker = node.getMarker();
+        if (marker != null) {
+            marker.setVisibility(true);
+        }
+        jtsModel.addOSMStandaloneNode(node);
+        mapView.invalidate();
+    }
+
     public void moveNode() {
         LatLng center = mapView.getCenter();
         OSMNode selectedNode = (OSMNode)OSMElement.getSelectedElements().getFirst();

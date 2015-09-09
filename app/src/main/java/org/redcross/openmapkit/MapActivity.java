@@ -411,7 +411,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
                     // undo action
                     @Override
                     public void onClick(View v) {
-//                                deletedNode
+                        osmMap.addNode(deletedNode);
                     }
                 })
                 .setActionTextColor(Color.rgb(126,188,111))
