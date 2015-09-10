@@ -35,6 +35,8 @@ public class OSMOverlay extends Overlay {
 
     private List<OSMNode> viewPortNodes = new ArrayList<>();
 
+    private boolean needToAddItemizedOverlay = true;
+
     /**
      * This should only be created by OSMMap.
      * * *
@@ -135,6 +137,9 @@ public class OSMOverlay extends Overlay {
             PointF anchor = new PointF(0.5f, 0.8f);
             marker.setAnchor(anchor);
             mapView.addOSMMarker(this, marker);
+        } else if (needToAddItemizedOverlay){
+            mapView.setDefaultOSMItemizedOverlay(this);
+            needToAddItemizedOverlay = false;
         }
     }
 

@@ -619,7 +619,7 @@ public class MapView extends ViewGroup implements MapViewConstants, MapEventsRec
         addItemizedOverlay(defaultMarkerOverlay);
     }
 
-    private void setDefaultOSMItemizedOverlay(OSMOverlay osmOverlay) {
+    public void setDefaultOSMItemizedOverlay(OSMOverlay osmOverlay) {
         defaultMarkerOverlay = new OSMItemizedIconOverlay(osmOverlay, getContext(), defaultMarkerList,
                 new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
                     public boolean onItemSingleTapUp(final int index, final Marker item) {
