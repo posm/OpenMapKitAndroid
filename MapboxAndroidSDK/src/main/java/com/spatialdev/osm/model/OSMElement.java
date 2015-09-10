@@ -166,7 +166,7 @@ public abstract class OSMElement {
     }
 
     protected static long getUniqueNegativeId() {
-        return negativeId++;
+        return negativeId--;
     }
 
     void xml(XmlSerializer xmlSerializer) throws IOException {
