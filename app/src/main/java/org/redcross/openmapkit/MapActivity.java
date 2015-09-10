@@ -37,9 +37,11 @@ import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -255,8 +257,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
 
+        int numRequiredTags = 0;
+        if (ODKCollectHandler.isODKCollectMode()) {
+            Collection<ODKTag> requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
+            numRequiredTags = requiredTags.size();
+        }
         int tagCount = osmElement.getTags().size();
-        if (tagCount > 0) {
+
+        if (tagCount > 0 || numRequiredTags > 0) {
             mTagListView.setVisibility(View.VISIBLE);
             addTagsButton.setVisibility(View.GONE);
         } else {
