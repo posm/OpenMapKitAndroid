@@ -89,11 +89,6 @@ public class TagSwipeActivity extends ActionBarActivity {
         if (id == R.id.action_save_to_odk_collect) {
             saveToODKCollect();
         }
-        
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
