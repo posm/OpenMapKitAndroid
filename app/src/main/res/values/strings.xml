@@ -12,6 +12,7 @@
     <!-- mbtiles menu -->
     <string name="action_mbtilessettings">Basemap Settings</string>
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
+    <string name="downloadOSMTitle">Download OSM Data</string>
     <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
     <string name="ok">OK</string>
     <string name="save">Save</string>
@@ -64,5 +65,9 @@
     <string name="standalone_fragment_title">Add or Confirm</string>
     <string name="standalone_fragment_question1">Add tag?</string>
     <string name="standalone_fragment_question2">Save tag edits?</string>
+
+    <string name="downloadOSMMessage">Do you want to download OSM XML data within the bounding box of your map?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

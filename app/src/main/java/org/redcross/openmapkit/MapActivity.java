@@ -513,7 +513,26 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             prompt.show();
         }
     }
-    
+
+    private void askIfDownloadOSM() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.downloadOSMTitle);
+        builder.setMessage(R.string.downloadOSMMessage);
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // just dismiss
+            }
+        });
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                downloadOSM();
+            }
+        });
+        builder.show();
+    }
+
     private void downloadOSM() {
         BoundingBox bbox = mapView.getBoundingBox();
         OSMDownloader downloader = new OSMDownloader(this, bbox);
@@ -552,7 +571,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         int id = item.getItemId();
 
         if (id == R.id.osmdownloader) {
-            downloadOSM();
+            askIfDownloadOSM();
             return true;
         } else if (id == R.id.mbtilessettings) {
             basemap.presentMBTilesOptions();
