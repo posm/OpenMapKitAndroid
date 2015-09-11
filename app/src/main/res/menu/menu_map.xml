@@ -31,9 +31,9 @@
             <item
                 android:id="@+id/osmsettings"
                 android:title="@string/action_osmsettings" />
-            <item
-                android:id="@+id/action_save_to_odk_collect"
-                android:title="@string/save_to_odk_collect" />
+            <!--<item-->
+                <!--android:id="@+id/action_save_to_odk_collect"-->
+                <!--android:title="@string/save_to_odk_collect" />-->
 
             </menu>
         </item>
