@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -24,9 +25,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cocoahero.android.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.LocationXMLParser;
+import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
@@ -38,6 +43,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -114,6 +121,8 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         positionMap();
 
+        addGeojsonOverlay();
+
         initializeListView();
 
         //Initialize location settings.
@@ -168,6 +177,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             mapView.setZoom(z);
             mapView.setUserLocationEnabled(true);
         }
+    }
+
+    protected void addGeojsonOverlay() {
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/buffers.json?target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/targetareas.json?target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/spraydays.json?spray_date=&target_area=408_257");
+        mapView.loadFromGeoJSONURL("http://api.mspray.onalabs.org/districts.json?district=Milenge");
     }
 
     /**
