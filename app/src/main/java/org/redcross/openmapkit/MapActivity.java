@@ -8,9 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,18 +31,22 @@ import android.widget.Toast;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMNode;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
+public class MapActivity extends AppCompatActivity implements OSMSelectionListener {
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
@@ -47,13 +55,22 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     private static String version = "";
 
     protected MapView mapView;
+    protected OSMMap osmMap;
     protected ListView mTagListView;
     protected ImageButton mCloseListViewButton;
+    protected ImageButton tagButton;
+    protected ImageButton deleteButton;
+    protected ImageButton moveButton;
+    protected Button nodeModeButton;
+    protected Button addTagsButton;
     protected LinearLayout mTopLinearLayout;
     protected LinearLayout mBottomLinearLayout;
     protected TextView mTagTextView;
     protected Basemap basemap;
     protected TagListAdapter tagListAdapter;
+
+    private boolean nodeMode = false;
+    private boolean moveNodeMode = false;
 
     /**
      * intent request codes
@@ -72,6 +89,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.osm_light_green));
         }
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setIcon(R.mipmap.ic_omk_nobg);
+        }
+
 
         // create directory structure for app if needed
         ExternalStorage.checkOrCreateAppDirs();
@@ -103,8 +127,15 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
 
         initializeOsmXml();
 
-        //add user location toggle button
+        // add user location toggle button
         initializeLocationButton();
+
+        // setup delete and move buttons
+        initializeDeleteAndMoveButtons();
+
+        initializeNodeModeButton();
+        initializeAddNodeButtons();
+        initializeMoveNodeButtons();
 
         positionMap();
 
@@ -190,6 +221,22 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             }
         });
 
+        View.OnClickListener tagSwipeLaunchListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //launch the TagSwipeActivity
+                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
+            }
+        };
+        // tag button
+        tagButton = (ImageButton)findViewById(R.id.tagButton);
+        tagButton.setOnClickListener(tagSwipeLaunchListener);
+
+        // add tags button
+        addTagsButton = (Button)findViewById(R.id.addTagsBtn);
+        addTagsButton.setOnClickListener(tagSwipeLaunchListener);
+
         //handle list view item taps
         mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -209,16 +256,42 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * @param osmElement The target OSMElement.
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
+
+        int numRequiredTags = 0;
+        if (ODKCollectHandler.isODKCollectMode()) {
+            Collection<ODKTag> requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
+            numRequiredTags = requiredTags.size();
+        }
+        int tagCount = osmElement.getTags().size();
+
+        if (tagCount > 0 || numRequiredTags > 0) {
+            mTagListView.setVisibility(View.VISIBLE);
+            addTagsButton.setVisibility(View.GONE);
+        } else {
+            mTagListView.setVisibility(View.GONE);
+            addTagsButton.setVisibility(View.VISIBLE);
+        }
+
+        /**
+         * If we have a node that is selected, we want to activate the
+         * delete and move buttons. Ways should not be editable.
+         */
+        if (osmElement instanceof OSMNode) {
+            deleteButton.setVisibility(View.VISIBLE);
+            moveButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+            moveButton.setVisibility(View.GONE);
+        }
+
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
         
-        if(!tagListAdapter.isEmpty()) {
-            //set the ListView's adapter
-            mTagListView.setAdapter(tagListAdapter);
+        //set the ListView's adapter
+        mTagListView.setAdapter(tagListAdapter);
 
-            //show the ListView under the map
-            proportionMapAndList(50, 50);
-        }
+        //show the ListView under the map
+        proportionMapAndList(50, 50);
     }
 
     /**
@@ -251,8 +324,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
      * For instantiating the location button and setting up its tap event handler
      */
     protected void initializeLocationButton() {
-
-        //instantiate location button
         final ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
 
         //set tap event
@@ -262,15 +333,135 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
                 boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
                 if (userLocationIsEnabled) {
                     mapView.setUserLocationEnabled(false);
+                    locationButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
                 } else {
                     mapView.setUserLocationEnabled(true);
                     mapView.goToUserLocation(true);
+                    locationButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton_blue));
                 }
             }
         });
     }
-    
 
+    protected void initializeDeleteAndMoveButtons() {
+        deleteButton = (ImageButton)findViewById(R.id.deleteBtn);
+        moveButton = (ImageButton)findViewById(R.id.moveNodeModeBtn);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteNode();
+            }
+        });
+        moveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleMoveNodeMode();
+            }
+        });
+    }
+    
+    protected void initializeNodeModeButton() {
+        nodeModeButton = (Button)findViewById(R.id.nodeModeButton);
+        nodeModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleNodeMode();
+            }
+        });
+    }
+
+    protected void initializeAddNodeButtons() {
+        final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
+        final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                osmMap.addNode();
+                toggleNodeMode();
+            }
+        };
+        addNodeMarkerBtn.setOnClickListener(listener);
+        addNodeBtn.setOnClickListener(listener);
+    }
+
+    protected void initializeMoveNodeButtons() {
+        final Button moveNodeBtn = (Button)findViewById(R.id.moveNodeBtn);
+        final ImageButton moveNodeMarkerBtn = (ImageButton)findViewById(R.id.moveNodeMarkerBtn);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                osmMap.moveNode();
+                toggleMoveNodeMode();
+            }
+        };
+        moveNodeBtn.setOnClickListener(listener);
+        moveNodeMarkerBtn.setOnClickListener(listener);
+    }
+
+    private void toggleNodeMode() {
+        final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
+        final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+        if (nodeMode) {
+            addNodeBtn.setVisibility(View.GONE);
+            addNodeMarkerBtn.setVisibility(View.GONE);
+            nodeModeButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
+        } else {
+            addNodeBtn.setVisibility(View.VISIBLE);
+            addNodeMarkerBtn.setVisibility(View.VISIBLE);
+            nodeModeButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton_green));
+            OSMElement.deselectAll();
+            mapView.invalidate();
+        }
+        nodeMode = !nodeMode;
+    }
+
+    private void deleteNode() {
+        final OSMNode deletedNode = osmMap.deleteNode();
+
+        Snackbar.make(findViewById(R.id.mapActivity),
+                "Deleted Node",
+                Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    // undo action
+                    @Override
+                    public void onClick(View v) {
+                        osmMap.addNode(deletedNode);
+                    }
+                })
+                .setActionTextColor(Color.rgb(126,188,111))
+                .show();
+    }
+
+    private void toggleMoveNodeMode() {
+        final ImageButton moveNodeModeBtn = (ImageButton)findViewById(R.id.moveNodeModeBtn);
+        final ImageButton moveNodeMarkerBtn = (ImageButton)findViewById(R.id.moveNodeMarkerBtn);
+        final Button moveNodeBtn = (Button)findViewById(R.id.moveNodeBtn);
+        if (moveNodeMode) {
+            moveNodeMarkerBtn.setVisibility(View.GONE);
+            moveNodeBtn.setVisibility(View.GONE);
+            moveNodeModeBtn.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
+            showSelectedMarker();
+        } else {
+            moveNodeMarkerBtn.setVisibility(View.VISIBLE);
+            moveNodeBtn.setVisibility(View.VISIBLE);
+            moveNodeModeBtn.setBackground(getResources().getDrawable(R.drawable.roundedbutton_orange));
+            hideSelectedMarker();
+            proportionMapAndList(100, 0);
+        }
+        moveNodeMode = !moveNodeMode;
+    }
+
+    private void hideSelectedMarker() {
+        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        node.getMarker().setVisibility(false);
+        mapView.invalidate();
+    }
+
+    private void showSelectedMarker() {
+        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        node.getMarker().setVisibility(true);
+        mapView.invalidate();
+    }
 
     /**
      * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
@@ -322,11 +513,39 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             prompt.show();
         }
     }
-    
+
+    private void askIfDownloadOSM() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.downloadOSMTitle);
+        builder.setMessage(R.string.downloadOSMMessage);
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // just dismiss
+            }
+        });
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                downloadOSM();
+            }
+        });
+        builder.show();
+    }
+
     private void downloadOSM() {
         BoundingBox bbox = mapView.getBoundingBox();
         OSMDownloader downloader = new OSMDownloader(this, bbox);
         downloader.execute();
+    }
+
+    /**
+     * OSMMapBuilder sets a reference to OSMMap in this class.
+     *
+     * @param osmMap
+     */
+    public void setOSMMap(OSMMap osmMap) {
+        this.osmMap = osmMap;
     }
 
     /**
@@ -352,13 +571,16 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         int id = item.getItemId();
 
         if (id == R.id.osmdownloader) {
-            downloadOSM();
+            askIfDownloadOSM();
             return true;
         } else if (id == R.id.mbtilessettings) {
             basemap.presentMBTilesOptions();
             return true;
         } else if (id == R.id.osmsettings) {
             presentOSMOptions();
+            return true;
+        } else if (id == R.id.action_save_to_odk_collect) {
+            saveToODKCollectAndExit();
             return true;
         }
         return false;
@@ -378,25 +600,23 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         }
     }
 
-    /**
-     * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
             if(resultCode == RESULT_OK) {
-                String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
-                String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
-                resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
+                saveToODKCollectAndExit();
             }
         }
+    }
+
+    protected void saveToODKCollectAndExit() {
+        String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
+        String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
+        resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
     
     public MapView getMapView() {

@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.views.util.constants.MapViewConstants;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * A rectangular geographical area defined in latitude and longitude units.
@@ -140,7 +139,7 @@ public final class BoundingBox implements Parcelable, Serializable, MapViewConst
      * @param latLngs List of LatLng objects
      * @return BoundingBox
      */
-    public static BoundingBox fromLatLngs(final List<? extends ILatLng> latLngs) {
+    public static BoundingBox fromLatLngs(final Iterable<? extends ILatLng> latLngs) {
         double minLat = 90,
                 minLon = 180,
                 maxLat = -90,

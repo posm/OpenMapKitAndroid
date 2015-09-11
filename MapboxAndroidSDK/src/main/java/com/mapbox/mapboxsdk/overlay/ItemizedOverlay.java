@@ -7,8 +7,16 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.MotionEvent;
 
+import com.mapbox.mapboxsdk.clustering.Cluster;
+import com.mapbox.mapboxsdk.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
+import com.mapbox.mapboxsdk.clustering.algo.PreCachingAlgorithmDecorator;
+import com.mapbox.mapboxsdk.events.MapListener;
+import com.mapbox.mapboxsdk.events.RotateEvent;
+import com.mapbox.mapboxsdk.events.ScrollEvent;
+import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
 import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas.UnsafeCanvasHandler;
@@ -16,6 +24,9 @@ import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
 import com.mapbox.mapboxsdk.views.util.Projection;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Draws a list of {@link Marker} as markers to a map. The item with the lowest index is drawn
@@ -27,15 +38,23 @@ import java.util.ArrayList;
  * @author Theodore Hong
  * @author Fred Eisele
  */
-public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay.Snappable {
-
+public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay.Snappable, MapListener {
+    private static final String TAG = ItemizedOverlay.class.getSimpleName();
     private final ArrayList<Marker> mInternalItemList;
+    private ArrayList<ClusterMarker> mInternalClusterList;
     protected boolean mDrawFocusedItem = true;
     private Marker mFocusedItem;
     private boolean mPendingFocusChangedEvent = false;
     private OnFocusChangeListener mOnFocusChangeListener;
+    private boolean mIsClusteringEnabled;
+    private ClusterMarker.OnDrawClusterListener mOnDrawClusterListener;
 
     private static SafePaint mClusterTextPaint;
+    private CalculateClusterTask mCalculateClusterTask;
+    private float mMinZoomForClustering = 22;
+
+    private PreCachingAlgorithmDecorator<Marker> mAlgorithm;
+
 
     /**
      * Method by which subclasses create the actual Items. This will only be called from populate()
@@ -60,7 +79,11 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
             mClusterTextPaint.setFakeBoldText(true);
         }
 
-        mInternalItemList = new ArrayList<Marker>();
+        mAlgorithm = new PreCachingAlgorithmDecorator<>(new NonHierarchicalDistanceBasedAlgorithm<Marker>());
+
+        mInternalItemList = new ArrayList<>();
+
+        mInternalClusterList = new ArrayList<>();
     }
 
     /**
@@ -79,16 +102,15 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
      * The focused item is always drawn last, which puts it visually on top of the other
      * items.<br/>
      *
-     * @param canvas the Canvas upon which to draw. Note that this may already have a
-     * transformation
-     * applied, so be sure to leave it the way you found it
+     * @param canvas  the Canvas upon which to draw. Note that this may already have a
+     *                transformation
+     *                applied, so be sure to leave it the way you found it
      * @param mapView the MapView that requested the draw. Use MapView.getProjection() to convert
-     * between on-screen pixels and latitude/longitude pairs
-     * @param shadow if true, draw the shadow layer. If false, draw the overlay contents.
+     *                between on-screen pixels and latitude/longitude pairs
+     * @param shadow  if true, draw the shadow layer. If false, draw the overlay contents.
      */
     @Override
     protected void drawSafe(ISafeCanvas canvas, MapView mapView, boolean shadow) {
-
         if (shadow) {
             return;
         }
@@ -98,24 +120,46 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
         }
         mPendingFocusChangedEvent = false;
 
+        sortListByLatitude();
+
         final Projection pj = mapView.getProjection();
-        final int size = this.mInternalItemList.size() - 1;
+        final int size = size() - 1;
 
         final RectF bounds =
                 new RectF(0, 0, mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
         pj.rotateRect(bounds);
         final float mapScale = 1 / mapView.getScale();
 
-    /* Draw in backward cycle, so the items with the least index are on the front. */
-        for (int i = size; i >= 0; i--) {
-            final Marker item = getItem(i);
-            if (item == mFocusedItem) {
-                continue;
+        if (!mIsClusteringEnabled || mapView.getZoomLevel() > mMinZoomForClustering) {
+            /* Draw in backward cycle, so the items with the least index are on the front. */
+            for (int i = size; i >= 0; i--) {
+                final Marker item = getItem(i);
+                if (item == mFocusedItem) {
+                    continue;
+                }
+                onDrawItem(canvas, item, pj, mapView.getMapOrientation(), bounds, mapScale);
             }
-            onDrawItem(canvas, item, pj, mapView.getMapOrientation(), bounds, mapScale);
-        }
-        if (mFocusedItem != null) {
-            onDrawItem(canvas, mFocusedItem, pj, mapView.getMapOrientation(), bounds, mapScale);
+
+            if (mFocusedItem != null) {
+                onDrawItem(canvas, mFocusedItem, pj, mapView.getMapOrientation(), bounds, mapScale);
+            }
+
+        } else if (mInternalClusterList != null) {
+            for (int i = mInternalClusterList.size() - 1; i >= 0; --i) {
+                final ClusterMarker clusterMarker = mInternalClusterList.get(i);
+                List<Marker> markerList = clusterMarker.getMarkersReadOnly();
+
+                if (markerList.size() > 1) {
+//                    if (mOnDrawClusterListener != null) {
+//                        Drawable drawable = mOnDrawClusterListener.drawCluster(clusterMarker);
+//                        clusterMarker.setMarker(drawable);
+//                    }
+                    onDrawItem(canvas, clusterMarker, pj, mapView.getMapOrientation(), bounds, mapScale);
+                } else {
+                    onDrawItem(canvas, markerList.get(0), pj, mapView.getMapOrientation(), bounds, mapScale);
+                }
+
+            }
         }
     }
 
@@ -125,13 +169,14 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
      * before anything else gets called.
      */
     protected void populate() {
-
         final int size = size();
+        mAlgorithm.clearItems();
         mInternalItemList.clear();
         mInternalItemList.ensureCapacity(size);
         for (int a = 0; a < size; a++) {
             mInternalItemList.add(createItem(a));
         }
+        mAlgorithm.addItems(mInternalItemList);
 
     }
 
@@ -141,27 +186,29 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
      * @param position the position of the item to return
      * @return the Item of the given index.
      */
-    public final Marker getItem(final int position) {
+    public Marker getItem(final int position) {
         return mInternalItemList.get(position);
     }
+
+    protected abstract void sortListByLatitude();
 
     /**
      * Draws an item located at the provided screen coordinates to the canvas.
      *
-     * @param canvas what the item is drawn upon.
-     * @param item the item to be drawn.
-     * @param projection the projection to use.
+     * @param canvas          what the item is drawn upon.
+     * @param item            the item to be drawn.
+     * @param projection      the projection to use.
      * @param aMapOrientation
      * @param mapBounds
      * @param mapScale
      */
     protected void onDrawItem(ISafeCanvas canvas, final Marker item, final Projection projection,
-            final float aMapOrientation, final RectF mapBounds, final float mapScale) {
-
+                              final float aMapOrientation, final RectF mapBounds, final float mapScale) {
         item.updateDrawingPosition();
         final PointF position = item.getPositionOnMap();
         final Point roundedCoords = new Point((int) position.x, (int) position.y);
-        if (!RectF.intersects(mapBounds, item.getDrawingBounds(projection, null))) {
+        if (!RectF.intersects(mapBounds, item.getDrawingBounds(projection, null))
+                || !item.isVisible()) {
             //dont draw item if offscreen
             return;
         }
@@ -194,7 +241,7 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
     }
 
     protected boolean markerHitTest(final Marker pMarker, final Projection pProjection,
-            final float pX, final float pY) {
+                                    final float pX, final float pY) {
         RectF rect = pMarker.getHitBounds(pProjection, null);
 /*
         RectF rect = pMarker.getDrawingBounds(pProjection, null);
@@ -299,7 +346,92 @@ public abstract class ItemizedOverlay extends SafeDrawOverlay implements Overlay
         mOnFocusChangeListener = l;
     }
 
-    public static interface OnFocusChangeListener {
+    public interface OnFocusChangeListener {
         void onFocusChanged(ItemizedOverlay overlay, Marker newFocus);
+    }
+
+
+    /**
+     * Enable or disable clustering
+     *
+     * @param enabled
+     * @param onDrawClusterListener A listener that allows the modification of the cluster's drawable
+     */
+    public void setClusteringEnabled(final boolean enabled, final ClusterMarker.OnDrawClusterListener onDrawClusterListener, float minZoom) {
+        mIsClusteringEnabled = enabled;
+        mOnDrawClusterListener = onDrawClusterListener;
+        mMinZoomForClustering = minZoom;
+    }
+
+    public void onScroll(ScrollEvent event) {
+
+    }
+
+    /**
+     * Called when a map is zoomed.
+     */
+    public void onZoom(ZoomEvent event) {
+        if (mIsClusteringEnabled && event.getZoomLevel() < mMinZoomForClustering) {
+            if (mCalculateClusterTask != null && mCalculateClusterTask.getStatus() != AsyncTask.Status.FINISHED) {
+                mCalculateClusterTask.cancel(true);
+            }
+            mCalculateClusterTask = new CalculateClusterTask(event);
+            mCalculateClusterTask.execute();
+        }
+    }
+
+    /**
+     * Called when a map is rotated.
+     */
+    public void onRotate(RotateEvent event) {
+
+    }
+
+    public ClusterMarker.OnDrawClusterListener getOnDrawClusterListener() {
+        return mOnDrawClusterListener;
+    }
+
+    public boolean isClusteringEnabled() {
+        return mIsClusteringEnabled;
+    }
+
+    private class CalculateClusterTask extends AsyncTask<Void, Void, ArrayList<ClusterMarker>> {
+        private ZoomEvent mZoomEvent;
+
+        public CalculateClusterTask(ZoomEvent event) {
+            mZoomEvent = event;
+        }
+
+
+        @Override
+        protected ArrayList<ClusterMarker> doInBackground(final Void... voids) {
+            ArrayList<ClusterMarker> clusterMarkers = new ArrayList<>();
+            Set<? extends Cluster<Marker>> clusters = mAlgorithm.getClusters(mZoomEvent.getZoomLevel());
+            for (Cluster<Marker> cluster : clusters) {
+                Collection<Marker> markers = cluster.getItems();
+                if (markers.size() > 0) {
+                    ClusterMarker clusterMarker;
+
+                    clusterMarker = new ClusterMarker();
+                    clusterMarker.addMarkersToCluster(markers);
+                    clusterMarker.addTo(mZoomEvent.getSource());
+                    clusterMarker.setPoint(cluster.getPosition());
+                    if (mOnDrawClusterListener != null) {
+                        Drawable drawable = mOnDrawClusterListener.drawCluster(clusterMarker);
+                        clusterMarker.setMarker(drawable);
+                    }
+
+                    clusterMarkers.add(clusterMarker);
+
+                }
+            }
+            return clusterMarkers;
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<ClusterMarker> clusterList) {
+            mInternalClusterList = clusterList;
+            mZoomEvent.getSource().invalidate();
+        }
     }
 }

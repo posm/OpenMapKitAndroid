@@ -3,4 +3,5 @@
     <color name="osm_light_green">#ff8bd27c</color>
     <color name="osm_green">#7ebc6f</color>
     <color name="osm_dark_green">#83b26e</color>
+    <color name="selected">#FF8C00</color>
 </resources>

@@ -14,14 +14,17 @@ import com.mapbox.mapboxsdk.events.RotateEvent;
 import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.spatialdev.osm.events.OSMSelectionListener;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMElement;
+import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.renderer.OSMOverlay;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -95,9 +98,23 @@ public class OSMMap implements MapViewListener, MapListener {
 
     }
 
+    /**
+     * When the user selects a marker on the map, we want to pan
+     * the map to where the marker is for selection.
+     *
+     * @param pMapView the map
+     * @param pMarker  the marker
+     */
     @Override
     public void onTapMarker(MapView pMapView, Marker pMarker) {
-
+        LatLng latLng = pMarker.getPoint();
+        pMapView.getController().animateTo(latLng);
+        OSMNode node = ((OSMMarker)pMarker).getNode();
+        OSMElement.deselectAll();
+        node.select();
+        if (OSMElement.hasSelectedElementsChanged() && selectionListener != null) {
+            selectionListener.selectedElementsChanged(OSMElement.getSelectedElements());
+        }
     }
 
     @Override
@@ -188,5 +205,34 @@ public class OSMMap implements MapViewListener, MapListener {
             osmOverlay.updateBoundingBox(bbox);
         }
     }
-    
+
+    public void addNode() {
+        LatLng center = mapView.getCenter();
+        OSMNode node = new OSMNode(center);
+        jtsModel.addOSMStandaloneNode(node);
+        mapView.invalidate();
+    }
+
+    public void addNode(OSMNode node) {
+        Marker marker = node.getMarker();
+        if (marker != null) {
+            marker.setVisibility(true);
+        }
+        jtsModel.addOSMStandaloneNode(node);
+        mapView.invalidate();
+    }
+
+    public void moveNode() {
+        LatLng center = mapView.getCenter();
+        OSMNode selectedNode = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        selectedNode.move(jtsModel, center);
+        mapView.invalidate();
+    }
+
+    public OSMNode deleteNode() {
+        OSMNode selectedNode = (OSMNode)OSMElement.getSelectedElements().getFirst();
+        selectedNode.delete(jtsModel);
+        mapView.invalidate();
+        return selectedNode;
+    }
 }

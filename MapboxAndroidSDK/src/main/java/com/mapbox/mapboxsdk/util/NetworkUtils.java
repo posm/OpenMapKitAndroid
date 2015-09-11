@@ -8,11 +8,9 @@ package com.mapbox.mapboxsdk.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import com.mapbox.mapboxsdk.constants.MapboxConstants;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
-
 import javax.net.ssl.SSLSocketFactory;
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +42,7 @@ public class NetworkUtils {
             client.setSslSocketFactory(sslSocketFactory);
         }
         HttpURLConnection connection = new OkUrlFactory(client).open(url);
-        connection.setRequestProperty("User-Agent", MapboxConstants.USER_AGENT);
+        connection.setRequestProperty("User-Agent", MapboxUtils.getUserAgent());
         return connection;
     }
 

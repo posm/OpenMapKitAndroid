@@ -5,9 +5,11 @@ import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.util.Projection;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,7 +45,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
     /**
      * Sorts List of Marker by Latitude
      */
-    private void sortListByLatitude() {
+    protected void sortListByLatitude() {
         Collections.sort(mItemList, new Comparator<Marker>() {
             public int compare(Marker a, Marker b) {
                 return Double.valueOf(a.getPoint().getLatitude()).compareTo(b.getPoint().getLatitude());
@@ -93,7 +95,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
         final Projection projection = mapView.getProjection();
         final float x = event.getX();
         final float y = event.getY();
-        for (int i = 0; i < this.mItemList.size(); ++i) {
+        for (int i = 0; i < size(); ++i) {
             final Marker item = getItem(i);
             if (markerHitTest(item, projection, x, y)) {
                 if (task.run(i)) {
@@ -105,7 +107,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
         return false;
     }
 
-    public boolean addItems(final List items) {
+    public boolean addItems(final List<Marker> items) {
         for (Object item : items) {
             if (item instanceof Marker) {
                 ((Marker) item).setParentHolder(this);
@@ -137,11 +139,18 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
 
     public boolean removeItem(final Marker item) {
         final boolean result = mItemList.remove(item);
+        if (getFocus() == item) {
+            setFocus(null);
+        }
         if (result) {
             onItemRemoved(item);
         }
         populate();
         return result;
+    }
+
+    public void clearFocus() {
+        setFocus(null);
     }
 
     public Marker removeItem(final int position) {
@@ -181,7 +190,7 @@ public class ItemizedIconOverlay extends ItemizedOverlay {
                 if (that.mOnItemGestureListener == null) {
                     return false;
                 }
-                return onSingleTapUpHelper(index, that.mItemList.get(index), mapView);
+                return onSingleTapUpHelper(index, getItem(index), mapView);
             }
         }));
     }

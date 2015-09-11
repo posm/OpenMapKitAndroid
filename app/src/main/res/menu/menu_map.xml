@@ -2,21 +2,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MapActivity">
 
-    <item android:id="@+id/mbtilessettings"
-          android:title="@string/action_mbtilessettings"
-          android:icon="@drawable/icon_basemap"
-          app:showAsAction="always" />
+    <!--<item android:id="@+id/mbtilessettings"-->
+          <!--android:title="@string/action_mbtilessettings"-->
+          <!--android:icon="@drawable/icon_basemap"-->
+          <!--app:showAsAction="ifRoom" />-->
     
-    <item android:id="@+id/osmdownloader"
-        android:title="@string/action_osmdownloader"
-        android:icon="@drawable/icon_downloader"
-        app:showAsAction="always" />
+    <!--<item android:id="@+id/osmdownloader"-->
+        <!--android:title="@string/action_osmdownloader"-->
+        <!--android:icon="@drawable/icon_downloader"-->
+        <!--app:showAsAction="ifRoom" />-->
     
-    <item android:id="@+id/osmsettings"
-        android:title="@string/action_osmsettings"
-        android:icon="@drawable/icon_layers"
-        app:showAsAction="always" />
+    <!--<item android:id="@+id/osmsettings"-->
+        <!--android:title="@string/action_osmsettings"-->
+        <!--android:icon="@drawable/icon_layers"-->
+        <!--app:showAsAction="ifRoom" />-->
 
-    
+    <item android:id="@+id/controlpanel"
+          android:title="@string/action_controlpanel"
+          android:icon="@drawable/ic_cog"
+          app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/mbtilessettings"
+                android:title="@string/action_mbtilessettings" />
+            <item
+                android:id="@+id/osmdownloader"
+                android:title="@string/action_osmdownloader" />
+            <item
+                android:id="@+id/osmsettings"
+                android:title="@string/action_osmsettings" />
+            <!--<item-->
+                <!--android:id="@+id/action_save_to_odk_collect"-->
+                <!--android:title="@string/save_to_odk_collect" />-->
 
-</menu>
+            </menu>
+        </item>
+
+    </menu>

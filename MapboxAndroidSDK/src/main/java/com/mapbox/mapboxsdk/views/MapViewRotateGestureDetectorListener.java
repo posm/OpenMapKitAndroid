@@ -7,8 +7,10 @@ import com.mapbox.mapboxsdk.views.util.OnMapOrientationChangeListener;
  * A custom rotate gesture detector that processes gesture events and dispatches them
  * to the map's overlay system.
  */
-public class MapViewRotateGestureDetectorListener
-        implements RotateGestureDetector.OnRotateGestureListener {
+public class MapViewRotateGestureDetectorListener implements RotateGestureDetector.OnRotateGestureListener {
+
+    private static String TAG = "MapViewRotateListener";
+
     private final MapView mapView;
     /**
      * This holds a reference to the first rotation angle
@@ -25,8 +27,6 @@ public class MapViewRotateGestureDetectorListener
     public MapViewRotateGestureDetectorListener(final MapView mv) {
         this.mapView = mv;
     }
-
-    private static String TAG = "Mapbox rotateDetector";
 
     @Override
     public boolean onRotate(RotateGestureDetector detector) {

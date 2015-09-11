@@ -6,10 +6,14 @@
 package com.spatialdev.osm.renderer;
 
 import android.graphics.Canvas;
+import android.graphics.PointF;
 
+import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.spatialdev.osm.model.JTSModel;
 import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMElement;
@@ -28,6 +32,10 @@ public class OSMOverlay extends Overlay {
     
     private float minVectorRenderZoom = 0;
     private float zoom = 0; // current zoom of map
+
+    private List<OSMNode> viewPortNodes = new ArrayList<>();
+
+    private boolean needToAddItemizedOverlay = true;
 
     /**
      * This should only be created by OSMMap.
@@ -66,6 +74,10 @@ public class OSMOverlay extends Overlay {
     public void updateZoom(float zoom) {
         this.zoom = zoom;
     }
+
+    public List<OSMNode> getViewPortNodes() {
+        return viewPortNodes;
+    }
     
     @Override
     protected void draw(Canvas c, MapView mapView, boolean shadow) {
@@ -76,7 +88,10 @@ public class OSMOverlay extends Overlay {
 
         List<OSMWay> polys = new ArrayList<>();
         List<OSMWay> lines = new ArrayList<>();
-        List<OSMNode> points = new ArrayList<>();
+
+        // We want to always be referring to the same list so external sources
+        // do not reference stale lists.
+        viewPortNodes.clear();
         
         List<OSMElement> viewPortElements = model.queryFromEnvelope(envelope);
         
@@ -92,8 +107,9 @@ public class OSMOverlay extends Overlay {
                 }
                 continue;
             }
-            // if it isn't a Way, it's a Node.
-            points.add((OSMNode)el);
+            // If it isn't a Way, it's a Node.
+            // We need to render the marker...
+            renderMarker(mapView, (OSMNode) el);
         }
         
         // Draw polygons
@@ -106,5 +122,25 @@ public class OSMOverlay extends Overlay {
             w.getOSMPath(mapView).draw(c);
         }
     }
-    
+
+    private void renderMarker(MapView mapView, OSMNode node) {
+        viewPortNodes.add(node);
+        if (node.getMarker() == null) {
+            OSMMarker marker = new OSMMarker(mapView, node);
+            marker.setMarker(mapView.getContext().getResources().getDrawable(R.mipmap.maki_star_blue));
+            /**
+             * Issue #81
+             * setMarker doesn't position bitmaps in the same way as setIcon.
+             * By setting the anchor, we bring down the image slightly so that the marker
+             * does indeed point to the point it refers to.
+             */
+            PointF anchor = new PointF(0.5f, 0.8f);
+            marker.setAnchor(anchor);
+            mapView.addOSMMarker(this, marker);
+        } else if (needToAddItemizedOverlay){
+            mapView.setDefaultOSMItemizedOverlay(this);
+            needToAddItemizedOverlay = false;
+        }
+    }
+
 }

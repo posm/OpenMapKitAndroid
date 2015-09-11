@@ -8,6 +8,7 @@ package com.spatialdev.osm.model;
 import android.util.Log;
 
 import com.mapbox.mapboxsdk.api.ILatLng;
+import com.spatialdev.osm.marker.OSMMarker;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -256,6 +257,35 @@ public class JTSModel {
         }
     }
 
+    /**
+     * When the user adds an OSMNode POI to the map, we want to add that new
+     * node to JTSModel. This is done in OSMMap.
+     *
+     * @param n - the OSMNode
+     */
+    public void addOSMStandaloneNode(OSMNode n) {
+        double lat = n.getLat();
+        double lng = n.getLng();
+        Coordinate coord = new Coordinate(lng, lat);
+        Point point = geometryFactory.createPoint(coord);
+        n.setJTSGeom(point);
+        Envelope envelope = point.getEnvelopeInternal();
+        spatialIndex.insert(envelope, n);
+    }
+
+    /**
+     * Removes the OSMElement from the Spatial Index
+     * if the element there.
+     *
+     * @param el - any OSMElement
+     */
+    public void removeOSMElement(OSMElement el) {
+        Geometry geom = el.getJTSGeom();
+        if (geom != null) {
+            Envelope env = geom.getEnvelopeInternal();
+            spatialIndex.remove(env, el);
+        }
+    }
 
     /**
      * This is how degrees wide a given pixel is for a given zoom.

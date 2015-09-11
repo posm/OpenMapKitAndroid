@@ -1,6 +1,7 @@
 package com.mapbox.mapboxsdk.overlay;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -25,8 +26,11 @@ import uk.co.senab.bitmapcache.CacheableBitmapDrawable;
  */
 public class Icon implements MapboxConstants {
 
+    private static final String TAG = "Icon";
+
     private Marker marker;
     private Drawable drawable;
+    private Context context;
 
     protected static BitmapLruCache sIconCache;
     private static final String DISK_CACHE_SUBDIR = "mapbox_icon_cache";
@@ -101,9 +105,8 @@ public class Icon implements MapboxConstants {
      * @param aColor  Color of Icon
      */
     public Icon(Context context, Size size, String symbol, String aColor) {
-
+        this.context = context;
         String url = MapboxUtils.markerIconURL(context, size.apiString, symbol, aColor);
-
         downloadBitmap(context, url);
     }
 
@@ -124,20 +127,19 @@ public class Icon implements MapboxConstants {
     public Icon setMarker(Marker aMarker) {
         this.marker = aMarker;
         if (drawable != null) {
-            this.marker.setMarker(drawable);
+            this.marker.setMarker(drawable, true);
         }
         return this;
     }
 
     private void downloadBitmap(Context context, String url) {
-        Log.d(TAG, String.format("downloadBitmap() with url = '%s'", url));
         CacheableBitmapDrawable bitmap = getCache(context).getFromMemoryCache(url);
 
         // Cache hit! We're done..
         if (bitmap != null) {
             drawable = bitmap;
             if (marker != null) {
-                marker.setMarker(drawable);
+                marker.setMarker(drawable, true);
             }
             return;
         }
@@ -171,7 +173,7 @@ public class Icon implements MapboxConstants {
                 // out of the cache...
                 drawable = sIconCache.get(url);
                 if (marker != null) {
-                    marker.setMarker(drawable);
+                    marker.setMarker(drawable, true);
                 }
                 return;
             }
@@ -183,7 +185,7 @@ public class Icon implements MapboxConstants {
                 if (list.isEmpty()) {
                     drawable = sIconCache.get(url);
                     if (marker != null) {
-                        marker.setMarker(drawable);
+                        marker.setMarker(drawable, true);
                     }
                     return;
                 }
@@ -210,7 +212,9 @@ public class Icon implements MapboxConstants {
                     }
                     HttpURLConnection connection = NetworkUtils.getHttpURLConnection(new URL(url));
                     // Note, sIconCache cannot be null..
-                    result = sIconCache.put(this.url, connection.getInputStream());
+
+                    BitmapFactory.Options opts = BitmapUtils.getBitmapOptions(context.getResources().getDisplayMetrics());
+                    result = sIconCache.put(this.url, connection.getInputStream(), opts);
                 } catch (IOException e) {
                     Log.e(TAG, "doInBackground: Unable to fetch icon from: " + this.url);
                 }
@@ -225,7 +229,7 @@ public class Icon implements MapboxConstants {
                 synchronized (list) {
                     for (Icon icon : list) {
                         if (icon.marker != null) {
-                            icon.marker.setMarker(bitmap);
+                            icon.marker.setMarker(bitmap, true);
                         }
                     }
                     if (UtilConstants.DEBUGMODE) {
@@ -236,6 +240,4 @@ public class Icon implements MapboxConstants {
             }
         }
     }
-
-    private static final String TAG = "Icon";
 }

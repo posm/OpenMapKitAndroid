@@ -29,7 +29,7 @@ import java.util.Set;
 
 final class BitmapMemoryLruCache extends LruCache<String, CacheableBitmapDrawable> {
 
-    public static final String TAG = BitmapMemoryLruCache.class.getSimpleName();
+    public static final String TAG = "BitmapMemoryLruCache";
     private final Set<SoftReference<CacheableBitmapDrawable>> mRemovedEntries;
     private final BitmapLruCache.RecyclePolicy mRecyclePolicy;
     private int largestValueSeenBytes;

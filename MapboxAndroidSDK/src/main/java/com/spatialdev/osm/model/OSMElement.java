@@ -23,6 +23,12 @@ public abstract class OSMElement {
     
     private static LinkedList<OSMElement> modifiedElements = new LinkedList<>();
     private static LinkedList<OSMElement> modifiedElementsInInstance = new LinkedList<>();
+
+    /**
+     * When creating a new OSMElement, it needs to be assigned a unique negative ID within
+     * the dataset. This should only be access by OSMElement#getUniqueNegativeId().
+     */
+    private static long negativeId = -1;
     
     protected long id;
     protected long version;
@@ -103,7 +109,10 @@ public abstract class OSMElement {
             el.deselect();
         }
     }
-    
+
+    /**
+     * This constructor is used by OSMDataSet in the XML parsing process.
+     */
     public OSMElement(String idStr,
                       String versionStr,
                       String timestampStr,
@@ -146,6 +155,20 @@ public abstract class OSMElement {
         }
     }
 
+    /**
+     * This constructor is used when we are creating an new OSMElement,
+     * such as when a new Node is created. This constructor assumes
+     * that we are creating a NEW element in the current survey.
+     */
+    public OSMElement() {
+        id = getUniqueNegativeId();
+        setAsModifiedInInstance();
+    }
+
+    protected static long getUniqueNegativeId() {
+        return negativeId--;
+    }
+
     void xml(XmlSerializer xmlSerializer) throws IOException {
         // set the tags for the element (all element types can have tags)
         Set<String> tagKeys = tags.keySet();
@@ -166,9 +189,15 @@ public abstract class OSMElement {
         if (isModified()) {
             xmlSerializer.attribute(null, "action", "modify");
         }
-        xmlSerializer.attribute(null, "version", String.valueOf(version));
-        xmlSerializer.attribute(null, "changeset", String.valueOf(changeset));
-        xmlSerializer.attribute(null, "timestamp", timestamp);
+        if (version != 0) {
+            xmlSerializer.attribute(null, "version", String.valueOf(version));
+        }
+        if (changeset != 0) {
+            xmlSerializer.attribute(null, "changeset", String.valueOf(changeset));
+        }
+        if (timestamp != null) {
+            xmlSerializer.attribute(null, "timestamp", timestamp);
+        }
     }
 
     /**
@@ -298,4 +327,5 @@ public abstract class OSMElement {
     public boolean isSelected() {
         return selected;
     }
+
 }
