@@ -579,6 +579,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         } else if (id == R.id.osmsettings) {
             presentOSMOptions();
             return true;
+        } else if (id == R.id.action_save_to_odk_collect) {
+            saveToODKCollectAndExit();
+            return true;
         }
         return false;
     }
@@ -597,25 +600,23 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         }
     }
 
-    /**
-     * For sending results from the 'create tag' or 'edit tag' activities back to a third party app (e.g. ODK Collect)
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
             if(resultCode == RESULT_OK) {
-                String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
-                String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
-                resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
+                saveToODKCollectAndExit();
             }
         }
+    }
+
+    protected void saveToODKCollectAndExit() {
+        String osmXmlFileFullPath = ODKCollectHandler.getODKCollectData().getOSMFileFullPath();
+        String osmXmlFileName = ODKCollectHandler.getODKCollectData().getOSMFileName();
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
+        resultIntent.putExtra("OSM_FILE_NAME", osmXmlFileName);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
     
     public MapView getMapView() {

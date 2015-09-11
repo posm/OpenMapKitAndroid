@@ -3,14 +3,14 @@
 
     <string name="app_name">OpenMapKit</string>
 
-    <string name="action_osmdownloader">OSM Downloader</string>
+    <string name="action_osmdownloader">OSM XML Downloader</string>
     <!-- osm menu -->
-    <string name="action_osmsettings">OSM Settings</string>
+    <string name="action_osmsettings">OSM XML Layers</string>
     <string name="osmChooserDialogTitle">Choose OSM XML Files</string>
     <string name="osmAppPath">openmapkit/osm</string>
 
     <!-- mbtiles menu -->
-    <string name="action_mbtilessettings">Basemap Settings</string>
+    <string name="action_mbtilessettings">Basemap</string>
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
     <string name="downloadOSMTitle">Download OSM Data</string>
     <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
@@ -69,5 +69,7 @@
     <string name="downloadOSMMessage">Do you want to download OSM XML data within the bounding box of your map?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <string name="action_controlpanel">Control Panel</string>
 
 </resources>
