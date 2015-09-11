@@ -12,7 +12,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 import android.view.MotionEvent;
-
 import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.events.MapListener;
 import com.mapbox.mapboxsdk.events.RotateEvent;
@@ -31,6 +30,7 @@ import com.mapbox.mapboxsdk.views.util.Projection;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -117,15 +117,6 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
 
         setMyLocationProvider(myLocationProvider);
         setOverlayIndex(USERLOCATIONOVERLAY_INDEX);
-
-        //Load location settings if location changed.
-        try {
-            LocationXMLParser.parseXML(mContext);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public UserLocationOverlay(GpsLocationProvider myLocationProvider, MapView mapView) {
@@ -191,6 +182,14 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
             // Rotate the icon
             canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
             // Counteract any scaling that may be happening so the icon stays the same size
+
+            try {
+                LocationXMLParser.parseXML(mContext);
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             float radius = (float) LocationXMLParser.getProximityRadius();
             //If proximity check is true and the GPS is not enabled, don't show user location else
             //draw circle of provided radius around the user.

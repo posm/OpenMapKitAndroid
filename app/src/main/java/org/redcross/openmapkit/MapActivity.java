@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -115,15 +117,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         positionMap();
 
         initializeListView();
-
-        //Initialize location settings.
-        try {
-            LocationXMLParser.parseXML(this);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -384,6 +377,13 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     @Override
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
+            try {
+                LocationXMLParser.parseXML(this);
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //tagsButton.setVisibility(View.VISIBLE);
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
