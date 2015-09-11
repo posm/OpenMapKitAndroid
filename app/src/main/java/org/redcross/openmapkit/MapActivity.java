@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.overlay.LocationXMLParser;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
@@ -34,17 +33,14 @@ import com.vividsolutions.jts.geom.Point;
 
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
 public class MapActivity extends ActionBarActivity implements OSMSelectionListener {
-    private static double boundRadius;
+    private static double boundRadius = 150;
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
@@ -79,18 +75,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.osm_light_green));
         }
-
-        //Get the boundRadius from the location settings
-        LocationXMLParser locationXMLParser = new LocationXMLParser();
-        HashMap locationSettings = null;
-        try {
-            locationSettings = locationXMLParser.parseXML();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        boundRadius = (double) locationSettings.get(LocationXMLParser.PROXIMITY_RADIUS);
 
         // create directory structure for app if needed
         ExternalStorage.checkOrCreateAppDirs();
@@ -388,30 +372,31 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
     @Override
     public void selectedElementsChanged(LinkedList<OSMElement> selectedElements) {
         if (selectedElements != null && selectedElements.size() > 0) {
-            //tagsButton.setVisibility(View.VISIBLE);
+//            tagsButton.setVisibility(View.VISIBLE);
             //fetch the tapped feature
             OSMElement tappedOSMElement = selectedElements.get(0);
+
             boolean userLocationIsEnabled = mapView.getUserLocationEnabled();
             if (userLocationIsEnabled) {
-                //Checks whether tappedElement is within select range.
+
+                //Check whether tappedElement is within select range.
                 if (isWithinDistance(tappedOSMElement)) {
                     //present OSM Feature tags in bottom ListView
                     identifyOSMFeature(tappedOSMElement);
+                    //Show a LatLong of the selected element
+                    //Toast.makeText(this, "Within bound 150 " + Integer.toString((int) distance(tappedOSMElement.getLatitude(), getUserLocation().getLatitude(), tappedOSMElement.getLongitude(), getUserLocation().getLongitude())), Toast.LENGTH_LONG).show();
                 } else {
-                    //Ignore points outside proximity boundary.
+                    //Show point is outside bound region
                     tappedOSMElement.deselectAll();
+                    //Toast.makeText(this, "Outside bound 150 " + Integer.toString((int) distance(tappedOSMElement.getLatitude(), getUserLocation().getLatitude(), tappedOSMElement.getLongitude(), getUserLocation().getLongitude())), Toast.LENGTH_LONG).show();
                 }
             } else {
-                //If GPS is disabled, user can select any point.
+                //present OSM Feature tags in bottom ListView
                 identifyOSMFeature(tappedOSMElement);
             }
         }
     }
 
-    /**
-     * @param tappedOSMElement selected point
-     * @return true if the element is within specified radius.
-     */
     private boolean isWithinDistance(OSMElement tappedOSMElement) {
         LatLng userPos = getUserLocation();
         double userLat = userPos.getLatitude();
@@ -424,18 +409,9 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
          Coordinate cord = new Coordinate(userLong, userLat);
          Geometry geo = geometryFactory.createPoint(cord);
          return tappedOSMElement.getJTSGeom().isWithinDistance(geo, boundRadius);*/
-
         return distance(userLat, osmElemLat, userLong, osmElemLong) <= boundRadius;
     }
 
-    /**
-     *
-     * @param lat1
-     * @param lat2
-     * @param lng1
-     * @param lng2
-     * @return distance between 2 points in map.
-     */
     public double distance(double lat1, double lat2, double lng1, double lng2) {
         double earthRadius = 6371000; //meters
         double dLat = Math.toRadians(lat2 - lat1);
@@ -449,10 +425,6 @@ public class MapActivity extends ActionBarActivity implements OSMSelectionListen
         return dist;
     }
 
-    /**
-     *
-     * @return current location of user.
-     */
     public LatLng getUserLocation() {
         return mapView.getUserLocation();
     }

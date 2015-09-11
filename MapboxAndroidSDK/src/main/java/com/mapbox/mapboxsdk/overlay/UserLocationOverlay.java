@@ -9,7 +9,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.location.Location;
-import android.location.LocationManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import com.mapbox.mapboxsdk.R;
@@ -26,11 +25,6 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
 import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
 import com.mapbox.mapboxsdk.views.util.Projection;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -178,33 +172,20 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         canvas.scale(mapScale, mapScale, mMapCoords.x, mMapCoords.y);
 
         if (mDrawAccuracyEnabled) {
+            final float radius = lastFix.getAccuracy() / (float) Projection.groundResolution(
+                    lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
             canvas.save();
             // Rotate the icon
             canvas.rotate(lastFix.getBearing(), mMapCoords.x, mMapCoords.y);
             // Counteract any scaling that may be happening so the icon stays the same size
 
-            try {
-                LocationXMLParser.parseXML();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            float radius = (float) LocationXMLParser.getProximityRadius();
+            mCirclePaint.setAlpha(50);
+            mCirclePaint.setStyle(Style.FILL);
+            canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
 
-            if (!(LocationXMLParser.getProximityCheck() && !isGPSEnabled())) {
-                radius = radius / (float) Projection.groundResolution(
-                        lastFix.getLatitude(), mapView.getZoomLevel()) * mapView.getScale();
-                mCirclePaint.setAlpha(50);
-                mCirclePaint.setStyle(Style.FILL);
-                canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
-
-                mCirclePaint.setAlpha(150);
-                mCirclePaint.setStyle(Style.STROKE);
-                canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
-            } else {
-
-            }
+            mCirclePaint.setAlpha(150);
+            mCirclePaint.setStyle(Style.STROKE);
+            canvas.drawCircle(mMapCoords.x, mMapCoords.y, radius, mCirclePaint);
             canvas.restore();
         }
 
@@ -576,17 +557,5 @@ public class UserLocationOverlay extends SafeDrawOverlay implements Snappable, M
         if (event.getUserAction()) {
             disableFollowLocation();
         }
-    }
-
-    /**
-     *
-     * @return true if GPS is enabled.
-     */
-    private boolean isGPSEnabled() {
-        LocationManager manager = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
-        if ( manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-            return true;
-        }
-        return false;
     }
 }
