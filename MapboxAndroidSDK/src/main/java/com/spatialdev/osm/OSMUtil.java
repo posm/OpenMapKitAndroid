@@ -14,75 +14,36 @@ import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMWay;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 
 public class OSMUtil {
 
-    public static ArrayList<Object> createUIObjectsFromDataSet(OSMDataSet ds) {
-        ArrayList<Object> uiObjects = new ArrayList<>();
+    private static String dateFormatStr = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatStr, Locale.US);
 
-        /**
-         * POLYGONS
-         */
-        List<OSMWay> closedWays = ds.getClosedWays();
-        for (OSMWay w : closedWays) {
-            Iterator<OSMNode> nodeIterator = w.getNodeIterator();
-            PathOverlay path = new PathOverlay();
-            path.setOptimizePath(false); // optimizePath does not work for polys
-            Paint paint = path.getPaint();
-            paint.setStyle(Paint.Style.FILL);
-            paint.setARGB(85, 95, 237, 140);
-            while (nodeIterator.hasNext()) {
-                OSMNode n = nodeIterator.next();
-                LatLng latLng = n.getLatLng();
-                path.addPoint(latLng);
-            }
-            uiObjects.add(path);
-        }
-
-
-        /**
-         * LINES
-         */
-        List<OSMWay> openWays = ds.getOpenWays();
-        for (OSMWay w : openWays) {
-            Iterator<OSMNode> nodeIterator = w.getNodeIterator();
-            PathOverlay path = new PathOverlay();
-            path.getPaint().setARGB(200, 209, 29, 119);
-            while (nodeIterator.hasNext()) {
-                OSMNode n = nodeIterator.next();
-                LatLng latLng = n.getLatLng();
-                path.addPoint(latLng);
-            }
-            uiObjects.add(path);
-        }
-
-
-        /**
-         * POINTS
-         */
-        List<OSMNode> standaloneNodes = ds.getStandaloneNodes();
-        for (OSMNode n : standaloneNodes) {
-            LatLng latLng = n.getLatLng();
-            Marker marker = new Marker(n.getClass().getSimpleName(), printTags(n), latLng);
-            uiObjects.add(marker);
-        }
-
-        return uiObjects;
+    public static String nowTimestamp() {
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dateFormat.format(new Date());
     }
-    
-    public static String printTags(OSMElement element) {
-        Map<String, String> tags = element.getTags();
-        Set<String> keys = tags.keySet();
-        String str = "";
-        for (String k : keys) {
-            str += k + ": " + tags.get(k) + "\n";
-        }
-        return str;
+
+
+    /**
+     * Returns a timestamp without ':'.
+     *
+     * @return timestamp without ':'
+     */
+    public static String nowFileTimestamp() {
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String str = dateFormat.format(new Date());
+        return str.replaceAll(":", "");
     }
 }

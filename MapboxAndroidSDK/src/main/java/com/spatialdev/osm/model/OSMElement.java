@@ -5,15 +5,12 @@
 package com.spatialdev.osm.model;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
+import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.renderer.OSMPath;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -27,9 +24,6 @@ public abstract class OSMElement {
     
     private static LinkedList<OSMElement> modifiedElements = new LinkedList<>();
     private static LinkedList<OSMElement> modifiedElementsInInstance = new LinkedList<>();
-
-    private static String dateFormatStr = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatStr, Locale.US);
 
 
     /**
@@ -118,10 +112,6 @@ public abstract class OSMElement {
         }
     }
 
-    private static String nowTimestamp() {
-        return dateFormat.format(new Date());
-    }
-
     /**
      * This constructor is used by OSMDataSet in the XML parsing process.
      */
@@ -165,7 +155,6 @@ public abstract class OSMElement {
         if (action != null && action.equals("modify")) {
             setAsModified();
         }
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
@@ -176,7 +165,6 @@ public abstract class OSMElement {
     public OSMElement() {
         id = getUniqueNegativeId();
         setAsModifiedInInstance();
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     protected static long getUniqueNegativeId() {
@@ -215,7 +203,7 @@ public abstract class OSMElement {
          * we want to stay with the previously recorded timestamp.
          */
         if (modifiedInInstance) {
-            xmlSerializer.attribute(null, "timestamp", nowTimestamp());
+            xmlSerializer.attribute(null, "timestamp", OSMUtil.nowTimestamp());
         } else if (timestamp != null) {
             xmlSerializer.attribute(null, "timestamp", timestamp);
         }

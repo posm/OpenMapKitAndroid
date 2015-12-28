@@ -2,6 +2,7 @@ package org.redcross.openmapkit.odkcollect;
 
 import android.os.Environment;
 
+import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
 
@@ -164,7 +165,7 @@ public class ODKCollectData {
     }
 
     public String getOSMFileName() {
-        return osmClassName + osmId + ".osm";
+        return osmClassName + osmId + "_" + OSMUtil.nowFileTimestamp() + ".osm";
     }
     
     public String getOSMFileFullPath() {
