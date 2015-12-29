@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -22,6 +23,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
@@ -376,8 +379,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                osmMap.addNode();
+                OSMNode node = osmMap.addNode();
                 toggleNodeMode();
+                node.select();
+                identifyOSMFeature(node);
             }
         };
         addNodeMarkerBtn.setOnClickListener(listener);
@@ -452,14 +457,24 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     private void hideSelectedMarker() {
-        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
-        node.getMarker().setVisibility(false);
+        LinkedList<OSMElement> selectedElements = OSMElement.getSelectedElements();
+        if (selectedElements.size() < 1) return;
+        OSMNode node = (OSMNode)selectedElements.getFirst();
+        Marker marker = node.getMarker();
+        if (marker != null) {
+            node.getMarker().setVisibility(false);
+        }
         mapView.invalidate();
     }
 
     private void showSelectedMarker() {
-        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
-        node.getMarker().setVisibility(true);
+        LinkedList<OSMElement> selectedElements = OSMElement.getSelectedElements();
+        if (selectedElements.size() < 1) return;
+        OSMNode node = (OSMNode)selectedElements.getFirst();
+        Marker marker = node.getMarker();
+        if (marker != null) {
+            node.getMarker().setVisibility(true);
+        }
         mapView.invalidate();
     }
 
@@ -512,6 +527,36 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             Toast prompt = Toast.makeText(getApplicationContext(), "Please add .osm files to " + ExternalStorage.getOSMDir(), Toast.LENGTH_LONG);
             prompt.show();
         }
+    }
+
+    private void inputOSMCredentials() {
+        final SharedPreferences userNamePref = getSharedPreferences("org.redcross.openmapkit.USER_NAME", Context.MODE_PRIVATE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("OpenStreetMap User Name");
+        builder.setMessage("Please enter your OpenStreetMap user name.");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        String userName = userNamePref.getString("userName", null);
+        if (userName != null) {
+            input.setText(userName);
+        }
+        builder.setView(input);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // just dismiss
+            }
+        });
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String userName = input.getText().toString();
+                SharedPreferences.Editor editor = userNamePref.edit();
+                editor.putString("userName", userName);
+                editor.apply();
+            }
+        });
+        builder.show();
     }
 
     private void askIfDownloadOSM() {
@@ -575,6 +620,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             return true;
         } else if (id == R.id.mbtilessettings) {
             basemap.presentMBTilesOptions();
+            return true;
+        } else if (id == R.id.osmcredentials) {
+            inputOSMCredentials();
             return true;
         } else if (id == R.id.osmsettings) {
             presentOSMOptions();

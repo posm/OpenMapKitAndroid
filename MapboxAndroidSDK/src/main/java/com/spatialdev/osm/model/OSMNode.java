@@ -15,6 +15,8 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class OSMNode extends OSMElement {
 
@@ -152,6 +154,16 @@ public class OSMNode extends OSMElement {
         super.select();
         if (marker != null) {
             marker.setMarker(marker.getMapView().getContext().getResources().getDrawable(R.mipmap.maki_star_orange));
+        } else {
+            // Very wretched hack. Something is wrong with Mapbox Android SDK (Deprecated). Satisfies #98
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (marker != null) {
+                        marker.setMarker(marker.getMapView().getContext().getResources().getDrawable(R.mipmap.maki_star_orange));
+                    }
+                }
+            }, 100);
         }
     }
 

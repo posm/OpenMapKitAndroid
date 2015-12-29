@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.renderer.OSMPath;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -23,6 +24,7 @@ public abstract class OSMElement {
     
     private static LinkedList<OSMElement> modifiedElements = new LinkedList<>();
     private static LinkedList<OSMElement> modifiedElementsInInstance = new LinkedList<>();
+
 
     /**
      * When creating a new OSMElement, it needs to be assigned a unique negative ID within
@@ -195,7 +197,14 @@ public abstract class OSMElement {
         if (changeset != 0) {
             xmlSerializer.attribute(null, "changeset", String.valueOf(changeset));
         }
-        if (timestamp != null) {
+        /**
+         * If the element just got modified, we want to set the time stamp when the record
+         * is serialized. If it has not been modified or was modified in a previous session,
+         * we want to stay with the previously recorded timestamp.
+         */
+        if (modifiedInInstance) {
+            xmlSerializer.attribute(null, "timestamp", OSMUtil.nowTimestamp());
+        } else if (timestamp != null) {
             xmlSerializer.attribute(null, "timestamp", timestamp);
         }
     }

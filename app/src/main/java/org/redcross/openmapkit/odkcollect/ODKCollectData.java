@@ -2,6 +2,7 @@ package org.redcross.openmapkit.odkcollect;
 
 import android.os.Environment;
 
+import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMXmlWriter;
 
@@ -133,10 +134,10 @@ public class ODKCollectData {
         return null;
     }
     
-    public void consumeOSMElement(OSMElement el) throws IOException {
+    public void consumeOSMElement(OSMElement el, String osmUserName) throws IOException {
         osmClassName = el.getClass().getSimpleName();
         osmId = el.getId();
-        editedXml = OSMXmlWriter.elementToString(el, "theoutpost", APP_NAME + " " + appVersion);
+        editedXml = OSMXmlWriter.elementToString(el, osmUserName, APP_NAME + " " + appVersion);
     }
     
     public void deleteOldOSMEdit() {
@@ -164,7 +165,7 @@ public class ODKCollectData {
     }
 
     public String getOSMFileName() {
-        return osmClassName + osmId + ".osm";
+        return osmClassName + osmId + "_" + OSMUtil.nowFileTimestamp() + ".osm";
     }
     
     public String getOSMFileFullPath() {

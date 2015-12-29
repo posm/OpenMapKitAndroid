@@ -26,6 +26,9 @@
                 android:id="@+id/mbtilessettings"
                 android:title="@string/action_mbtilessettings" />
             <item
+                android:id="@+id/osmcredentials"
+                android:title="@string/action_osmcredentials" />
+            <item
                 android:id="@+id/osmdownloader"
                 android:title="@string/action_osmdownloader" />
             <item

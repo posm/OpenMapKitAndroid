@@ -3,6 +3,7 @@
 
     <string name="app_name">OpenMapKit</string>
 
+    <string name="action_osmcredentials">OSM User Name</string>
     <string name="action_osmdownloader">OSM XML Downloader</string>
     <!-- osm menu -->
     <string name="action_osmsettings">OSM XML Layers</string>

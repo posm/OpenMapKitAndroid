@@ -70,9 +70,9 @@ public class ODKCollectHandler {
      * @param el
      * @return The full path of the saved OSM XML File
      */
-    public static String saveXmlInODKCollect(OSMElement el) {
+    public static String saveXmlInODKCollect(OSMElement el, String osmUserName) {
         try {
-            odkCollectData.consumeOSMElement(el);
+            odkCollectData.consumeOSMElement(el, osmUserName);
             odkCollectData.deleteOldOSMEdit();
             odkCollectData.writeXmlToOdkCollectInstanceDir();
             return odkCollectData.getOSMFileFullPath();
