@@ -14,9 +14,6 @@ Android mobile application for browsing OpenStreetMap features to create and edi
   - Can be launched by your XForm survey to select OSM features and create/edit tags within your survey collection workflow. 
   - Tags and OSM ID are sent back to ODK Collect to be stored in survey data
 
-
-![OpenMapKit Flowchart](/docs/assets/OpenMapKit_flowchart.png)
-
 ## Documentation
 
 See the [wiki](https://github.com/AmericanRedCross/openmapkit/wiki) for details on how to setup and load data into the app.

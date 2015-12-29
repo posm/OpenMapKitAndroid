@@ -376,8 +376,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                osmMap.addNode();
+                OSMNode node = osmMap.addNode();
                 toggleNodeMode();
+                node.select();
+                identifyOSMFeature(node);
             }
         };
         addNodeMarkerBtn.setOnClickListener(listener);
