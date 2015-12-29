@@ -8,8 +8,8 @@ android {
         applicationId "org.redcross.openmapkit"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 12
-        versionName "0.12"
+        versionCode 14
+        versionName "0.14"
     }
     buildTypes {
         release {
