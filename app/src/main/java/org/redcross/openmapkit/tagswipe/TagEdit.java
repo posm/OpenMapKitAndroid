@@ -94,9 +94,9 @@ public class TagEdit {
         return 0;
     }
     
-    public static void saveToODKCollect() {
+    public static void saveToODKCollect(String osmUserName) {
         updateTagsInOSMElement();
-        ODKCollectHandler.saveXmlInODKCollect(osmElement);
+        ODKCollectHandler.saveXmlInODKCollect(osmElement, osmUserName);
     }
     
     private static void updateTagsInOSMElement() {

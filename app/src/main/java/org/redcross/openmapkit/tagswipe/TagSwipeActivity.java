@@ -6,6 +6,8 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
@@ -24,10 +28,12 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 public class TagSwipeActivity extends ActionBarActivity {
 
     private List<TagEdit> tagEdits;
+    private SharedPreferences userNamePref;
 
     
     private void setupModel() {
         tagEdits = TagEdit.buildTagEdits();
+        userNamePref = getSharedPreferences("org.redcross.openmapkit.USER_NAME", Context.MODE_PRIVATE);
     }
 
     
@@ -93,17 +99,49 @@ public class TagSwipeActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * We check to see if there is a saved user name. If there is not,
+     * we present a dialog to ask for it. Otherwise, we just use what
+     * is saved for writing OSM XML and saving to ODK Collect.
+     */
     public void saveToODKCollect() {
-        TagEdit.saveToODKCollect();
-        setResult(Activity.RESULT_OK);
-        finish();
+        String userName = userNamePref.getString("userName", null);
+        if (userName == null) {
+            askForOSMUsername();
+        } else {
+            TagEdit.saveToODKCollect(userName);
+            setResult(Activity.RESULT_OK);
+            finish();
+        }
     }
     
     public void cancel() {
         setResult(Activity.RESULT_CANCELED);
         finish();
     }
-    
+
+    private void askForOSMUsername() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("OpenStreetMap User Name");
+        builder.setMessage("Please enter your OpenStreetMap user name.");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        builder.setView(input);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String userName = input.getText().toString();
+                SharedPreferences.Editor editor = userNamePref.edit();
+                editor.putString("userName", userName);
+                editor.apply();
+                TagEdit.saveToODKCollect(userName);
+                setResult(Activity.RESULT_OK);
+                finish();
+            }
+        });
+        builder.show();
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

@@ -68,12 +68,12 @@ public class ODKCollectTagActivity extends ActionBarActivity {
     }
     
     void saveToOdkCollect() {
-        OSMElement osmElement = fragment.updateTagsInOSMElement();
-        String osmXmlFileFullPath = ODKCollectHandler.saveXmlInODKCollect(osmElement);
-        
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
-        setResult(Activity.RESULT_OK, resultIntent);
+//        OSMElement osmElement = fragment.updateTagsInOSMElement();
+//        String osmXmlFileFullPath = ODKCollectHandler.saveXmlInODKCollect(osmElement);
+//
+//        Intent resultIntent = new Intent();
+//        resultIntent.putExtra("OSM_PATH", osmXmlFileFullPath);
+//        setResult(Activity.RESULT_OK, resultIntent);
 
         finish();
     }

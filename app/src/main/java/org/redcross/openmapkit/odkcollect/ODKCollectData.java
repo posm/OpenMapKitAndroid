@@ -134,10 +134,10 @@ public class ODKCollectData {
         return null;
     }
     
-    public void consumeOSMElement(OSMElement el) throws IOException {
+    public void consumeOSMElement(OSMElement el, String osmUserName) throws IOException {
         osmClassName = el.getClass().getSimpleName();
         osmId = el.getId();
-        editedXml = OSMXmlWriter.elementToString(el, "theoutpost", APP_NAME + " " + appVersion);
+        editedXml = OSMXmlWriter.elementToString(el, osmUserName, APP_NAME + " " + appVersion);
     }
     
     public void deleteOldOSMEdit() {
