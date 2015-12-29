@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.OSMMap;
 import com.spatialdev.osm.events.OSMSelectionListener;
@@ -454,14 +455,24 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     private void hideSelectedMarker() {
-        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
-        node.getMarker().setVisibility(false);
+        LinkedList<OSMElement> selectedElements = OSMElement.getSelectedElements();
+        if (selectedElements.size() < 1) return;
+        OSMNode node = (OSMNode)selectedElements.getFirst();
+        Marker marker = node.getMarker();
+        if (marker != null) {
+            node.getMarker().setVisibility(false);
+        }
         mapView.invalidate();
     }
 
     private void showSelectedMarker() {
-        OSMNode node = (OSMNode)OSMElement.getSelectedElements().getFirst();
-        node.getMarker().setVisibility(true);
+        LinkedList<OSMElement> selectedElements = OSMElement.getSelectedElements();
+        if (selectedElements.size() < 1) return;
+        OSMNode node = (OSMNode)selectedElements.getFirst();
+        Marker marker = node.getMarker();
+        if (marker != null) {
+            node.getMarker().setVisibility(true);
+        }
         mapView.invalidate();
     }
 
