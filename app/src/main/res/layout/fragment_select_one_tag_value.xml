@@ -40,6 +40,22 @@
                 android:layout_height="fill_parent"
                 android:id="@+id/selectOneTagValueRadioGroup">
 
+                <LinearLayout android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/customTagValueRadio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
+
+                    <EditText
+                        android:id="@+id/customTagValueEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
             </RadioGroup>
         </ScrollView>
 
