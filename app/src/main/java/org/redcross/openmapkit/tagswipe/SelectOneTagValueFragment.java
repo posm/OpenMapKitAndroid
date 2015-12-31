@@ -1,5 +1,6 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
@@ -8,6 +9,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -96,6 +100,26 @@ public class SelectOneTagValueFragment extends Fragment {
             odkTag.putRadioButtonIdToTagItemHash(buttonId, item);
             tagValueRadioGroup.addView(textView);
         }
+
+        /**
+         * Custom radio button for custom OSM tag values.
+         * It's got a horizontal linear layout with a ToggleableRadioButton
+         * and an EditText.
+         */
+        LinearLayout customLinearLayout = new LinearLayout(activity);
+        customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        ToggleableRadioButton customButton = new ToggleableRadioButton(activity);
+        customButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        customButton.setText("");
+        EditText customEditText = new EditText(activity);
+        customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        customLinearLayout.setFocusableInTouchMode(true);
+        customLinearLayout.addView(customButton);
+        customLinearLayout.addView(customEditText);
+        tagValueRadioGroup.addView(customLinearLayout);
+
     }
 
     /**
@@ -180,8 +204,13 @@ public class SelectOneTagValueFragment extends Fragment {
         @Override
         public void toggle() {
             if(isChecked()) {
-                if(getParent() instanceof RadioGroup) {
+                ViewParent parent = getParent();
+                if(parent instanceof RadioGroup) {
                     ((RadioGroup)getParent()).clearCheck();
+                }
+                // This is for the special custom OSM tag value radio button in a LinearLayout.
+                else if (parent instanceof LinearLayout) {
+                    ((RadioGroup)parent.getParent()).clearCheck();
                 }
             } else {
                 setChecked(true);
