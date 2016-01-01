@@ -6,6 +6,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,14 +108,30 @@ public class SelectOneTagValueFragment extends Fragment {
          * It's got a horizontal linear layout with a ToggleableRadioButton
          * and an EditText.
          */
+        final ToggleableRadioButton customButton = new ToggleableRadioButton(activity);
+        customButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        customButton.setText("");
+
+        EditText customEditText = new EditText(activity);
+        customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        customEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    customButton.setChecked(true);
+                } else {
+                    customButton.setChecked(false);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+
         LinearLayout customLinearLayout = new LinearLayout(activity);
         customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
         customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        ToggleableRadioButton customButton = new ToggleableRadioButton(activity);
-        customButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        customButton.setText("");
-        EditText customEditText = new EditText(activity);
-        customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         customLinearLayout.setFocusableInTouchMode(true);
         customLinearLayout.addView(customButton);
@@ -206,7 +224,7 @@ public class SelectOneTagValueFragment extends Fragment {
             if(isChecked()) {
                 ViewParent parent = getParent();
                 if(parent instanceof RadioGroup) {
-                    ((RadioGroup)getParent()).clearCheck();
+                    ((RadioGroup)parent).clearCheck();
                 }
                 // This is for the special custom OSM tag value radio button in a LinearLayout.
                 else if (parent instanceof LinearLayout) {
