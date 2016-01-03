@@ -72,17 +72,26 @@ public class SelectOneTagValueFragment extends Fragment {
     }
     
     private void setupRadioButtons() {
-        RadioGroup tagValueRadioGroup = (RadioGroup)rootView.findViewById(R.id.selectOneTagValueRadioGroup);
+        final RadioGroup tagValueRadioGroup = (RadioGroup)rootView.findViewById(R.id.selectOneTagValueRadioGroup);
         tagEdit.setRadioGroup(tagValueRadioGroup);
         Activity activity = getActivity();
         ODKTag odkTag = tagEdit.getODKTag();
         if (odkTag == null) return;
+
+        /**
+         * Custom radio button for custom OSM tag values.
+         * It's got a horizontal linear layout with a ToggleableRadioButton
+         * and an EditText.
+         */
+        final ToggleableRadioButton customButton = new ToggleableRadioButton(activity, tagValueRadioGroup, null);
+        customButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         String prevTagVal = tagEdit.getTagVal();
         Collection<ODKTagItem> odkTagItems = odkTag.getItems();
         for (ODKTagItem item : odkTagItems) {
             String label = item.getLabel();
             String value = item.getValue();
-            ToggleableRadioButton button = new ToggleableRadioButton(activity);
+            ToggleableRadioButton button = new ToggleableRadioButton(activity, tagValueRadioGroup, customButton);
             button.setTextSize(18);
             TextView textView = new TextView(activity);
             textView.setPadding(66, 0, 0, 25);
@@ -104,31 +113,34 @@ public class SelectOneTagValueFragment extends Fragment {
         }
 
         /**
-         * Custom radio button for custom OSM tag values.
-         * It's got a horizontal linear layout with a ToggleableRadioButton
-         * and an EditText.
+         * Special EditText that is next to the customButton
          */
-        final ToggleableRadioButton customButton = new ToggleableRadioButton(activity);
-        customButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        customButton.setText("");
-
         EditText customEditText = new EditText(activity);
         customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         customEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 0) {
                     customButton.setChecked(true);
+                    tagValueRadioGroup.clearCheck();
                 } else {
                     customButton.setChecked(false);
                 }
             }
+
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
 
+        /**
+         * Adding customButton and customEditText to a horizontal linear layout
+         * and puts that as the last item in the tag value radio group.
+         */
         LinearLayout customLinearLayout = new LinearLayout(activity);
         customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
         customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -137,6 +149,14 @@ public class SelectOneTagValueFragment extends Fragment {
         customLinearLayout.addView(customButton);
         customLinearLayout.addView(customEditText);
         tagValueRadioGroup.addView(customLinearLayout);
+//        tagValueRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+//                if (radioGroup.getCheckedRadioButtonId() != -1 || customButton.isSelected()) {
+//                    customButton.setChecked(false);
+//                };
+//            }
+//        });
 
     }
 
@@ -215,23 +235,32 @@ public class SelectOneTagValueFragment extends Fragment {
      * * * * 
      */
     public class ToggleableRadioButton extends RadioButton {
-        public ToggleableRadioButton(Context context) {
+        private RadioGroup radioGroup;
+        private RadioButton customButton;
+
+        public ToggleableRadioButton(Context context, RadioGroup radioGroup, RadioButton customButton) {
             super(context);
+            this.radioGroup = radioGroup;
+            this.customButton = customButton;
         }
 
         @Override
         public void toggle() {
             if(isChecked()) {
-                ViewParent parent = getParent();
-                if(parent instanceof RadioGroup) {
-                    ((RadioGroup)parent).clearCheck();
-                }
-                // This is for the special custom OSM tag value radio button in a LinearLayout.
-                else if (parent instanceof LinearLayout) {
-                    ((RadioGroup)parent.getParent()).clearCheck();
+                radioGroup.clearCheck();
+                if(!(getParent() instanceof RadioGroup)) {
+                    setChecked(false);
                 }
             } else {
                 setChecked(true);
+                // if custom button
+                if(!(getParent() instanceof RadioGroup)) {
+                    radioGroup.clearCheck();
+                }
+                // not custom button
+                else if (customButton != null){
+                    customButton.setChecked(false);
+                }
             }
         }
     }
