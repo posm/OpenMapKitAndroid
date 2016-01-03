@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -74,7 +75,7 @@ public class SelectOneTagValueFragment extends Fragment {
     private void setupRadioButtons() {
         final RadioGroup tagValueRadioGroup = (RadioGroup)rootView.findViewById(R.id.selectOneTagValueRadioGroup);
         tagEdit.setRadioGroup(tagValueRadioGroup);
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
         ODKTag odkTag = tagEdit.getODKTag();
         if (odkTag == null) return;
 
@@ -83,39 +84,13 @@ public class SelectOneTagValueFragment extends Fragment {
          * It's got a horizontal linear layout with a ToggleableRadioButton
          * and an EditText.
          */
-        final ToggleableRadioButton customButton = new ToggleableRadioButton(activity, tagValueRadioGroup, null);
+        final ToggleableRadioButton customButton = new ToggleableRadioButton(activity, tagValueRadioGroup, null, null);
         customButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        String prevTagVal = tagEdit.getTagVal();
-        Collection<ODKTagItem> odkTagItems = odkTag.getItems();
-        for (ODKTagItem item : odkTagItems) {
-            String label = item.getLabel();
-            String value = item.getValue();
-            ToggleableRadioButton button = new ToggleableRadioButton(activity, tagValueRadioGroup, customButton);
-            button.setTextSize(18);
-            TextView textView = new TextView(activity);
-            textView.setPadding(66, 0, 0, 25);
-            textView.setOnClickListener(new TextViewOnClickListener(button));
-            if (label != null) {
-                button.setText(label);
-                textView.setText(value);
-            } else {
-                button.setText(value);
-                textView.setText("");
-            }
-            tagValueRadioGroup.addView(button);
-            if (prevTagVal != null && value.equals(prevTagVal)) {
-                button.toggle();
-            }
-            int buttonId = button.getId();
-            odkTag.putRadioButtonIdToTagItemHash(buttonId, item);
-            tagValueRadioGroup.addView(textView);
-        }
 
         /**
          * Special EditText that is next to the customButton
          */
-        EditText customEditText = new EditText(activity);
+        final EditText customEditText = new EditText(activity);
         customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         customEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -136,6 +111,48 @@ public class SelectOneTagValueFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
+        customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (customButton.isChecked()) {
+                    customEditText.setFocusableInTouchMode(true);
+                    customEditText.requestFocus();
+                    final InputMethodManager inputMethodManager = (InputMethodManager) activity
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.showSoftInput(customEditText, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
+        });
+
+        /**
+         * Setting up buttons with prescribed choice values.
+         */
+        String prevTagVal = tagEdit.getTagVal();
+        Collection<ODKTagItem> odkTagItems = odkTag.getItems();
+        for (ODKTagItem item : odkTagItems) {
+            String label = item.getLabel();
+            String value = item.getValue();
+            ToggleableRadioButton button = new ToggleableRadioButton(activity, tagValueRadioGroup, customButton, customEditText);
+            button.setTextSize(18);
+            TextView textView = new TextView(activity);
+            textView.setPadding(66, 0, 0, 25);
+            textView.setOnClickListener(new TextViewOnClickListener(button));
+            if (label != null) {
+                button.setText(label);
+                textView.setText(value);
+            } else {
+                button.setText(value);
+                textView.setText("");
+            }
+            tagValueRadioGroup.addView(button);
+            if (prevTagVal != null && value.equals(prevTagVal)) {
+                button.toggle();
+            }
+            int buttonId = button.getId();
+            odkTag.putRadioButtonIdToTagItemHash(buttonId, item);
+            tagValueRadioGroup.addView(textView);
+        }
+
 
         /**
          * Adding customButton and customEditText to a horizontal linear layout
@@ -149,14 +166,6 @@ public class SelectOneTagValueFragment extends Fragment {
         customLinearLayout.addView(customButton);
         customLinearLayout.addView(customEditText);
         tagValueRadioGroup.addView(customLinearLayout);
-//        tagValueRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-//                if (radioGroup.getCheckedRadioButtonId() != -1 || customButton.isSelected()) {
-//                    customButton.setChecked(false);
-//                };
-//            }
-//        });
 
     }
 
@@ -232,16 +241,18 @@ public class SelectOneTagValueFragment extends Fragment {
      * * * *
      * http://stackoverflow.com/questions/15836789/android-radio-button-uncheck
      * https://github.com/AmericanRedCross/OpenMapKit/issues/9
-     * * * * 
+     * * * *
      */
     public class ToggleableRadioButton extends RadioButton {
         private RadioGroup radioGroup;
         private RadioButton customButton;
+        private EditText customEditText;
 
-        public ToggleableRadioButton(Context context, RadioGroup radioGroup, RadioButton customButton) {
+        public ToggleableRadioButton(Context context, RadioGroup radioGroup, RadioButton customButton, EditText customEditText) {
             super(context);
             this.radioGroup = radioGroup;
             this.customButton = customButton;
+            this.customEditText = customEditText;
         }
 
         @Override
@@ -260,6 +271,9 @@ public class SelectOneTagValueFragment extends Fragment {
                 // not custom button
                 else if (customButton != null){
                     customButton.setChecked(false);
+                    if (customEditText != null) {
+                        customEditText.clearFocus();
+                    }
                 }
             }
         }
