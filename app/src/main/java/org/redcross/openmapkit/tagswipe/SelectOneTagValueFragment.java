@@ -128,10 +128,14 @@ public class SelectOneTagValueFragment extends Fragment {
          * Setting up buttons with prescribed choice values.
          */
         String prevTagVal = tagEdit.getTagVal();
+        boolean prevTagValInTagItems = false;
         Collection<ODKTagItem> odkTagItems = odkTag.getItems();
         for (ODKTagItem item : odkTagItems) {
             String label = item.getLabel();
             String value = item.getValue();
+            if (value.equals(prevTagVal)) {
+                prevTagValInTagItems = true;
+            }
             ToggleableRadioButton button = new ToggleableRadioButton(activity, tagValueRadioGroup, customButton, customEditText);
             button.setTextSize(18);
             TextView textView = new TextView(activity);
@@ -151,6 +155,9 @@ public class SelectOneTagValueFragment extends Fragment {
             int buttonId = button.getId();
             odkTag.putRadioButtonIdToTagItemHash(buttonId, item);
             tagValueRadioGroup.addView(textView);
+        }
+        if (!prevTagValInTagItems) {
+            customEditText.setText(prevTagVal);
         }
 
 
