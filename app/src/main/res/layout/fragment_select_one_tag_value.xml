@@ -38,9 +38,8 @@
             <RadioGroup
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:id="@+id/selectOneTagValueRadioGroup">
+                android:id="@+id/selectOneTagValueRadioGroup" />
 
-            </RadioGroup>
         </ScrollView>
 
     </LinearLayout>
