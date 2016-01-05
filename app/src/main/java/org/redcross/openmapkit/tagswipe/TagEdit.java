@@ -1,6 +1,8 @@
 package org.redcross.openmapkit.tagswipe;
 
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.spatialdev.osm.model.OSMElement;
@@ -140,8 +142,14 @@ public class TagEdit {
     
     private void updateTagInOSMElement() {
         if (radioGroup != null && odkTag != null) {
+            LinearLayout customLL = (LinearLayout)radioGroup.getChildAt(radioGroup.getChildCount() - 1);
+            RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
             int checkedId = radioGroup.getCheckedRadioButtonId();
-            if (checkedId != -1) {
+            if (customRadio.isChecked()) {
+                EditText et = (EditText)customLL.getChildAt(1);
+                tagVal = et.getText().toString();
+                osmElement.addOrEditTag(tagKey, tagVal);
+            } else if (checkedId != -1) {
                 tagVal = odkTag.getTagItemValueFromRadioButtonId(checkedId);
                 osmElement.addOrEditTag(tagKey, tagVal);
             } else {
