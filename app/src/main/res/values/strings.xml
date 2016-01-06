@@ -19,7 +19,7 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="add">+</string>
-    
+
     <string name="mbtilesAppPath">openmapkit/mbtiles</string>
 
     <!-- private shared preferences for mapactivity -->
@@ -58,9 +58,9 @@
     <string name="title_activity_tag_swipe">Tags</string>
 
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    
+
     <string name="odkcollect_fragment_title">Confirm</string>
     <string name="odkcollect_fragment_question">Save tag edits to ODK Collect?</string>
     <string name="standalone_fragment_title">Add or Confirm</string>

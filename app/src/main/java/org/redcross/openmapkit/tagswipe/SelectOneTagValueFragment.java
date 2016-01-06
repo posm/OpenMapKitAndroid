@@ -1,6 +1,5 @@
 package org.redcross.openmapkit.tagswipe;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -40,9 +38,6 @@ public class SelectOneTagValueFragment extends Fragment {
     private TagEdit tagEdit;
     private View rootView;
 
-    private TextView tagKeyLabelTextView;
-    private TextView tagKeyTextView;
-
     private OnFragmentInteractionListener mListener;
 
     
@@ -55,8 +50,8 @@ public class SelectOneTagValueFragment extends Fragment {
     }
 
     private void setupWidgets() {
-        tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
-        tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
+        TextView tagKeyLabelTextView = (TextView) rootView.findViewById(R.id.tagKeyLabelTextView);
+        TextView tagKeyTextView = (TextView) rootView.findViewById(R.id.tagKeyTextView);
 
         String keyLabel = tagEdit.getTagKeyLabel();
         String key = tagEdit.getTagKey();
