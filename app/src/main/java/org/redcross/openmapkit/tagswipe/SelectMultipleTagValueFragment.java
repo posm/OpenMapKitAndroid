@@ -78,6 +78,7 @@ public class SelectMultipleTagValueFragment extends Fragment {
         String prevTagVal = tagEdit.getTagVal();
         boolean prevTagValInTagItems = false;
         Collection<ODKTagItem> odkTagItems = odkTag.getItems();
+        int id = 1;
         for (ODKTagItem item : odkTagItems) {
             String label = item.getLabel();
             String value = item.getValue();
@@ -100,8 +101,8 @@ public class SelectMultipleTagValueFragment extends Fragment {
             if (prevTagVal != null && value.equals(prevTagVal)) {
                 checkBox.toggle();
             }
-            int id = checkBox.getId();
-            odkTag.putButtonIdToTagItemHash(id, item);
+            checkBox.setId(id);
+            odkTag.putButtonIdToTagItemHash(id++, item);
             odkTag.addCheckbox(checkBox);
             checkboxLinearLayout.addView(textView);
         }

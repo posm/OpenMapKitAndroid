@@ -103,6 +103,7 @@ public class ODKTag {
                 ODKTagItem item = buttonIdToODKTagItemHash.get(id);
                 if (item != null) {
                     if (firstVal) {
+                        firstVal = false;
                         values = item.getValue();
                     } else {
                         values += ';' + item.getValue();
