@@ -1,13 +1,18 @@
 package org.redcross.openmapkit.tagswipe;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -65,6 +70,7 @@ public class SelectMultipleTagValueFragment extends Fragment {
         setupCheckBoxes();
     }
 
+    @SuppressWarnings("ResourceType")
     private void setupCheckBoxes() {
         tagEdit.setCheckBoxMode(true);
         final LinearLayout checkboxLinearLayout = (LinearLayout)rootView.findViewById(R.id.checkboxLinearLayout);
@@ -106,6 +112,54 @@ public class SelectMultipleTagValueFragment extends Fragment {
             odkTag.addCheckbox(checkBox);
             checkboxLinearLayout.addView(textView);
         }
+
+        final CheckBox editTextCheckBox = new CheckBox(activity);
+        final EditText editText = new EditText(activity);
+        editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        if (!prevTagValInTagItems && prevTagVal != null) {
+            editText.setText(prevTagVal);
+            editTextCheckBox.setChecked(true);
+        }
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    editTextCheckBox.setChecked(true);
+                } else {
+                    editTextCheckBox.setChecked(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        editTextCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (editTextCheckBox.isChecked()) {
+                    editText.setFocusableInTouchMode(true);
+                    editText.requestFocus();
+                    final InputMethodManager inputMethodManager = (InputMethodManager) activity
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
+        });
+
+        LinearLayout customLinearLayout = new LinearLayout(activity);
+        customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        customLinearLayout.setFocusableInTouchMode(true);
+        customLinearLayout.addView(editTextCheckBox);
+        customLinearLayout.addView(editText);
+        checkboxLinearLayout.addView(customLinearLayout);
+
     }
 
     /**
