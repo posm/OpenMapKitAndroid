@@ -1,15 +1,21 @@
 package org.redcross.openmapkit.tagswipe;
 
-import android.content.Context;
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
+
+import java.util.Collection;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,7 +66,57 @@ public class SelectMultipleTagValueFragment extends Fragment {
     }
 
     private void setupCheckBoxes() {
+        final LinearLayout checkboxLinearLayout = (LinearLayout)rootView.findViewById(R.id.checkboxLinearLayout);
+        final Activity activity = getActivity();
+        ODKTag odkTag = tagEdit.getODKTag();
+        if (odkTag == null) return;
 
+        /**
+         * Setting up buttons with prescribed choice values.
+         */
+        String prevTagVal = tagEdit.getTagVal();
+        boolean prevTagValInTagItems = false;
+        Collection<ODKTagItem> odkTagItems = odkTag.getItems();
+        for (ODKTagItem item : odkTagItems) {
+            String label = item.getLabel();
+            String value = item.getValue();
+            if (value.equals(prevTagVal)) {
+                prevTagValInTagItems = true;
+            }
+            CheckBox checkBox = new CheckBox(activity);
+            checkBox.setTextSize(18);
+            TextView textView = new TextView(activity);
+            textView.setPadding(66, 0, 0, 25);
+            textView.setOnClickListener(new TextViewOnClickListener(checkBox));
+            if (label != null) {
+                checkBox.setText(label);
+                textView.setText(value);
+            } else {
+                checkBox.setText(value);
+                textView.setText("");
+            }
+            checkboxLinearLayout.addView(checkBox);
+            if (prevTagVal != null && value.equals(prevTagVal)) {
+                checkBox.toggle();
+            }
+            checkboxLinearLayout.addView(textView);
+        }
+    }
+
+    /**
+     * Allows us to pass a CheckBox as a parameter to onClick
+     */
+    private class TextViewOnClickListener implements View.OnClickListener {
+        CheckBox checkBox;
+
+        public TextViewOnClickListener(CheckBox cb) {
+            checkBox = cb;
+        }
+
+        @Override
+        public void onClick(View v) {
+            checkBox.toggle();
+        }
     }
 
     @Override
