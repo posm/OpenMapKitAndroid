@@ -72,7 +72,6 @@ public class SelectMultipleTagValueFragment extends Fragment {
 
     @SuppressWarnings("ResourceType")
     private void setupCheckBoxes() {
-        tagEdit.setCheckBoxMode(true);
         final LinearLayout checkboxLinearLayout = (LinearLayout)rootView.findViewById(R.id.checkboxLinearLayout);
         final Activity activity = getActivity();
         ODKTag odkTag = tagEdit.getODKTag();
@@ -150,6 +149,7 @@ public class SelectMultipleTagValueFragment extends Fragment {
                 }
             }
         });
+        tagEdit.setupEditCheckbox(editTextCheckBox, editText);
 
         LinearLayout customLinearLayout = new LinearLayout(activity);
         customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);

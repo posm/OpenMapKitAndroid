@@ -1,5 +1,6 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -39,6 +40,12 @@ public class TagEdit {
     private int idx = -1;
     private EditText editText;
     private RadioGroup radioGroup;
+
+    /**
+     * For CheckBox mode.
+     */
+    private CheckBox editTextCheckBox;
+    private EditText checkBoxEditText;
     
     public static List<TagEdit> buildTagEdits() {
         int idx = 0;
@@ -137,8 +144,10 @@ public class TagEdit {
         this.radioGroup = radioGroup;
     }
 
-    public void setCheckBoxMode(boolean bool) {
+    public void setupEditCheckbox(CheckBox cb, EditText et) {
         checkBoxMode = true;
+        editTextCheckBox = cb;
+        checkBoxEditText = et;
     }
     
     public ODKTag getODKTag() {
@@ -149,7 +158,11 @@ public class TagEdit {
         // check boxes
         if (odkTag != null && checkBoxMode) {
             if (odkTag.hasCheckedTagValues()) {
-                tagVal = odkTag.getSemiColonDelimitedTagValues();
+                if (editTextCheckBox.isChecked()) {
+                    tagVal = odkTag.getSemiColonDelimitedTagValues(checkBoxEditText.getText().toString());
+                } else {
+                    tagVal = odkTag.getSemiColonDelimitedTagValues(null);
+                }
                 osmElement.addOrEditTag(tagKey, tagVal);
             } else {
                 osmElement.deleteTag(tagKey);

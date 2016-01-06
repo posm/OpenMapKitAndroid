@@ -94,7 +94,7 @@ public class ODKTag {
         return false;
     }
 
-    public String getSemiColonDelimitedTagValues() {
+    public String getSemiColonDelimitedTagValues(String customValues) {
         String values = null;
         boolean firstVal = true;
         for (CheckBox cb : checkBoxes) {
@@ -108,6 +108,16 @@ public class ODKTag {
                     } else {
                         values += ';' + item.getValue();
                     }
+                }
+            }
+        }
+        if (customValues != null) {
+            customValues = customValues.trim();
+            if (customValues.length() > 0) {
+                if (firstVal) {
+                    values = customValues;
+                } else {
+                    values += ';' + customValues;
                 }
             }
         }
