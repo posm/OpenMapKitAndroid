@@ -147,8 +147,8 @@ public class SelectOneTagValueFragment extends Fragment {
             if (prevTagVal != null && value.equals(prevTagVal)) {
                 button.toggle();
             }
-            int buttonId = button.getId();
-            odkTag.putRadioButtonIdToTagItemHash(buttonId, item);
+            int id = button.getId();
+            odkTag.putButtonIdToTagItemHash(id, item);
             tagValueRadioGroup.addView(textView);
         }
         if (!prevTagValInTagItems) {

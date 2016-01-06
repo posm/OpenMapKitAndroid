@@ -1,12 +1,15 @@
 package org.redcross.openmapkit.odkcollect.tag;
 
 import android.app.Activity;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +20,8 @@ public class ODKTag {
     private String key;
     private String label;
     private LinkedHashMap<String, ODKTagItem> items = new LinkedHashMap<>();
-    private Map<Integer, ODKTagItem> radioButtonIdToODKTagItemHash = new HashMap<>();
+    private Map<Integer, ODKTagItem> buttonIdToODKTagItemHash = new HashMap<>();
+    private List<CheckBox> checkBoxes = new ArrayList<>();
 
     public String getKey() {
         return key;
@@ -47,12 +51,12 @@ public class ODKTag {
         items.put(item.getValue(), item);
     }
     
-    public void putRadioButtonIdToTagItemHash(Integer id, ODKTagItem tagItem) {
-        radioButtonIdToODKTagItemHash.put(id, tagItem);        
+    public void putButtonIdToTagItemHash(Integer id, ODKTagItem tagItem) {
+        buttonIdToODKTagItemHash.put(id, tagItem);
     }
     
-    public String getTagItemValueFromRadioButtonId(Integer id) {
-        ODKTagItem item = radioButtonIdToODKTagItemHash.get(id);
+    public String getTagItemValueFromButtonId(Integer id) {
+        ODKTagItem item = buttonIdToODKTagItemHash.get(id);
         if (item != null) {
             return item.getValue();
         }
@@ -75,5 +79,37 @@ public class ODKTag {
             et.setText(initialTagVal);
         }
         return et;
+    }
+
+    public void addCheckbox(CheckBox cb) {
+        checkBoxes.add(cb);
+    }
+
+    public boolean hasCheckedTagValues() {
+        for (CheckBox cb : checkBoxes) {
+            if (cb.isChecked()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getSemiColonDelimitedTagValues() {
+        String values = null;
+        boolean firstVal = true;
+        for (CheckBox cb : checkBoxes) {
+            if (cb.isChecked()) {
+                int id = cb.getId();
+                ODKTagItem item = buttonIdToODKTagItemHash.get(id);
+                if (item != null) {
+                    if (firstVal) {
+                        values = item.getValue();
+                    } else {
+                        values += ';' + item.getValue();
+                    }
+                }
+            }
+        }
+        return values;
     }
 }

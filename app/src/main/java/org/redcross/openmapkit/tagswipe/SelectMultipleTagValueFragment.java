@@ -66,6 +66,7 @@ public class SelectMultipleTagValueFragment extends Fragment {
     }
 
     private void setupCheckBoxes() {
+        tagEdit.setCheckBoxMode(true);
         final LinearLayout checkboxLinearLayout = (LinearLayout)rootView.findViewById(R.id.checkboxLinearLayout);
         final Activity activity = getActivity();
         ODKTag odkTag = tagEdit.getODKTag();
@@ -99,6 +100,9 @@ public class SelectMultipleTagValueFragment extends Fragment {
             if (prevTagVal != null && value.equals(prevTagVal)) {
                 checkBox.toggle();
             }
+            int id = checkBox.getId();
+            odkTag.putButtonIdToTagItemHash(id, item);
+            odkTag.addCheckbox(checkBox);
             checkboxLinearLayout.addView(textView);
         }
     }

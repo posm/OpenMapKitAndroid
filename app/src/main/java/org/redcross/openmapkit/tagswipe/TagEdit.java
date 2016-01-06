@@ -35,6 +35,7 @@ public class TagEdit {
     private String tagVal;
     private ODKTag odkTag;
     private boolean readOnly;
+    private boolean checkBoxMode = false;
     private int idx = -1;
     private EditText editText;
     private RadioGroup radioGroup;
@@ -135,12 +136,27 @@ public class TagEdit {
     public void setRadioGroup(RadioGroup radioGroup) {
         this.radioGroup = radioGroup;
     }
+
+    public void setCheckBoxMode(boolean bool) {
+        checkBoxMode = true;
+    }
     
     public ODKTag getODKTag() {
         return odkTag;
     }
     
     private void updateTagInOSMElement() {
+        // check boxes
+        if (odkTag != null && checkBoxMode) {
+            if (odkTag.hasCheckedTagValues()) {
+                tagVal = odkTag.getSemiColonDelimitedTagValues();
+                osmElement.addOrEditTag(tagKey, tagVal);
+            } else {
+                osmElement.deleteTag(tagKey);
+            }
+            return;
+        }
+        // radio buttons
         if (radioGroup != null && odkTag != null) {
             LinearLayout customLL = (LinearLayout)radioGroup.getChildAt(radioGroup.getChildCount() - 1);
             RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
@@ -150,12 +166,14 @@ public class TagEdit {
                 tagVal = et.getText().toString();
                 osmElement.addOrEditTag(tagKey, tagVal);
             } else if (checkedId != -1) {
-                tagVal = odkTag.getTagItemValueFromRadioButtonId(checkedId);
+                tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
                 osmElement.addOrEditTag(tagKey, tagVal);
             } else {
                 osmElement.deleteTag(tagKey);
             }
-        } else if (editText != null) {
+        }
+        // edit text
+        else if (editText != null) {
             tagVal = editText.getText().toString();
             osmElement.addOrEditTag(tagKey, tagVal);
         }
