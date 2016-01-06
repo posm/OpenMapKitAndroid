@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.redcross.openmapkit.R;
 
@@ -41,6 +42,24 @@ public class SelectMultipleTagValueFragment extends Fragment {
     }
 
     private void setupWidgets() {
+        TextView tagKeyLabelTextView = (TextView) rootView.findViewById(R.id.tagKeyLabelTextView);
+        TextView tagKeyTextView = (TextView) rootView.findViewById(R.id.tagKeyTextView);
+
+        String keyLabel = tagEdit.getTagKeyLabel();
+        String key = tagEdit.getTagKey();
+
+        if (keyLabel != null) {
+            tagKeyLabelTextView.setText(keyLabel);
+            tagKeyTextView.setText(key);
+        } else {
+            tagKeyLabelTextView.setText(key);
+            tagKeyTextView.setText("");
+        }
+
+        setupCheckBoxes();
+    }
+
+    private void setupCheckBoxes() {
 
     }
 
