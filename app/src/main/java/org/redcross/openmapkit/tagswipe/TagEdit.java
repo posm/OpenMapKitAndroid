@@ -157,8 +157,9 @@ public class TagEdit {
     private void updateTagInOSMElement() {
         // check boxes
         if (odkTag != null && checkBoxMode) {
-            if (odkTag.hasCheckedTagValues()) {
-                if (editTextCheckBox.isChecked()) {
+            boolean editTextCheckBoxChecked = editTextCheckBox.isChecked();
+            if (odkTag.hasCheckedTagValues() || editTextCheckBoxChecked) {
+                if (editTextCheckBoxChecked) {
                     tagVal = odkTag.getSemiColonDelimitedTagValues(checkBoxEditText.getText().toString());
                 } else {
                     tagVal = odkTag.getSemiColonDelimitedTagValues(null);
