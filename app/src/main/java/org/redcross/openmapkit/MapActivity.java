@@ -39,6 +39,7 @@ import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 
+import org.redcross.openmapkit.deployments.DeploymentsActivity;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
@@ -615,7 +616,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
                 
         int id = item.getItemId();
 
-        if (id == R.id.osmdownloader) {
+        if (id == R.id.deployments) {
+            launchDeploymentsActivity();
+            return true;
+        } else if (id == R.id.osmdownloader) {
             askIfDownloadOSM();
             return true;
         } else if (id == R.id.mbtilessettings) {
@@ -632,6 +636,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             return true;
         }
         return false;
+    }
+
+    private void launchDeploymentsActivity() {
+        Intent deploymentsActivity = new Intent(getApplicationContext(), DeploymentsActivity.class);
+        startActivity(deploymentsActivity);
     }
 
     @Override
