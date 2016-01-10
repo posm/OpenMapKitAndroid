@@ -16,6 +16,7 @@ import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -219,6 +220,19 @@ public class TagEdit {
     
     public String getTagVal() {
         return tagVal;
+    }
+
+    public Set<String> getTagVals() {
+        Set<String> tagVals = new HashSet<>();
+        if (tagVal == null || tagVal.length() < 1) {
+            return tagVals;
+        }
+        String[] vals = tagVal.trim().split(";");
+        for (int i = 0; i < vals.length; i++) {
+            String val = vals[i];
+            tagVals.add(val);
+        }
+        return tagVals;
     }
     
     public boolean isReadOnly() {
