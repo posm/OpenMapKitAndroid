@@ -75,5 +75,8 @@
     <string name="action_controlpanel">Control Panel</string>
     <string name="title_activity_deployments">Deployments</string>
     <string name="title_activity_deployment_details">Deployment Details</string>
+    <string name="noname">No Name</string>
+    <string name="download_complete">Deployment Complete!</string>
+    <string name="download_failed">Download Failed!</string>
 
 </resources>
