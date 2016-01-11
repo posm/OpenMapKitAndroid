@@ -5,12 +5,16 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *	Structure for ODK OSM Tag elements in XForm.
@@ -95,32 +99,26 @@ public class ODKTag {
     }
 
     public String getSemiColonDelimitedTagValues(String customValues) {
-        String values = null;
-        boolean firstVal = true;
+        Set<String> values = new HashSet<>();
         for (CheckBox cb : checkBoxes) {
             if (cb.isChecked()) {
                 int id = cb.getId();
                 ODKTagItem item = buttonIdToODKTagItemHash.get(id);
                 if (item != null) {
-                    if (firstVal) {
-                        firstVal = false;
-                        values = item.getValue();
-                    } else {
-                        values += ';' + item.getValue();
-                    }
+                    values.add(item.getValue());
                 }
             }
         }
         if (customValues != null) {
             customValues = customValues.trim();
-            if (customValues.length() > 0) {
-                if (firstVal) {
-                    values = customValues;
-                } else {
-                    values += ';' + customValues;
+            String[] customValuesArr = customValues.split(";");
+            if (customValuesArr.length > 0) {
+                for (int i = 0; i < customValuesArr.length; i++) {
+                    String customVal = customValuesArr[i];
+                    values.add(customVal);
                 }
             }
         }
-        return values;
+        return StringUtils.join(values, ";");
     }
 }

@@ -16,11 +16,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,15 +83,16 @@ public class SelectMultipleTagValueFragment extends Fragment {
         /**
          * Setting up buttons with prescribed choice values.
          */
-        String prevTagVal = tagEdit.getTagVal();
-        boolean prevTagValInTagItems = false;
+        Set<String> prevTagVals = tagEdit.getTagVals();
+        // Used to keep track of the values not in ODKTagItems
+        Set<String> prevTagValsNotInChoices = new HashSet<>(prevTagVals);
         Collection<ODKTagItem> odkTagItems = odkTag.getItems();
         int id = 1;
         for (ODKTagItem item : odkTagItems) {
             String label = item.getLabel();
             String value = item.getValue();
-            if (value.equals(prevTagVal)) {
-                prevTagValInTagItems = true;
+            if (prevTagVals.contains(value)) {
+                prevTagValsNotInChoices.remove(value);
             }
             CheckBox checkBox = new CheckBox(activity);
             checkBox.setTextSize(18);
@@ -103,7 +107,7 @@ public class SelectMultipleTagValueFragment extends Fragment {
                 textView.setText("");
             }
             checkboxLinearLayout.addView(checkBox);
-            if (prevTagVal != null && value.equals(prevTagVal)) {
+            if (prevTagVals.size() > 0 && prevTagVals.contains(value)) {
                 checkBox.toggle();
             }
             checkBox.setId(id);
@@ -115,8 +119,9 @@ public class SelectMultipleTagValueFragment extends Fragment {
         final CheckBox editTextCheckBox = new CheckBox(activity);
         final EditText editText = new EditText(activity);
         editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        if (!prevTagValInTagItems && prevTagVal != null) {
-            editText.setText(prevTagVal);
+        if (prevTagValsNotInChoices.size() > 0) {
+            String joinedNotInChoices = StringUtils.join(prevTagValsNotInChoices, ";");
+            editText.setText(joinedNotInChoices);
             editTextCheckBox.setChecked(true);
         }
         editText.addTextChangedListener(new TextWatcher() {
