@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.deployments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,13 @@ public class DeploymentsRecyclerAdapter extends RecyclerView.Adapter<Deployments
             super(itemView);
             nameTextView = (TextView)itemView.findViewById(R.id.name);
             descriptionTextView = (TextView)itemView.findViewById(R.id.description);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent deploymentDetailsActivity = new Intent(context, DeploymentDetailsActivity.class);
+                    context.startActivity(deploymentDetailsActivity);
+                }
+            });
         }
     }
 }

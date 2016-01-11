@@ -48,6 +48,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.redcross.openmapkit.MapActivity" />
         </activity>
+        <activity
+            android:name=".deployments.DeploymentDetailsActivity"
+            android:label="@string/title_activity_deployment_details"
+            android:parentActivityName=".deployments.DeploymentsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.redcross.openmapkit.deployments.DeploymentsActivity" />
+        </activity>
     </application>
 
 </manifest>
