@@ -6,70 +6,63 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
+    android:padding="16dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.redcross.openmapkit.deployments.DeploymentDetailsActivity"
     tools:showIn="@layout/activity_deployment_details">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="24sp"
+        android:text="@string/noname"
+        android:id="@+id/nameTextView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/descriptionTextView"
+        android:layout_marginTop="4dp"
+        android:text="This is filler text for the description of the deployment. We can say all kinds of things in here, but really it is taking up space to look important." />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="22dp">
+        android:layout_marginTop="8dp"
+        android:id="@+id/progressBar" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="24sp"
-            android:text="@string/noname"
-            android:id="@+id/nameTextView" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 Files, 162.34 MB"
+        android:id="@+id/progressTextView" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/descriptionTextView"
-            android:layout_marginTop="4dp"
-            android:text="This is filler text for the description of the deployment. We can say all kinds of things in here, but really it is taking up space to look important." />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download_complete"
+        android:id="@+id/deploymentComplete"
+        android:textStyle="bold"
+        android:textColor="@color/osm_green"
+        android:visibility="gone" />
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:id="@+id/progressBar" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download_failed"
+        android:id="@+id/downloadFailed"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="gone" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10 Files, 162.34 MB"
-            android:id="@+id/progressTextView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/download_complete"
-            android:id="@+id/deploymentComplete"
-            android:textStyle="bold"
-            android:textColor="@color/osm_green"
-            android:visibility="gone" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/download_failed"
-            android:id="@+id/downloadFailed"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_red_light"
-            android:visibility="gone" />
-
-        <ExpandableListView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-            android:divider="#A4C739"
-            android:dividerHeight="0.5dp"
-            android:id="@+id/expandableListView" />
-
-    </LinearLayout>
+    <ExpandableListView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:divider="@color/osm_dark_green"
+        android:dividerHeight="0.5dp"
+        android:id="@+id/expandableListView" />
 
 </LinearLayout>

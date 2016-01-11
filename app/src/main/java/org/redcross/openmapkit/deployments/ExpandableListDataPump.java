@@ -23,16 +23,8 @@ public class ExpandableListDataPump {
         entertainment.add("Toronto to open with The Judge");
         entertainment.add("British dancer return from Russia");
 
-        List<String> science = new ArrayList<>();
-        science.add("Eggshell may act like sunblock");
-        science.add("Brain hub predicts negative events");
-        science.add("California hit by raging wildfires");
-        science.add("Rosetta's comet seen in close-up");
-        science.add("Secret of sandstone shapes revealed");
-
-        expandableListDetail.put("TECHNOLOGY NEWS", technology);
-        expandableListDetail.put("ENTERTAINMENT NEWS", entertainment);
-        expandableListDetail.put("SCIENCE & ENVIRONMENT NEWS", science);
+        expandableListDetail.put("MBTiles", technology);
+        expandableListDetail.put("OSM XML", entertainment);
         return expandableListDetail;
     }
 }
