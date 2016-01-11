@@ -39,7 +39,7 @@
             android:padding="6dp"
             android:textColor="#5e5e5e"
             android:textSize="14sp"
-            android:text="No Description" />
+            android:text="" />
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

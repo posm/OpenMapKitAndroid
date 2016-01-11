@@ -8,36 +8,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
-import java.util.List;
-
 public class DeploymentsRecyclerAdapter extends RecyclerView.Adapter<DeploymentsRecyclerAdapter.DeploymentsViewHolder> {
-    private List<Deployment> deploymentsList;
     private Context context;
 
-    public DeploymentsRecyclerAdapter(Context context, List<Deployment> deploymentsList) {
-        this.deploymentsList = deploymentsList;
+    public DeploymentsRecyclerAdapter(Context context) {
         this.context = context;
     }
 
     @Override
     public DeploymentsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_deployments, parent, false);
-        DeploymentsViewHolder viewHolder = new DeploymentsViewHolder(view);
-        return viewHolder;
+        return new DeploymentsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(DeploymentsViewHolder holder, int position) {
-        Deployment deployment = deploymentsList.get(position);
-        holder.nameTextView.setText(deployment.getName());
-        holder.descriptionTextView.setText(deployment.getDescription());
+        JSONObject deployment = Deployments.singleton().get(position);
+        if (deployment == null) return;
+        String name = deployment.optString("name");
+        holder.nameTextView.setText(name);
+        JSONObject manifest = deployment.optJSONObject("manifest");
+        if (manifest == null) return;
+        String description = manifest.optString("description");
+        if (description == null) return;
+        holder.descriptionTextView.setText(description);
     }
 
     @Override
     public int getItemCount() {
-        return deploymentsList == null ? 0 : deploymentsList.size();
+        return Deployments.singleton().size();
     }
 
     public class DeploymentsViewHolder extends RecyclerView.ViewHolder {
@@ -52,6 +54,7 @@ public class DeploymentsRecyclerAdapter extends RecyclerView.Adapter<Deployments
                 @Override
                 public void onClick(View v) {
                     Intent deploymentDetailsActivity = new Intent(context, DeploymentDetailsActivity.class);
+                    deploymentDetailsActivity.putExtra("POSITION", getLayoutPosition());
                     context.startActivity(deploymentDetailsActivity);
                 }
             });
