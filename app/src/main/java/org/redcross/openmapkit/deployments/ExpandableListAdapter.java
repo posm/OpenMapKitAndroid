@@ -8,41 +8,79 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<String> expandableListTitle;
-    private Map<String, List<String>> expandableListDetail;
+    private List<String> mbTilesList = new ArrayList<>();
+    private List<String> osmXmlList = new ArrayList<>();
 
-    public ExpandableListAdapter(Context context, List<String> expandableListTitle,
-                                 Map<String, List<String>> expandableListDetail) {
+    public ExpandableListAdapter(Context context, int deploymentPosition) {
         this.context = context;
-        this.expandableListTitle = expandableListTitle;
-        this.expandableListDetail = expandableListDetail;
+        extractMBTilesAndOsmXml(deploymentPosition);
+    }
+
+    private void extractMBTilesAndOsmXml(int deploymentPosition) {
+        JSONArray files = Deployments.singleton().get(deploymentPosition).optJSONArray("files");
+        for (int i = 0, len = files.length(); i < len; ++i) {
+            String fileName = files.optString(i);
+            int mbtilesIdx = fileName.indexOf(".mbtiles");
+            if (mbtilesIdx > -1) {
+                mbTilesList.add(fileName);
+                continue;
+            }
+            int osmIdx = fileName.indexOf(".osm");
+            if (osmIdx > -1) {
+                osmXmlList.add(fileName);
+            }
+        }
     }
 
     @Override
     public int getGroupCount() {
-        return expandableListTitle.size();
+        return 2;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return expandableListDetail.get(this.expandableListTitle.get(groupPosition)).size();
+        switch (groupPosition) {
+            case 0:
+                return mbTilesList.size();
+            case 1:
+                return osmXmlList.size();
+            default:
+                return 0;
+        }
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return expandableListTitle.get(groupPosition);
+        switch (groupPosition) {
+            case 0:
+                return "MBTilesd";
+            case 1:
+                return "OSM XML";
+            default:
+                return "Other";
+        }
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return expandableListDetail.get(this.expandableListTitle.get(groupPosition)).get(childPosition);
+        switch (groupPosition) {
+            case 0:
+                return mbTilesList.get(childPosition);
+            case 1:
+                return osmXmlList.get(childPosition);
+            default:
+                return "";
+        }
     }
 
     @Override
@@ -64,8 +102,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String listTitle = (String) getGroup(groupPosition);
         if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) this.context.
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group_deployment_details, null);
         }
         TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
@@ -89,6 +126,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true;
+        return false;
     }
 }
