@@ -8,8 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
 import java.util.ArrayList;
@@ -39,6 +41,24 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
         // ====================================
+
+        /**
+         * Getting deployment fields we want from the JSON and stuffing it
+         * where it needs to go!
+         */
+        int position = getIntent().getIntExtra("POSITION", 0);
+        JSONObject deployment = Deployments.singleton().get(position);
+
+        String name = deployment.optString("name");
+        TextView nameTextView = (TextView)findViewById(R.id.nameTextView);
+        nameTextView.setText(name);
+
+        JSONObject manifest = deployment.optJSONObject("manifest");
+        if (manifest != null) {
+            String description = manifest.optString("description");
+            TextView descriptionTextView = (TextView)findViewById(R.id.descriptionTextView);
+            descriptionTextView.setText(description);
+        }
 
 
         /**
