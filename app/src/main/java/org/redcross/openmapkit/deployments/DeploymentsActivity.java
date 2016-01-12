@@ -90,15 +90,15 @@ public class DeploymentsActivity extends AppCompatActivity {
     }
 
     public void deploymentsFetched(boolean success) {
-        // Download complete. Let us update UI
-        progressBar.setVisibility(View.GONE);
         if (success) {
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             DeploymentsRecyclerAdapter adapter = new DeploymentsRecyclerAdapter(DeploymentsActivity.this);
             recyclerView.setAdapter(adapter);
         } else {
-            Snackbar.make(findViewById(R.id.mapActivity),
+            Snackbar.make(findViewById(R.id.deploymentsActivity),
                     "Failed to connect to OpenMapKit Server!",
-                    Snackbar.LENGTH_LONG)
+                    Snackbar.LENGTH_INDEFINITE)
                     .setAction("Setup", new View.OnClickListener() {
                         // undo action
                         @Override
@@ -139,8 +139,8 @@ public class DeploymentsActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = omkServerUrlPref.edit();
                 editor.putString("omkServerUrl", omkServerUrl);
                 editor.apply();
-                recyclerView.setAdapter(null);
-                setProgressBarIndeterminateVisibility(true);
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
                 Deployments.singleton().fetch(DeploymentsActivity.this, omkServerUrl);
             }
         });

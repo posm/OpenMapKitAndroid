@@ -69,6 +69,8 @@ public class Deployments {
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(3000);
+                urlConnection.setReadTimeout(7000);
                 int statusCode = urlConnection.getResponseCode();
 
                 // 200 represents HTTP OK
@@ -85,7 +87,7 @@ public class Deployments {
                     result = false; //"Failed to fetch data!";
                 }
             } catch (Exception e) {
-                Log.d(TAG, e.getLocalizedMessage());
+                result = false;
             }
             return result;
         }
