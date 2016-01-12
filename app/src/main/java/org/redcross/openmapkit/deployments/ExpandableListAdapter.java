@@ -9,12 +9,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
@@ -63,7 +61,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public Object getGroup(int groupPosition) {
         switch (groupPosition) {
             case 0:
-                return "MBTilesd";
+                return "MBTiles";
             case 1:
                 return "OSM XML";
             default:

@@ -9,14 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class DeploymentDetailsActivity extends AppCompatActivity {
 

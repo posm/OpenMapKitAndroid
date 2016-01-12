@@ -78,5 +78,6 @@
     <string name="noname">No Name</string>
     <string name="download_complete">Deployment Complete!</string>
     <string name="download_failed">Download Failed!</string>
+    <string name="serverUrl">OpenMapKit Server URL</string>
 
 </resources>
