@@ -59,7 +59,14 @@ public class DeploymentsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         setProgressBarIndeterminateVisibility(true);
-        Deployments.singleton().fetch(this);
+
+        SharedPreferences omkServerUrlPref = getSharedPreferences("org.redcross.openmapkit.OMK_SERVER_URL", Context.MODE_PRIVATE);
+        String omkServerUrl = omkServerUrlPref.getString("omkServerUrl", null);
+        if (omkServerUrl != null) {
+            Deployments.singleton().fetch(this, omkServerUrl);
+        } else {
+            inputOMKServer();
+        }
     }
 
     @Override
@@ -75,9 +82,11 @@ public class DeploymentsActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         super.onOptionsItemSelected(item);
-
-        inputOMKServer();
-        return true;
+        if (item.getItemId() == R.id.serverUrlButton) {
+            inputOMKServer();
+            return true;
+        }
+        return false;
     }
 
     public void deploymentsFetched(boolean success) {
@@ -106,7 +115,7 @@ public class DeploymentsActivity extends AppCompatActivity {
         final SharedPreferences omkServerUrlPref = getSharedPreferences("org.redcross.openmapkit.OMK_SERVER_URL", Context.MODE_PRIVATE);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("OpenMapKit Server");
-        builder.setMessage("Please enter the URL of the OpenMapKit Server Deployments REST end point.");
+        builder.setMessage("Please enter the URL of OpenMapKit Server Deployments REST end point.");
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         String omkServerUrl = omkServerUrlPref.getString("omkServerUrl", null);
@@ -124,9 +133,15 @@ public class DeploymentsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String omkServerUrl = input.getText().toString();
+                if (omkServerUrl.indexOf("http") != 0) {
+                    omkServerUrl = "http://" + omkServerUrl;
+                }
                 SharedPreferences.Editor editor = omkServerUrlPref.edit();
                 editor.putString("omkServerUrl", omkServerUrl);
                 editor.apply();
+                recyclerView.setAdapter(null);
+                setProgressBarIndeterminateVisibility(true);
+                Deployments.singleton().fetch(DeploymentsActivity.this, omkServerUrl);
             }
         });
         builder.show();

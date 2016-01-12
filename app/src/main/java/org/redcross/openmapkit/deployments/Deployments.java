@@ -1,5 +1,7 @@
 package org.redcross.openmapkit.deployments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,7 +21,6 @@ import java.net.URL;
 public class Deployments {
     private static Deployments singleton = new Deployments();
 
-    private String url = "http://54.200.124.199:3210/deployments";
     private JSONArray deploymentsArray = new JSONArray();
     private DeploymentsActivity activity;
 
@@ -28,9 +29,12 @@ public class Deployments {
         return singleton;
     }
 
-    public void fetch(DeploymentsActivity activity) {
+    public void fetch(DeploymentsActivity activity, String url) {
         this.activity = activity;
-        DeploymentsListHttpTask task = new Deployments.DeploymentsListHttpTask();
+        if (url == null) {
+            activity.deploymentsFetched(false);
+            return;
+        }
         new DeploymentsListHttpTask().execute(url);
     }
 
