@@ -1,13 +1,9 @@
 package org.redcross.openmapkit.deployments;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -38,8 +34,8 @@ public class Deployments {
         new DeploymentsListHttpTask().execute(url);
     }
 
-    public JSONObject get(int idx) {
-        return deploymentsArray.optJSONObject(idx);
+    public Deployment get(int idx) {
+        return new Deployment(deploymentsArray.optJSONObject(idx));
     }
 
     public int size() {
@@ -55,8 +51,6 @@ public class Deployments {
     }
 
     public class DeploymentsListHttpTask extends AsyncTask<String, Void, Boolean> {
-        private static final String TAG = "DeploymentsListHttpTask";
-
         @Override
         protected void onPreExecute() {
 

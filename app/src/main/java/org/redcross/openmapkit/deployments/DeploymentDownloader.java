@@ -1,11 +1,9 @@
 package org.redcross.openmapkit.deployments;
 
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.os.AsyncTask;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Vector;
@@ -13,13 +11,12 @@ import java.util.Vector;
 public class DeploymentDownloader extends AsyncTask<Void, String, Long> {
 
     private List<DeploymentDownloaderListener> listeners = new Vector<>();
+    private DownloadManager downloadManager;
+    int fileCount = 0;
 
-    public DeploymentDownloader(JSONObject deployment) {
-        try {
-            deployment.getJSONArray("files");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public DeploymentDownloader(Deployment deployment, Activity activity) {
+        downloadManager = (DownloadManager)activity.getSystemService(Activity.DOWNLOAD_SERVICE);
+        fileCount = deployment.fileCount();
     }
 
     public void addListener(DeploymentDownloaderListener listener) {

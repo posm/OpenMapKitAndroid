@@ -18,7 +18,6 @@
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:paddingBottom="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="4 Files"
         android:id="@+id/listDetails" />
 
 </LinearLayout>

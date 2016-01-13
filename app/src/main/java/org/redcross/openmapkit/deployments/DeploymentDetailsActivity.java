@@ -17,7 +17,7 @@ import org.redcross.openmapkit.R;
 
 public class DeploymentDetailsActivity extends AppCompatActivity implements View.OnClickListener, DeploymentDownloaderListener {
 
-    private JSONObject deployment;
+    private Deployment deployment;
     private DeploymentDownloader downloader;
 
     private FloatingActionButton fab;
@@ -45,23 +45,26 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         int position = getIntent().getIntExtra("POSITION", 0);
         deployment = Deployments.singleton().get(position);
 
-        String name = deployment.optString("name");
+        String name = deployment.json().optString("name");
         TextView nameTextView = (TextView)findViewById(R.id.nameTextView);
         nameTextView.setText(name);
 
-        JSONObject manifest = deployment.optJSONObject("manifest");
+        JSONObject manifest = deployment.json().optJSONObject("manifest");
         if (manifest != null) {
             String description = manifest.optString("description");
             TextView descriptionTextView = (TextView)findViewById(R.id.descriptionTextView);
             descriptionTextView.setText(description);
         }
 
+        TextView progressTextView = (TextView)findViewById(R.id.progressTextView);
+        progressTextView.setText(deployment.fileCount() + " files.");
+
         /**
          * SETUP FOR EXPANDABLE LIST VIEW FOR MBTILES AND OSM FILES
          */
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        ExpandableListAdapter expandableListAdapter = new ExpandableListAdapter(this, position);
-        expandableListView.setAdapter(expandableListAdapter);
+        FileExpandableListAdapter fileExpandableListAdapter = new FileExpandableListAdapter(this, position);
+        expandableListView.setAdapter(fileExpandableListAdapter);
 
         /**
          * FAB to initiate downloads.
@@ -127,7 +130,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         /**
          * Instantiate downloader.
          */
-        downloader = new DeploymentDownloader(deployment);
+        downloader = new DeploymentDownloader(deployment, this);
         downloader.addListener(this);
         downloader.execute();
     }

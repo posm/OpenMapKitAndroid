@@ -14,30 +14,17 @@ import org.redcross.openmapkit.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+public class FileExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
+    private Deployment deployment;
     private List<String> mbTilesList = new ArrayList<>();
     private List<String> osmXmlList = new ArrayList<>();
 
-    public ExpandableListAdapter(Context context, int deploymentPosition) {
+    public FileExpandableListAdapter(Context context, int deploymentPosition) {
         this.context = context;
-        extractMBTilesAndOsmXml(deploymentPosition);
-    }
-
-    private void extractMBTilesAndOsmXml(int deploymentPosition) {
-        JSONArray files = Deployments.singleton().get(deploymentPosition).optJSONArray("files");
-        for (int i = 0, len = files.length(); i < len; ++i) {
-            String fileName = files.optString(i);
-            int mbtilesIdx = fileName.indexOf(".mbtiles");
-            if (mbtilesIdx > -1) {
-                mbTilesList.add(fileName);
-                continue;
-            }
-            int osmIdx = fileName.indexOf(".osm");
-            if (osmIdx > -1) {
-                osmXmlList.add(fileName);
-            }
-        }
+        deployment = Deployments.singleton().get(deploymentPosition);
+        mbTilesList = deployment.mbtilesUrls();
+        osmXmlList = deployment.osmUrls();
     }
 
     @Override
@@ -73,9 +60,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public Object getChild(int groupPosition, int childPosition) {
         switch (groupPosition) {
             case 0:
-                return mbTilesList.get(childPosition);
+                String url = mbTilesList.get(childPosition);
+                int slashIdx = url.lastIndexOf("/");
+                String fileName = url.substring(slashIdx+1);
+                return fileName;
             case 1:
-                return osmXmlList.get(childPosition);
+                url = osmXmlList.get(childPosition);
+                slashIdx = url.lastIndexOf("/");
+                fileName = url.substring(slashIdx+1);
+                return fileName;
             default:
                 return "";
         }
@@ -98,14 +91,22 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String listTitle = (String) getGroup(groupPosition);
+        String listTitle = (String)getGroup(groupPosition);
         if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group_deployment_details, null);
         }
-        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
+        TextView listTitleTextView = (TextView)convertView.findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+        int fileCount = 0;
+        if (groupPosition == 0) {
+            fileCount = deployment.mbtilesCount();
+        } else {
+            fileCount = deployment.osmCount();
+        }
+        TextView listDetails = (TextView)convertView.findViewById(R.id.listDetails);
+        listDetails.setText(fileCount + " Files");
         return convertView;
     }
 
