@@ -1,5 +1,6 @@
 package org.redcross.openmapkit.deployments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,25 +19,14 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // =========== SCAFFOLDING ============
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deployment_details);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
-        // ====================================
 
         /**
          * Getting deployment fields we want from the JSON and stuffing it
@@ -63,6 +53,40 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
         ExpandableListAdapter expandableListAdapter = new ExpandableListAdapter(this, position);
         expandableListView.setAdapter(expandableListAdapter);
 
+        /**
+         * FAB to initiate downloads.
+         */
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setCancelFab(fab);
+                
+            }
+        });
     }
 
+    private void setCancelFab(FloatingActionButton fab) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_clear_white_36dp, getApplicationContext().getTheme()));
+        } else {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_clear_white_36dp));
+        }
+    }
+
+    private void setDeleteFab(FloatingActionButton fab) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_white_36dp, getApplicationContext().getTheme()));
+        } else {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_white_36dp));
+        }
+    }
+
+    private void setDownloadFab(FloatingActionButton fab) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_file_download_white_36dp, getApplicationContext().getTheme()));
+        } else {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_file_download_white_36dp));
+        }
+    }
 }
