@@ -1,9 +1,9 @@
 package org.redcross.openmapkit.deployments;
 
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,7 +15,18 @@ import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
 
-public class DeploymentDetailsActivity extends AppCompatActivity {
+public class DeploymentDetailsActivity extends AppCompatActivity implements View.OnClickListener, DeploymentDownloaderListener {
+
+    private JSONObject deployment;
+    private DeploymentDownloader downloader;
+
+    private FloatingActionButton fab;
+    private TextView progressTextView;
+
+    private enum DownloadState {
+        FRESH, DOWNLOADING, CANCELED, ERROR, COMPLETE
+    }
+    private DownloadState downloadState = DownloadState.FRESH;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +40,10 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
         }
 
         /**
-         * Getting deployment fields we want from the JSON and stuffing it
-         * where it needs to go!
+         * Getting deployment object from JSON
          */
         int position = getIntent().getIntExtra("POSITION", 0);
-        JSONObject deployment = Deployments.singleton().get(position);
+        deployment = Deployments.singleton().get(position);
 
         String name = deployment.optString("name");
         TextView nameTextView = (TextView)findViewById(R.id.nameTextView);
@@ -56,17 +66,13 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
         /**
          * FAB to initiate downloads.
          */
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setCancelFab(fab);
+        fab = (FloatingActionButton)findViewById(R.id.fab);
+        fab.setOnClickListener(this);
 
-            }
-        });
+        progressTextView = (TextView)findViewById(R.id.progressTextView);
     }
 
-    private void setCancelFab(FloatingActionButton fab) {
+    private void setCancelFab() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_clear_white_36dp, getApplicationContext().getTheme()));
         } else {
@@ -74,7 +80,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setDeleteFab(FloatingActionButton fab) {
+    private void setDeleteFab() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_white_36dp, getApplicationContext().getTheme()));
         } else {
@@ -82,11 +88,99 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setDownloadFab(FloatingActionButton fab) {
+    private void setDownloadFab() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_file_download_white_36dp, getApplicationContext().getTheme()));
         } else {
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_file_download_white_36dp));
         }
     }
+
+    /**
+     * FAB OnClickListener method
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        if (downloadState == DownloadState.FRESH) {
+            startDownload();
+            return;
+        }
+        if (downloadState == DownloadState.DOWNLOADING) {
+            cancelDownload();
+            return;
+        }
+        if (downloadState == DownloadState.COMPLETE) {
+            deleteDownload();
+            return;
+        }
+        if (downloadState == DownloadState.CANCELED) {
+            startDownload();
+            return;
+        }
+        if (downloadState == DownloadState.ERROR) {
+            startDownload();
+        }
+    }
+
+    private void startDownload() {
+        /**
+         * Instantiate downloader.
+         */
+        downloader = new DeploymentDownloader(deployment);
+        downloader.addListener(this);
+        downloader.execute();
+    }
+
+    private void cancelDownload() {
+        if (downloader != null) {
+            downloader.cancel();
+        }
+    }
+
+    private void deleteDownload() {
+        // TODO Do something!
+    }
+
+
+    /**
+     * DeploymentDownloader Listener Methods
+     */
+
+    @Override
+    public void onDeploymentDownloadProgressUpdate(String msg, int bytesDownloaded) {
+        downloadState = DownloadState.DOWNLOADING;
+        progressTextView.setText(msg);
+        progressTextView.setTextColor(getResources().getColor(R.color.black));
+        progressTextView.setTypeface(null, Typeface.NORMAL);
+    }
+
+    @Override
+    public void onDeploymentDownloadCancel() {
+        downloadState = DownloadState.CANCELED;
+        setDownloadFab();
+        progressTextView.setText(R.string.deploymentDownloadCanceled);
+        progressTextView.setTextColor(getResources().getColor(R.color.holo_red_light));
+        progressTextView.setTypeface(null, Typeface.BOLD);
+    }
+
+    @Override
+    public void onDeploymentDownloadError(String msg) {
+        downloadState = DownloadState.ERROR;
+        setDownloadFab();
+        progressTextView.setText(msg);
+        progressTextView.setTextColor(getResources().getColor(R.color.holo_red_light));
+        progressTextView.setTypeface(null, Typeface.BOLD);
+    }
+
+    @Override
+    public void onDeploymentDownloadComplete() {
+        downloadState = DownloadState.COMPLETE;
+        setDeleteFab();
+        progressTextView.setText(R.string.deploymentDownloadComplete);
+        progressTextView.setTextColor(getResources().getColor(R.color.osm_dark_green));
+        progressTextView.setTypeface(null, Typeface.BOLD);
+    }
+
+
 }

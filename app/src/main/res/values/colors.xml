@@ -4,4 +4,5 @@
     <color name="osm_green">#7ebc6f</color>
     <color name="osm_dark_green">#83b26e</color>
     <color name="selected">#FF8C00</color>
+    <color name="holo_red_light">#ffff4444</color>
 </resources>
