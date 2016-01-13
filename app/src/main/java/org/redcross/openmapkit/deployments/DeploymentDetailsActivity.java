@@ -61,7 +61,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 setCancelFab(fab);
-                
+
             }
         });
     }
