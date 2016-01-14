@@ -151,6 +151,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     @Override
     public void onDeploymentDownloadProgressUpdate(String msg, int bytesDownloaded) {
         downloadState = DownloadState.DOWNLOADING;
+        setCancelFab();
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.black));
         progressTextView.setTypeface(null, Typeface.NORMAL);
