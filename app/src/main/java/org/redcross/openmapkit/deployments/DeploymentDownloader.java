@@ -19,6 +19,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
     private long[] downloadIds;
 
     private boolean downloading = true;
+    private boolean canceled = false;
     private int bytesDownloaded = 0;
     private int filesCompleted = 0;
 
@@ -33,15 +34,19 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
     }
 
     public void cancel() {
+        canceled = true;
+        downloading = false;
         for (long id : downloadIds) {
             if (id > -1) {
                 downloadManager.remove(id);
             }
         }
+        notifyDeploymentDownloadCanceled();
     }
 
     @Override
     protected void onPreExecute() {
+        canceled = false;
         String msg = progressMsg();
         notifyDeploymentDownloadProgressUpdate(msg, 0);
     }
@@ -75,6 +80,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void nothing) {
+        if (canceled) return;
         notifyDeploymentDownloadComplete();
     }
 
@@ -98,6 +104,12 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
         }
     }
 
+    private void notifyDeploymentDownloadCanceled() {
+        for (DeploymentDownloaderListener listener : listeners) {
+            listener.onDeploymentDownloadCancel();
+        }
+    }
+
     private void pollDownloadManager() {
         while (downloading) {
             DownloadManager.Query q = new DownloadManager.Query();
@@ -112,7 +124,9 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
                     ++filesCompleted;
                 }
             }
-            publishProgress();
+            if (!canceled) {
+                publishProgress();
+            }
             if (deployment.fileCount() == filesCompleted) {
                 downloading = false;
             }

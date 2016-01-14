@@ -131,6 +131,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         downloader = new DeploymentDownloader(deployment, this);
         downloader.addListener(this);
         downloader.execute();
+        setCancelFab();
     }
 
     private void cancelDownload() {
@@ -151,7 +152,6 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     @Override
     public void onDeploymentDownloadProgressUpdate(String msg, int bytesDownloaded) {
         downloadState = DownloadState.DOWNLOADING;
-        setCancelFab();
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.black));
         progressTextView.setTypeface(null, Typeface.NORMAL);
