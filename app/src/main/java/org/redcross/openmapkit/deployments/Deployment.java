@@ -11,6 +11,11 @@ import java.util.List;
 public class Deployment {
     private JSONObject json;
 
+    public static String fileNameFromUrl(String url) {
+        int slashIdx = url.lastIndexOf("/");
+        return url.substring(slashIdx+1);
+    }
+
     public Deployment(JSONObject deploymentJson) {
         if (deploymentJson != null) {
             json = deploymentJson;

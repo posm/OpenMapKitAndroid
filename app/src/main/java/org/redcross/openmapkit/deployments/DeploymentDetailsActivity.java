@@ -56,7 +56,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
             descriptionTextView.setText(description);
         }
 
-        TextView progressTextView = (TextView)findViewById(R.id.progressTextView);
+        progressTextView = (TextView)findViewById(R.id.progressTextView);
         progressTextView.setText(deployment.fileCount() + " files.");
 
         /**
@@ -71,8 +71,6 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
          */
         fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(this);
-
-        progressTextView = (TextView)findViewById(R.id.progressTextView);
     }
 
     private void setCancelFab() {

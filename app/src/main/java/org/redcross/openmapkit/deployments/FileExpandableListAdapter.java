@@ -61,14 +61,10 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
         switch (groupPosition) {
             case 0:
                 String url = mbTilesList.get(childPosition);
-                int slashIdx = url.lastIndexOf("/");
-                String fileName = url.substring(slashIdx+1);
-                return fileName;
+                return Deployment.fileNameFromUrl(url);
             case 1:
                 url = osmXmlList.get(childPosition);
-                slashIdx = url.lastIndexOf("/");
-                fileName = url.substring(slashIdx+1);
-                return fileName;
+                return Deployment.fileNameFromUrl(url);
             default:
                 return "";
         }
