@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -42,9 +43,11 @@ import com.spatialdev.osm.model.OSMNode;
 import org.redcross.openmapkit.deployments.DeploymentsActivity;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.server.MBTilesServer;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -58,6 +61,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     
     private static String version = "";
 
+    protected MBTilesServer mbTilesServer;
     protected MapView mapView;
     protected OSMMap osmMap;
     protected ListView mTagListView;
@@ -144,6 +148,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         positionMap();
 
         initializeListView();
+
+        initializeMBTilesServer();
     }
     
     @Override
@@ -691,5 +697,15 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     
     public static String getVersion() {
         return version;
+    }
+
+    private void initializeMBTilesServer() {
+        mbTilesServer = new MBTilesServer();
+        try {
+            mbTilesServer.start();
+        } catch(IOException ioe) {
+            Log.w("Httpd", "The server could not start.");
+        }
+        Log.w("Httpd", "Web server initialized.");
     }
 }

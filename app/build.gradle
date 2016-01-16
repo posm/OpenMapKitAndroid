@@ -21,6 +21,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
 }
 
 repositories {
@@ -31,6 +35,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
     compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'com.nanohttpd:nanohttpd-webserver:2.1.1'
     compile project(':MapboxAndroidSDK')
     compile "com.android.support:support-annotations:${supportLibVersion}"
     compile "com.android.support:support-v4:${supportLibVersion}"
