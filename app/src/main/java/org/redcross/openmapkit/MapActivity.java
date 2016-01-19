@@ -61,7 +61,6 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     
     private static String version = "";
 
-    protected MBTilesServer mbTilesServer;
     protected MapView mapView;
     protected OSMMap osmMap;
     protected ListView mTagListView;
@@ -88,6 +87,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Turn on MBTiles HTTP server.
+        initializeMBTilesServer();
 
         determineVersion();
         
@@ -148,8 +150,6 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         positionMap();
 
         initializeListView();
-
-        initializeMBTilesServer();
     }
     
     @Override
@@ -700,12 +700,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     private void initializeMBTilesServer() {
-        mbTilesServer = new MBTilesServer();
         try {
-            mbTilesServer.start();
+            MBTilesServer.singleton().start();
         } catch(IOException ioe) {
-            Log.w("Httpd", "The server could not start.");
+            Log.w("Httpd", "MBTiles HTTP server could not start.");
         }
-        Log.w("Httpd", "Web server initialized.");
+        Log.w("MBTilesServer", "MBTiles HTTP server initialized.");
     }
 }
