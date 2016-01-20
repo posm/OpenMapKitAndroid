@@ -22,5 +22,6 @@ See the [wiki](https://github.com/AmericanRedCross/openmapkit/wiki) for details 
 
 See license [here](https://github.com/AmericanRedCross/openmapkit/blob/master/LICENSE.md).
 
-
+###Related Projects
+The OpenMapKit is being used on the [POSM] (https://github.com/AmericanRedCross/posm)
 
