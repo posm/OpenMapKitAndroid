@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
 
 import java.util.List;
@@ -53,20 +55,30 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... nothing) {
-        List<String> osmUrls = deployment.osmUrls();
-        int i = 0;
-        for (String osmUrl : osmUrls) {
+        JSONArray osms = deployment.osm();
+        int osmsLen = osms.length();
+        int idx = 0;
+        for (int i = 0; i < osmsLen; ++i) {
+            JSONObject osm = osms.optJSONObject(i);
+            if (osm == null) continue;
+            String osmUrl = osm.optString("url");
+            if (osmUrl == null) continue;
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(osmUrl));
             request.setDestinationInExternalPublicDir(ExternalStorage.getOSMDirRelativeToExternalDir(), Deployment.fileNameFromUrl(osmUrl));
             long downloadId = downloadManager.enqueue(request);
-            downloadIds[i++] = downloadId;
+            downloadIds[idx++] = downloadId;
         }
-        List<String> mbtilesUrls = deployment.mbtilesUrls();
-        for (String mbtilesUrl : mbtilesUrls) {
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mbtilesUrl));
-            request.setDestinationInExternalPublicDir(ExternalStorage.getMBTilesDirRelativeToExternalDir(), Deployment.fileNameFromUrl(mbtilesUrl));
+        JSONArray mbtiles = deployment.mbtiles();
+        int mbtilesLen = mbtiles.length();
+        for (int j = 0; j < mbtilesLen; ++j) {
+            JSONObject mbtile = mbtiles.optJSONObject(j);
+            if (mbtile == null) continue;
+            String mbtileUrl = mbtile.optString("url");
+            if (mbtileUrl == null) continue;
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mbtileUrl));
+            request.setDestinationInExternalPublicDir(ExternalStorage.getMBTilesDirRelativeToExternalDir(), Deployment.fileNameFromUrl(mbtileUrl));
             long downloadId = downloadManager.enqueue(request);
-            downloadIds[i++] = downloadId;
+            downloadIds[idx++] = downloadId;
         }
         pollDownloadManager();
         return null;

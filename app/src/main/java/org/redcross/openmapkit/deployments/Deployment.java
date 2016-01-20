@@ -4,7 +4,6 @@ package org.redcross.openmapkit.deployments;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,54 +28,38 @@ public class Deployment {
     }
 
     public int osmCount() {
-        int osmCount = 0;
-        JSONArray files = json.optJSONArray("files");
-        for (int i = 0; i < files.length(); i++) {
-            String f = files.optString(i);
-            if (f.contains(".osm")) {
-                ++osmCount;
-            }
-        }
-        return osmCount;
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return 0;
+        JSONArray osmFiles = files.optJSONArray("osm");
+        if (osmFiles == null) return 0;
+        return osmFiles.length();
     }
 
     public int mbtilesCount() {
-        int mbtilesCount = 0;
-        JSONArray files = json.optJSONArray("files");
-        for (int i = 0; i < files.length(); i++) {
-            String f = files.optString(i);
-            if (f.contains(".mbtiles")) {
-                ++mbtilesCount;
-            }
-        }
-        return mbtilesCount;
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return 0;
+        JSONArray mbtilesFiles = files.optJSONArray("mbtiles");
+        if (mbtilesFiles == null) return 0;
+        return mbtilesFiles.length();
     }
 
     public int fileCount() {
         return osmCount() + mbtilesCount();
     }
 
-    public List<String> osmUrls() {
-        List<String> urls = new ArrayList<>();
-        JSONArray files = json.optJSONArray("files");
-        for (int i = 0; i < files.length(); i++) {
-            String f = files.optString(i);
-            if (f.contains(".osm")) {
-                urls.add(f);
-            }
-        }
-        return urls;
+    public JSONArray osm() {
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return new JSONArray();
+        JSONArray osmFiles = files.optJSONArray("osm");
+        if (osmFiles == null) return new JSONArray();
+        return osmFiles;
     }
 
-    public List<String> mbtilesUrls() {
-        List<String> urls = new ArrayList<>();
-        JSONArray files = json.optJSONArray("files");
-        for (int i = 0; i < files.length(); i++) {
-            String f = files.optString(i);
-            if (f.contains(".mbtiles")) {
-                urls.add(f);
-            }
-        }
-        return urls;
+    public JSONArray mbtiles() {
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return new JSONArray();
+        JSONArray mbtilesFiles = files.optJSONArray("mbtiles");
+        if (mbtilesFiles == null) return new JSONArray();
+        return mbtilesFiles;
     }
 }

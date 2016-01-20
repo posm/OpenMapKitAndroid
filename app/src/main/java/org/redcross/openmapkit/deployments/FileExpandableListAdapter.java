@@ -9,22 +9,21 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.redcross.openmapkit.R;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class FileExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private Deployment deployment;
-    private List<String> mbTilesList = new ArrayList<>();
-    private List<String> osmXmlList = new ArrayList<>();
+    private JSONArray mbtiles = new JSONArray();
+    private JSONArray osms = new JSONArray();
 
     public FileExpandableListAdapter(Context context, int deploymentPosition) {
         this.context = context;
         deployment = Deployments.singleton().get(deploymentPosition);
-        mbTilesList = deployment.mbtilesUrls();
-        osmXmlList = deployment.osmUrls();
+        mbtiles = deployment.mbtiles();
+        osms = deployment.osm();
     }
 
     @Override
@@ -36,9 +35,9 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
     public int getChildrenCount(int groupPosition) {
         switch (groupPosition) {
             case 0:
-                return mbTilesList.size();
+                return mbtiles.length();
             case 1:
-                return osmXmlList.size();
+                return osms.length();
             default:
                 return 0;
         }
@@ -60,11 +59,17 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
     public Object getChild(int groupPosition, int childPosition) {
         switch (groupPosition) {
             case 0:
-                String url = mbTilesList.get(childPosition);
-                return Deployment.fileNameFromUrl(url);
+                JSONObject mbtile = mbtiles.optJSONObject(childPosition);
+                if (mbtile == null) return "";
+                String mbtileName = mbtile.optString("name");
+                if (mbtileName == null) return "";
+                return mbtileName;
             case 1:
-                url = osmXmlList.get(childPosition);
-                return Deployment.fileNameFromUrl(url);
+                JSONObject osm = osms.optJSONObject(childPosition);
+                if (osm == null) return "";
+                String osmName = osm.optString("name");
+                if (osmName == null) return "";
+                return osmName;
             default:
                 return "";
         }
