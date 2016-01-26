@@ -31,11 +31,13 @@ public class MBTilesServer extends NanoHTTPD {
 
     private MBTilesServer() {
         super(PORT);
+        ExternalStorage.checkOrCreateAppDirs();
         initializeMBTilesFiles();
     }
 
     private void initializeMBTilesFiles() {
         File[] files = ExternalStorage.fetchMBTilesFiles();
+        if (files == null) return;
         for (File f : files) {
             addTiles(f.getAbsolutePath());
         }
