@@ -140,12 +140,12 @@ public class OSMNode extends OSMElement {
     }
 
     @Override
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         xmlSerializer.startTag(null, "node");
-        setOsmElementXmlAttributes(xmlSerializer);
+        setOsmElementXmlAttributes(xmlSerializer, omkOsmUser);
         xmlSerializer.attribute(null, "lat", String.valueOf(lat));
         xmlSerializer.attribute(null, "lon", String.valueOf(lng));
-        super.xml(xmlSerializer); // generates tags
+        super.xml(xmlSerializer, omkOsmUser); // generates tags
         xmlSerializer.endTag(null, "node");
     }
 

@@ -61,19 +61,19 @@ public class OSMWay extends OSMElement {
     }
 
     @Override
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         for (OSMNode node : linkedNodes) {
-            node.xml(xmlSerializer);
+            node.xml(xmlSerializer, omkOsmUser);
         }
         xmlSerializer.startTag(null, "way");
-        setOsmElementXmlAttributes(xmlSerializer);
+        setOsmElementXmlAttributes(xmlSerializer, omkOsmUser);
         // generate nds
         setWayXmlNds(xmlSerializer);
         // generate tags
-        super.xml(xmlSerializer); 
+        super.xml(xmlSerializer, omkOsmUser);
         xmlSerializer.endTag(null, "way");
         for (OSMRelation relation : linkedRelations) {
-            relation.xml(xmlSerializer);
+            relation.xml(xmlSerializer, omkOsmUser);
         }
     }
 

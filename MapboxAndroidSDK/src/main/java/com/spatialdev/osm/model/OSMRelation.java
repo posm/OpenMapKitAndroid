@@ -49,16 +49,16 @@ public class OSMRelation extends OSMElement {
     }
 
     @Override
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         xmlSerializer.startTag(null, "relation");
         if (isModified()) {
             xmlSerializer.attribute(null, "action", "modify");
         }
-        setOsmElementXmlAttributes(xmlSerializer);
+        setOsmElementXmlAttributes(xmlSerializer, omkOsmUser);
         // generate members
         setRelationXmlMembers(xmlSerializer);
         // generate tags
-        super.xml(xmlSerializer);
+        super.xml(xmlSerializer, omkOsmUser);
         xmlSerializer.endTag(null, "relation");
     }
     

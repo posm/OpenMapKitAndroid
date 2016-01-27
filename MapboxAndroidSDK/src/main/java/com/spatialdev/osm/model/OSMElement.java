@@ -171,7 +171,7 @@ public abstract class OSMElement {
         return negativeId--;
     }
 
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         // set the tags for the element (all element types can have tags)
         Set<String> tagKeys = tags.keySet();
         for (String tagKey : tagKeys) {
@@ -186,7 +186,7 @@ public abstract class OSMElement {
         }
     }
     
-    protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer) throws IOException {
+    protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         xmlSerializer.attribute(null, "id", String.valueOf(id));
         if (isModified()) {
             xmlSerializer.attribute(null, "action", "modify");
@@ -207,6 +207,14 @@ public abstract class OSMElement {
         } else if (timestamp != null) {
             xmlSerializer.attribute(null, "timestamp", timestamp);
         }
+        /**
+         * We want to put the OSM user set in OMK Android for all of the elements we are writing.
+         * This is important, because when we are filtering in OMK iD, we need to be able to filter
+         * by OSM user. The OSM user should refer to all elements affected by an edit. This means
+         * that the OMK Android OSM user name should apply to nodes referenced by an edited way
+         * as well (so that filtering gets the complete geometry in).
+         */
+        xmlSerializer.attribute(null, "user", omkOsmUser);
     }
 
     /**
