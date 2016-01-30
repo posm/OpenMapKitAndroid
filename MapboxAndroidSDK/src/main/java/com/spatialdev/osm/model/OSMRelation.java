@@ -4,6 +4,8 @@
  */
 package com.spatialdev.osm.model;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -46,6 +48,21 @@ public class OSMRelation extends OSMElement {
                        String action) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr, action);
+    }
+
+    @Override
+    public String checksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        for (OSMNode n : linkedNodes) {
+            str.append(n.checksum());
+        }
+        for (OSMWay w : linkedWays) {
+            str.append(w.checksum());
+        }
+        for (OSMRelation r : linkedRelations) {
+            str.append(r.checksum());
+        }
+        return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
     }
 
     @Override

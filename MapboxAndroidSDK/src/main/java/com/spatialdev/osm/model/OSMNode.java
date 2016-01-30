@@ -10,6 +10,8 @@ import com.mapbox.mapboxsdk.overlay.ItemizedOverlay;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.spatialdev.osm.marker.OSMMarker;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -137,6 +139,21 @@ public class OSMNode extends OSMElement {
      */
     public Marker getMarker() {
         return marker;
+    }
+
+    /**
+     * The checksum of an OSMNode is the sorted k,v of the tags
+     * with the lat and long following.
+     *
+     * @return
+     */
+    @Override
+    public String checksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        str.append(lat);
+        str.append(lng);
+        return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
+
     }
 
     @Override

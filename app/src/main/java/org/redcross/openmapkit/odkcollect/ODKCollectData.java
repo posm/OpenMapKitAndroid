@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class ODKCollectData {
     
-    public static final String APP_NAME = "OpenMapKit";
+    public static final String APP_NAME = "OpenMapKit Android";
             
     private String formId;
     private String instanceId;
@@ -37,10 +37,9 @@ public class ODKCollectData {
     private List<File> editedOSM = new ArrayList<>();
     
     private String editedXml;
-    private String osmClassName;
+    private String checksum;
     private String appVersion;
-    private long osmId;
-    
+
     public ODKCollectData ( String formId, 
                             String formFileName,
                             String instanceId, 
@@ -135,8 +134,7 @@ public class ODKCollectData {
     }
     
     public void consumeOSMElement(OSMElement el, String osmUserName) throws IOException {
-        osmClassName = el.getClass().getSimpleName();
-        osmId = el.getId();
+        checksum = el.checksum();
         editedXml = OSMXmlWriter.elementToString(el, osmUserName, APP_NAME + " " + appVersion);
     }
     
@@ -165,7 +163,7 @@ public class ODKCollectData {
     }
 
     public String getOSMFileName() {
-        return osmClassName + osmId + "_" + OSMUtil.nowFileTimestamp() + ".osm";
+        return checksum + ".osm";
     }
     
     public String getOSMFileFullPath() {

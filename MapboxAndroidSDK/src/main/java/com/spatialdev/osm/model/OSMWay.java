@@ -7,6 +7,8 @@ package com.spatialdev.osm.model;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.renderer.OSMPath;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -58,6 +60,15 @@ public class OSMWay extends OSMElement {
                   String action) {
 
         super(idStr, versionStr, timestampStr, changesetStr, uidStr, userStr, action);
+    }
+
+    @Override
+    public String checksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        for (OSMNode n : linkedNodes) {
+            str.append(n.checksum());
+        }
+        return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
     }
 
     @Override

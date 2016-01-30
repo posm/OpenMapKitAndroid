@@ -5,8 +5,10 @@
 package com.spatialdev.osm.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,7 +58,7 @@ public abstract class OSMElement {
     /**
      * This can be used to keep track of which tag is currently selected in a tag editor
      * like OpenMapKit.
-     * * * 
+     * * *
      */
     protected String selectedTag;
 
@@ -171,6 +173,32 @@ public abstract class OSMElement {
         return negativeId--;
     }
 
+    /**
+     * All OSM Element types need to have this implemented. This checksum is composed
+     * of the tags sorted alphabetically by key. The rest of the implementation is
+     * defined differently whether it is Node, Way, or Relation.
+     *
+     * @return SHA-1 HEX checksum of the element
+     */
+    public abstract String checksum();
+
+    /**
+     * The tags are sorted by key, and each key, value is
+     * iterated and concatenated to a String.
+     *
+     * @return
+     */
+    protected StringBuilder tagsAsSortedKVString() {
+        List<String> keys = new ArrayList<>(tags.keySet());
+        java.util.Collections.sort(keys);
+        StringBuilder tagsStr = new StringBuilder();
+        for (String k : keys) {
+            tagsStr.append(k);
+            tagsStr.append(tags.get(k));
+        }
+        return tagsStr;
+    }
+
     void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         // set the tags for the element (all element types can have tags)
         Set<String> tagKeys = tags.keySet();
@@ -219,7 +247,7 @@ public abstract class OSMElement {
 
     /**
      * Maintains state over which tag is selected in a tag editor UI
-     * * * 
+     * * *
      * @param tagKey
      */
     public void selectTag(String tagKey) {
