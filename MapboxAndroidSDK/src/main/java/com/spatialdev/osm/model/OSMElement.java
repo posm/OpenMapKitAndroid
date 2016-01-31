@@ -188,7 +188,7 @@ public abstract class OSMElement {
      *
      * @return
      */
-    protected StringBuilder tagsAsSortedKVString() {
+    public StringBuilder tagsAsSortedKVString() {
         List<String> keys = new ArrayList<>(tags.keySet());
         java.util.Collections.sort(keys);
         StringBuilder tagsStr = new StringBuilder();
