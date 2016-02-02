@@ -64,11 +64,16 @@ public class OSMWay extends OSMElement {
 
     @Override
     public String checksum() {
+        String str = preChecksum();
+        return new String(Hex.encodeHex(DigestUtils.sha1(str)));
+    }
+
+    public String preChecksum() {
         StringBuilder str = tagsAsSortedKVString();
         for (OSMNode n : linkedNodes) {
             str.append(n.checksum());
         }
-        return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
+        return str.toString();
     }
 
     @Override

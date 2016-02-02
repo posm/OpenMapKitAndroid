@@ -153,7 +153,6 @@ public class OSMNode extends OSMElement {
         str.append(lat);
         str.append(lng);
         return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
-
     }
 
     @Override
