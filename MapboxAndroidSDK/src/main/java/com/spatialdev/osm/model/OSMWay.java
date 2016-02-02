@@ -118,14 +118,13 @@ public class OSMWay extends OSMElement {
         // first check if the way is closed before doing this processing...
         checkIfClosed();
         LinkedList<Long> unlinkedRefs = new LinkedList<>();
-        while (nodeRefs.size() > 0) {
-            Long refId = nodeRefs.pop();
+        for (Long refId : nodeRefs) {
             OSMNode node = nodes.get(refId);
             wayNodes.add(refId);
             if (node == null) {
-                unlinkedRefs.push(refId);
+                unlinkedRefs.add(refId);
             } else {
-                linkedNodes.push(node);
+                linkedNodes.add(node);
             }
         }
         nodeRefs = unlinkedRefs;

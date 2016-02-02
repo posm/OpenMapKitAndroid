@@ -39,7 +39,7 @@ public class ChecksumTest extends InstrumentationTestCase {
 
     public void testWayChecksum() throws Exception {
         String checksum = way.checksum();
-        assertEquals("7be9866185c19bfff63029c96226105295b8ccf0", checksum);
+        assertEquals("add90109a0ca34d12d28292ccd05c588d2220f0a", checksum);
     }
 
     public void testNodesInWayChecksums() throws Exception {
