@@ -193,8 +193,11 @@ public abstract class OSMElement {
         java.util.Collections.sort(keys);
         StringBuilder tagsStr = new StringBuilder();
         for (String k : keys) {
-            tagsStr.append(k);
-            tagsStr.append(tags.get(k));
+            String v = tags.get(k);
+            if (v.length() > 0) {
+                tagsStr.append(k);
+                tagsStr.append(v);
+            }
         }
         return tagsStr;
     }

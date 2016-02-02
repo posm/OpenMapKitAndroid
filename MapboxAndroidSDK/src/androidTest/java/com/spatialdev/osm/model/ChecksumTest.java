@@ -11,15 +11,18 @@ import java.util.List;
 
 public class ChecksumTest extends InstrumentationTestCase {
 
-    private InputStream in;
-    private OSMDataSet ds;
     private OSMWay way;
+    private OSMWay way2;
 
     public void setUp() throws Exception {
         super.setUp();
-        in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/checksum_way.osm");
-        ds = OSMXmlParser.parseFromInputStream(in);
+        InputStream in = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/checksum_way.osm");
+        OSMDataSet ds = OSMXmlParser.parseFromInputStream(in);
         way = ds.getClosedWays().get(0);
+
+        InputStream in2 = getInstrumentation().getTargetContext().getResources().getAssets().open("test/osm/checksum_way2.osm");
+        OSMDataSet ds2 = OSMXmlParser.parseFromInputStream(in2);
+        way2 = ds2.getClosedWays().get(0);
     }
 
     public void tearDown() throws Exception {
@@ -40,6 +43,11 @@ public class ChecksumTest extends InstrumentationTestCase {
     public void testWayChecksum() throws Exception {
         String checksum = way.checksum();
         assertEquals("add90109a0ca34d12d28292ccd05c588d2220f0a", checksum);
+    }
+
+    public void testWayChecksum2() throws Exception {
+        String checksum = way2.checksum();
+        assertEquals("3854296ef0b8fc4810454dd5d8de79dc59f7f007", checksum);
     }
 
     public void testNodesInWayChecksums() throws Exception {
