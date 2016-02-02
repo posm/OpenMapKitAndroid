@@ -7,6 +7,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.InputStream;
+import java.util.List;
 
 public class ChecksumTest extends InstrumentationTestCase {
 
@@ -39,5 +40,21 @@ public class ChecksumTest extends InstrumentationTestCase {
     public void testWayChecksum() throws Exception {
         String checksum = way.checksum();
         assertEquals("7be9866185c19bfff63029c96226105295b8ccf0", checksum);
+    }
+
+    public void testNodesInWayChecksums() throws Exception {
+        List<OSMNode> nodes = way.getNodes();
+        for (OSMNode n : nodes) {
+            long id = n.getId();
+            if (id == 3969314187L) {
+                assertEquals("6f3b2e85e05dbdc496f9250931693f7a3e427807", n.checksum());
+            } else if (id == 3969314188L) {
+                assertEquals("e52eb00f4e028a8010e32a9cfca788273f49a675", n.checksum());
+            } else if (id == 3969314189L) {
+                assertEquals("3f7514c1b2ca88dfc53fdd7daecc0851bfeba081", n.checksum());
+            } else if (id == 3969314190L) {
+                assertEquals("c3010e77a9f5d322bfd0081c607dfc7109b86ba9", n.checksum());
+            }
+        }
     }
 }
