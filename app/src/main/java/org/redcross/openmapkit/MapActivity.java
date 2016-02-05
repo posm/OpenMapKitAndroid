@@ -89,7 +89,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         super.onCreate(savedInstanceState);
 
         // Turn on MBTiles HTTP server.
-        initializeMBTilesServer();
+        /**
+         * We are waiting to enable this until we need it for a new map renderer.
+         */
+//        initializeMBTilesServer();
 
         determineVersion();
         
