@@ -28,6 +28,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.jakewharton:disklrucache:2.0.2'
+    compile 'commons-codec:commons-codec:1.10'
 }
 
 android {
@@ -43,6 +44,12 @@ android {
         all {
             resValue "string", "mapboxAndroidSDKVersion", project.VERSION_NAME
         }
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
     }
 
     compileOptions {

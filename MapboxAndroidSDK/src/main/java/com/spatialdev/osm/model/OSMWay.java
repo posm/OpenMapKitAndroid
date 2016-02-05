@@ -7,6 +7,8 @@ package com.spatialdev.osm.model;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.spatialdev.osm.renderer.OSMPath;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -61,19 +63,33 @@ public class OSMWay extends OSMElement {
     }
 
     @Override
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    public String checksum() {
+        String str = preChecksum();
+        return new String(Hex.encodeHex(DigestUtils.sha1(str)));
+    }
+
+    public String preChecksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        for (OSMNode n : linkedNodes) {
+            str.append(n.checksum());
+        }
+        return str.toString();
+    }
+
+    @Override
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         for (OSMNode node : linkedNodes) {
-            node.xml(xmlSerializer);
+            node.xml(xmlSerializer, omkOsmUser);
         }
         xmlSerializer.startTag(null, "way");
-        setOsmElementXmlAttributes(xmlSerializer);
+        setOsmElementXmlAttributes(xmlSerializer, omkOsmUser);
         // generate nds
         setWayXmlNds(xmlSerializer);
         // generate tags
-        super.xml(xmlSerializer); 
+        super.xml(xmlSerializer, omkOsmUser);
         xmlSerializer.endTag(null, "way");
         for (OSMRelation relation : linkedRelations) {
-            relation.xml(xmlSerializer);
+            relation.xml(xmlSerializer, omkOsmUser);
         }
     }
 
@@ -102,14 +118,13 @@ public class OSMWay extends OSMElement {
         // first check if the way is closed before doing this processing...
         checkIfClosed();
         LinkedList<Long> unlinkedRefs = new LinkedList<>();
-        while (nodeRefs.size() > 0) {
-            Long refId = nodeRefs.pop();
+        for (Long refId : nodeRefs) {
             OSMNode node = nodes.get(refId);
             wayNodes.add(refId);
             if (node == null) {
-                unlinkedRefs.push(refId);
+                unlinkedRefs.add(refId);
             } else {
-                linkedNodes.push(node);
+                linkedNodes.add(node);
             }
         }
         nodeRefs = unlinkedRefs;

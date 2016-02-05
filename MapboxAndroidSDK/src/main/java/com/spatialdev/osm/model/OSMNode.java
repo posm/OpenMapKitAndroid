@@ -10,6 +10,8 @@ import com.mapbox.mapboxsdk.overlay.ItemizedOverlay;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.spatialdev.osm.marker.OSMMarker;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -139,13 +141,32 @@ public class OSMNode extends OSMElement {
         return marker;
     }
 
+    public String preChecksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        str.append(lat);
+        str.append(lng);
+        return str.toString();
+    }
+
+    /**
+     * The checksum of an OSMNode is the sorted k,v of the tags
+     * with the lat and long following.
+     *
+     * @return
+     */
     @Override
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    public String checksum() {
+        String str = preChecksum();
+        return new String(Hex.encodeHex(DigestUtils.sha1(str)));
+    }
+
+    @Override
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         xmlSerializer.startTag(null, "node");
-        setOsmElementXmlAttributes(xmlSerializer);
+        setOsmElementXmlAttributes(xmlSerializer, omkOsmUser);
         xmlSerializer.attribute(null, "lat", String.valueOf(lat));
         xmlSerializer.attribute(null, "lon", String.valueOf(lng));
-        super.xml(xmlSerializer); // generates tags
+        super.xml(xmlSerializer, omkOsmUser); // generates tags
         xmlSerializer.endTag(null, "node");
     }
 

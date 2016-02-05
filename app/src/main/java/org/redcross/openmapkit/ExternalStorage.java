@@ -41,7 +41,11 @@ public class ExternalStorage {
                 + APP_DIR + "/"
                 + MBTILES_DIR + "/";
     }
-    
+
+    public static String getMBTilesDirRelativeToExternalDir() {
+        return "/" + APP_DIR + "/" + MBTILES_DIR + "/";
+    }
+
     public static String getOSMDir() {
         return Environment.getExternalStorageDirectory() + "/"
                 + APP_DIR + "/"

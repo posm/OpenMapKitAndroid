@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -39,11 +40,14 @@ import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 
+import org.redcross.openmapkit.deployments.DeploymentsActivity;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
+import org.redcross.openmapkit.server.MBTilesServer;
 import org.redcross.openmapkit.tagswipe.TagSwipeActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -83,6 +87,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Turn on MBTiles HTTP server.
+        /**
+         * We are waiting to enable this until we need it for a new map renderer.
+         */
+//        initializeMBTilesServer();
 
         determineVersion();
         
@@ -615,7 +625,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
                 
         int id = item.getItemId();
 
-        if (id == R.id.osmdownloader) {
+        if (id == R.id.deployments) {
+            launchDeploymentsActivity();
+            return true;
+        } else if (id == R.id.osmdownloader) {
             askIfDownloadOSM();
             return true;
         } else if (id == R.id.mbtilessettings) {
@@ -632,6 +645,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             return true;
         }
         return false;
+    }
+
+    private void launchDeploymentsActivity() {
+        Intent deploymentsActivity = new Intent(getApplicationContext(), DeploymentsActivity.class);
+        startActivity(deploymentsActivity);
     }
 
     @Override
@@ -682,5 +700,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     
     public static String getVersion() {
         return version;
+    }
+
+    private void initializeMBTilesServer() {
+        try {
+            MBTilesServer.singleton().start();
+        } catch(IOException ioe) {
+            Log.w("Httpd", "MBTiles HTTP server could not start.");
+        }
+        Log.w("MBTilesServer", "MBTiles HTTP server initialized.");
     }
 }

@@ -5,8 +5,10 @@
 package com.spatialdev.osm.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,7 +58,7 @@ public abstract class OSMElement {
     /**
      * This can be used to keep track of which tag is currently selected in a tag editor
      * like OpenMapKit.
-     * * * 
+     * * *
      */
     protected String selectedTag;
 
@@ -171,7 +173,36 @@ public abstract class OSMElement {
         return negativeId--;
     }
 
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    /**
+     * All OSM Element types need to have this implemented. This checksum is composed
+     * of the tags sorted alphabetically by key. The rest of the implementation is
+     * defined differently whether it is Node, Way, or Relation.
+     *
+     * @return SHA-1 HEX checksum of the element
+     */
+    public abstract String checksum();
+
+    /**
+     * The tags are sorted by key, and each key, value is
+     * iterated and concatenated to a String.
+     *
+     * @return
+     */
+    public StringBuilder tagsAsSortedKVString() {
+        List<String> keys = new ArrayList<>(tags.keySet());
+        java.util.Collections.sort(keys);
+        StringBuilder tagsStr = new StringBuilder();
+        for (String k : keys) {
+            String v = tags.get(k);
+            if (v.length() > 0) {
+                tagsStr.append(k);
+                tagsStr.append(v);
+            }
+        }
+        return tagsStr;
+    }
+
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         // set the tags for the element (all element types can have tags)
         Set<String> tagKeys = tags.keySet();
         for (String tagKey : tagKeys) {
@@ -186,7 +217,7 @@ public abstract class OSMElement {
         }
     }
     
-    protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer) throws IOException {
+    protected void setOsmElementXmlAttributes(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         xmlSerializer.attribute(null, "id", String.valueOf(id));
         if (isModified()) {
             xmlSerializer.attribute(null, "action", "modify");
@@ -207,11 +238,19 @@ public abstract class OSMElement {
         } else if (timestamp != null) {
             xmlSerializer.attribute(null, "timestamp", timestamp);
         }
+        /**
+         * We want to put the OSM user set in OMK Android for all of the elements we are writing.
+         * This is important, because when we are filtering in OMK iD, we need to be able to filter
+         * by OSM user. The OSM user should refer to all elements affected by an edit. This means
+         * that the OMK Android OSM user name should apply to nodes referenced by an edited way
+         * as well (so that filtering gets the complete geometry in).
+         */
+        xmlSerializer.attribute(null, "user", omkOsmUser);
     }
 
     /**
      * Maintains state over which tag is selected in a tag editor UI
-     * * * 
+     * * *
      * @param tagKey
      */
     public void selectTag(String tagKey) {

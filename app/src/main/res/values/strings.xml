@@ -11,6 +11,7 @@
     <string name="osmAppPath">openmapkit/osm</string>
 
     <!-- mbtiles menu -->
+    <string name="action_deployments">Deployments</string>
     <string name="action_mbtilessettings">Basemap</string>
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
     <string name="downloadOSMTitle">Download OSM Data</string>
@@ -72,5 +73,13 @@
     <string name="no">No</string>
 
     <string name="action_controlpanel">Control Panel</string>
+    <string name="title_activity_deployments">Deployments</string>
+    <string name="title_activity_deployment_details">Deployment Details</string>
+    <string name="noname">No Name</string>
+    <string name="download_complete">Deployment Complete!</string>
+    <string name="download_failed">Download Failed!</string>
+    <string name="serverUrl">OpenMapKit Server URL</string>
+    <string name="deploymentDownloadCanceled">Deployment download canceled!</string>
+    <string name="deploymentDownloadComplete">Deployment download complete!</string>
 
 </resources>

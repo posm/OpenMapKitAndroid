@@ -2,5 +2,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.mapbox.mapboxsdk">
     <application android:allowBackup="true"/>
-    <uses-sdk android:minSdkVersion="9"/>
 </manifest>

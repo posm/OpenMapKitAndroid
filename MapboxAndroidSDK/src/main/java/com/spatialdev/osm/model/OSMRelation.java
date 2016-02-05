@@ -4,6 +4,8 @@
  */
 package com.spatialdev.osm.model;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -49,16 +51,31 @@ public class OSMRelation extends OSMElement {
     }
 
     @Override
-    void xml(XmlSerializer xmlSerializer) throws IOException {
+    public String checksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        for (OSMNode n : linkedNodes) {
+            str.append(n.checksum());
+        }
+        for (OSMWay w : linkedWays) {
+            str.append(w.checksum());
+        }
+        for (OSMRelation r : linkedRelations) {
+            str.append(r.checksum());
+        }
+        return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
+    }
+
+    @Override
+    void xml(XmlSerializer xmlSerializer, String omkOsmUser) throws IOException {
         xmlSerializer.startTag(null, "relation");
         if (isModified()) {
             xmlSerializer.attribute(null, "action", "modify");
         }
-        setOsmElementXmlAttributes(xmlSerializer);
+        setOsmElementXmlAttributes(xmlSerializer, omkOsmUser);
         // generate members
         setRelationXmlMembers(xmlSerializer);
         // generate tags
-        super.xml(xmlSerializer);
+        super.xml(xmlSerializer, omkOsmUser);
         xmlSerializer.endTag(null, "relation");
     }
     

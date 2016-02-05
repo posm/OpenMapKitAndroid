@@ -22,6 +22,7 @@ public class OSMXmlWriter {
 
     private LinkedList<OSMElement> elements;
     private String generator = "unknown";
+    private String osmUser = "";
     private XmlSerializer xmlSerializer;
     StringWriter stringWriter;
     
@@ -35,8 +36,8 @@ public class OSMXmlWriter {
     }
     
     public static String elementsToString(LinkedList<OSMElement> elements, String osmUser, String appNameAndVersion) throws IOException {
-        OSMXmlWriter writer = new OSMXmlWriter(elements, appNameAndVersion);
-        writer.start(osmUser);
+        OSMXmlWriter writer = new OSMXmlWriter(elements, appNameAndVersion, osmUser);
+        writer.start();
         
         if (elements != null) {
             writer.iterateElements();
@@ -45,14 +46,15 @@ public class OSMXmlWriter {
         return writer.end();
     }
     
-    private OSMXmlWriter(LinkedList<OSMElement> elements, String generator) {
+    private OSMXmlWriter(LinkedList<OSMElement> elements, String generator, String osmUser) {
         this.elements = elements;
         this.generator = generator;
+        this.osmUser = osmUser;
         xmlSerializer = Xml.newSerializer();
         stringWriter = new StringWriter();
     }
 
-    private void start(String osmUser) throws IOException {
+    private void start() throws IOException {
         xmlSerializer.setOutput(stringWriter);
         xmlSerializer.startDocument("UTF-8", null);
         xmlSerializer.startTag(ns, "osm");
@@ -69,7 +71,7 @@ public class OSMXmlWriter {
     
     private void iterateElements() throws IOException {
         for (OSMElement element : elements) {
-            element.xml(xmlSerializer);
+            element.xml(xmlSerializer, osmUser);
         }
     }
 }
