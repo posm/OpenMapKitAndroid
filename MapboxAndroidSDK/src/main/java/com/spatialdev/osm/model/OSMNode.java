@@ -141,6 +141,13 @@ public class OSMNode extends OSMElement {
         return marker;
     }
 
+    public String preChecksum() {
+        StringBuilder str = tagsAsSortedKVString();
+        str.append(lat);
+        str.append(lng);
+        return str.toString();
+    }
+
     /**
      * The checksum of an OSMNode is the sorted k,v of the tags
      * with the lat and long following.
@@ -149,10 +156,8 @@ public class OSMNode extends OSMElement {
      */
     @Override
     public String checksum() {
-        StringBuilder str = tagsAsSortedKVString();
-        str.append(lat);
-        str.append(lng);
-        return new String(Hex.encodeHex(DigestUtils.sha1(str.toString())));
+        String str = preChecksum();
+        return new String(Hex.encodeHex(DigestUtils.sha1(str)));
     }
 
     @Override
