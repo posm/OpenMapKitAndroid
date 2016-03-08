@@ -115,7 +115,7 @@ public class DeploymentsActivity extends AppCompatActivity {
         final SharedPreferences omkServerUrlPref = getSharedPreferences("org.redcross.openmapkit.OMK_SERVER_URL", Context.MODE_PRIVATE);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("OpenMapKit Server");
-        builder.setMessage("Please enter the URL of OpenMapKit Server Deployments REST end point.");
+        builder.setMessage("Please enter the URL of OpenMapKit Server.");
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         String omkServerUrl = omkServerUrlPref.getString("omkServerUrl", null);

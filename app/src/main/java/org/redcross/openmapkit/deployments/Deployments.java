@@ -61,7 +61,14 @@ public class Deployments {
             Boolean result = false;
             HttpURLConnection urlConnection;
             try {
-                URL url = new URL(params[0]);
+                String urlStr = params[0];
+                String endpoint;
+                if (urlStr.charAt(urlStr.length()-1) == '/') {
+                    endpoint = urlStr + "omk/deployments";
+                } else {
+                    endpoint = urlStr + "/omk/deployments";
+                }
+                URL url = new URL(endpoint);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setConnectTimeout(3000);
                 urlConnection.setReadTimeout(7000);
