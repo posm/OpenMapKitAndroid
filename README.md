@@ -18,7 +18,7 @@ Android mobile application for browsing OpenStreetMap features to create and edi
 
 See the [wiki](https://github.com/AmericanRedCross/openmapkitandroid/wiki) for details on how to setup and load data into the app.
 
-###License (GNU)
+###License (BSD)
 
 See license [here](https://github.com/AmericanRedCross/openmapkitandroid/blob/master/LICENSE.md).
 
