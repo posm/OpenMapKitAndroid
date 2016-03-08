@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
 
     private FloatingActionButton fab;
     private TextView progressTextView;
+    private ProgressBar progressBar;
 
     private enum DownloadState {
         FRESH, DOWNLOADING, CANCELED, ERROR, COMPLETE
@@ -58,6 +60,9 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
 
         progressTextView = (TextView)findViewById(R.id.progressTextView);
         progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
+
+//        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+//        progressBar.setMax(100);
 
         /**
          * SETUP FOR EXPANDABLE LIST VIEW FOR MBTILES AND OSM FILES
@@ -155,6 +160,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.black));
         progressTextView.setTypeface(null, Typeface.NORMAL);
+//        progressBar.setProgress((int)bytesDownloaded);
     }
 
     @Override
