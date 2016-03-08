@@ -22,7 +22,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     private boolean downloading = true;
     private boolean canceled = false;
-    private int bytesDownloaded = 0;
+    private long bytesDownloaded = 0;
     private int filesCompleted = 0;
 
     public DeploymentDownloader(Deployment deployment, Activity activity) {
@@ -104,7 +104,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
                 + ((double)bytesDownloaded) / 1000000.0 + " MB.";
     }
 
-    private void notifyDeploymentDownloadProgressUpdate(String msg, int bytesDownloaded) {
+    private void notifyDeploymentDownloadProgressUpdate(String msg, long bytesDownloaded) {
         for (DeploymentDownloaderListener listener : listeners) {
             listener.onDeploymentDownloadProgressUpdate(msg, bytesDownloaded);
         }

@@ -57,7 +57,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         }
 
         progressTextView = (TextView)findViewById(R.id.progressTextView);
-        progressTextView.setText(deployment.fileCount() + " files.");
+        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
 
         /**
          * SETUP FOR EXPANDABLE LIST VIEW FOR MBTILES AND OSM FILES
@@ -150,7 +150,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
      */
 
     @Override
-    public void onDeploymentDownloadProgressUpdate(String msg, int bytesDownloaded) {
+    public void onDeploymentDownloadProgressUpdate(String msg, long bytesDownloaded) {
         downloadState = DownloadState.DOWNLOADING;
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.black));

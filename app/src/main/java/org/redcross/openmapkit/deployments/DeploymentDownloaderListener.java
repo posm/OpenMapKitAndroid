@@ -9,7 +9,7 @@ public interface DeploymentDownloaderListener {
      * @param msg A string message to be shown to user.
      * @param bytesDownloaded How many bytes downloaded.
      */
-    void onDeploymentDownloadProgressUpdate(String msg, int bytesDownloaded);
+    void onDeploymentDownloadProgressUpdate(String msg, long bytesDownloaded);
 
     /**
      * Download canceled.

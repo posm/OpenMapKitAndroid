@@ -47,6 +47,15 @@ public class Deployment {
         return osmCount() + mbtilesCount();
     }
 
+    public long totalSize() {
+        return json.optLong("totalSize", 0);
+    }
+
+    public String totalSizeMB() {
+        double totalSize = ((double)totalSize()) / 1000000.0;
+        return totalSize + " MB.";
+    }
+
     public JSONArray osm() {
         JSONObject files = json.optJSONObject("files");
         if (files == null) return new JSONArray();
