@@ -27,6 +27,25 @@ public class Deployment {
         return json;
     }
 
+    /**
+     * Returns the title of the deployment. If the title
+     * is not available, return the name instead.
+     *
+     * @return - title or name
+     */
+    public String title() {
+        String title = null;
+        JSONObject manifest = json.optJSONObject("manifest");
+        if (manifest != null) {
+            title = manifest.optString("title");
+        }
+        if (title != null && title.length() > 0) {
+            return title;
+        } else {
+            return json.optString("name");
+        }
+    }
+
     public int osmCount() {
         JSONObject files = json.optJSONObject("files");
         if (files == null) return 0;

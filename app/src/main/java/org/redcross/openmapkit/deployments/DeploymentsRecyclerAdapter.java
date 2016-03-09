@@ -27,9 +27,9 @@ public class DeploymentsRecyclerAdapter extends RecyclerView.Adapter<Deployments
     @Override
     public void onBindViewHolder(DeploymentsViewHolder holder, int position) {
         Deployment deployment = Deployments.singleton().get(position);
-        String name = deployment.json().optString("name");
-        if (name == null) return;
-        holder.nameTextView.setText(name);
+        String title = deployment.title();
+        if (title == null) return;
+        holder.nameTextView.setText(title);
         JSONObject manifest = deployment.json().optJSONObject("manifest");
         if (manifest == null) return;
         String description = manifest.optString("description");

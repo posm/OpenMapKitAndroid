@@ -47,9 +47,9 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         int position = getIntent().getIntExtra("POSITION", 0);
         deployment = Deployments.singleton().get(position);
 
-        String name = deployment.json().optString("name");
+        String title = deployment.title();
         TextView nameTextView = (TextView)findViewById(R.id.nameTextView);
-        nameTextView.setText(name);
+        nameTextView.setText(title);
 
         JSONObject manifest = deployment.json().optJSONObject("manifest");
         if (manifest != null) {
