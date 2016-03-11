@@ -208,6 +208,10 @@ public class JTSModel {
             if (!w.isModified() && OSMWay.containsModifiedWay(w.getId())) {
                 continue;    
             }
+            // Don't render or index ways that do not have all of their referenced nodes.
+            if (w.incomplete()) {
+                continue;
+            }
             List<OSMNode> nodes = w.getNodes();
             Coordinate[] coords = coordArrayFromNodeList(nodes);
             Polygon poly = geometryFactory.createPolygon(coords);
@@ -221,6 +225,10 @@ public class JTSModel {
         List<OSMWay> openWays = ds.getOpenWays();
         for (OSMWay w : openWays) {
             if (!w.isModified() && OSMWay.containsModifiedWay(w.getId())) {
+                continue;
+            }
+            // Don't render or index ways that do not have all of their referenced nodes.
+            if (w.incomplete()) {
                 continue;
             }
             List<OSMNode> nodes = w.getNodes();

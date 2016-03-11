@@ -47,6 +47,16 @@ public class OSMWay extends OSMElement {
      */
     private boolean closed = false;
 
+    /**
+     * If we do not have all of the nodes linked to the refs, the way is incomplete
+     * and cannot be rendered.
+     *
+     * @return - if way is incomplete
+     */
+    public boolean incomplete() {
+        return nodeRefs.size() > 0;
+    }
+
     public static boolean containsModifiedWay(long wayId) {
         return modifiedWayIdSet.contains(wayId);
     }
