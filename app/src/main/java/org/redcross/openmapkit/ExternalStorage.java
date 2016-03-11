@@ -3,6 +3,9 @@ package org.redcross.openmapkit;
 import android.os.Environment;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * For encapsulating tasks such as checking if external storage is available for read, for write, and fetching files from storage
@@ -21,7 +24,7 @@ public class ExternalStorage {
      * Creating the application directory structure.
      */
     public static void checkOrCreateAppDirs() {
-        File externalDir = Environment.getExternalStorageDirectory();
+        File externalDir = getSDCardOrExternalStorage();
         File appDir = new File(externalDir, APP_DIR);
         if(!appDir.exists()) {
             appDir.mkdirs();
@@ -36,8 +39,46 @@ public class ExternalStorage {
         }
     }
 
+    private static File getSDCardOrExternalStorage() {
+        String path = null;
+        String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4).*rw.*";
+        String s = "";
+        try {
+            final Process process = new ProcessBuilder().command("mount")
+                    .redirectErrorStream(true).start();
+            process.waitFor();
+            final InputStream is = process.getInputStream();
+            final byte[] buffer = new byte[1024];
+            while (is.read(buffer) != -1) {
+                s = s + new String(buffer);
+            }
+            is.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        // parse output
+        final String[] lines = s.split("\n");
+        for (String line : lines) {
+            if (!line.toLowerCase(Locale.US).contains("asec")) {
+                if (line.matches(reg)) {
+                    String[] parts = line.split(" ");
+                    for (String part : parts) {
+                        if (part.startsWith("/"))
+                            if (!part.toLowerCase(Locale.US).contains("vold"))
+                                path = part;
+                    }
+                }
+            }
+        }
+        if (path != null && !path.equals("")) {
+            return new File(path);
+        }
+        return Environment.getExternalStorageDirectory();
+    }
+
     public static String getMBTilesDir() {
-        return Environment.getExternalStorageDirectory() + "/"
+        return getSDCardOrExternalStorage() + "/"
                 + APP_DIR + "/"
                 + MBTILES_DIR + "/";
     }
@@ -47,7 +88,7 @@ public class ExternalStorage {
     }
 
     public static String getOSMDir() {
-        return Environment.getExternalStorageDirectory() + "/"
+        return getSDCardOrExternalStorage() + "/"
                 + APP_DIR + "/"
                 + OSM_DIR + "/";
     }
