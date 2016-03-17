@@ -532,6 +532,23 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
                     //user clicked cancel
                 }
             });
+
+            builder.setNeutralButton("Enable All", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ListView list = ((AlertDialog) dialog).getListView();
+                    for (int i = 0; i < list.getCount(); i++) {
+                        boolean checked = list.isItemChecked(i);
+                        if (!checked) {
+                            list.setItemChecked(i, true);
+                            File fileToAdd = osmFiles[i];
+                            Set<File> toAdd = new HashSet<>();
+                            toAdd.add(fileToAdd);
+                            OSMMapBuilder.addOSMFilesToModel(toAdd);
+                        }
+                    }
+                }
+            });
             builder.show();
         } else {
             Toast prompt = Toast.makeText(getApplicationContext(), "Please add .osm files to " + ExternalStorage.getOSMDir(), Toast.LENGTH_LONG);
