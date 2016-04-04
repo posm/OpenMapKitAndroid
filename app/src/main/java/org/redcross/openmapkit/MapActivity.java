@@ -237,9 +237,13 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         View.OnClickListener tagSwipeLaunchListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //launch the TagSwipeActivity
-                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
-                startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
+                if (ODKCollectHandler.isODKCollectMode()) {
+                    //launch the TagSwipeActivity
+                    Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                    startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
+                } else {
+                    launchODKCollectSnackbar();
+                }
             }
         };
         // tag button
@@ -254,12 +258,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         mTagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String tappedKey = tagListAdapter.getTagKeyForIndex(position);
-
-                //launch the TagSwipeActivity and pass the key
-                Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
-                tagSwipe.putExtra("TAG_KEY", tappedKey);
-                startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
+                if (ODKCollectHandler.isODKCollectMode()) {
+                    String tappedKey = tagListAdapter.getTagKeyForIndex(position);
+                    Intent tagSwipe = new Intent(getApplicationContext(), TagSwipeActivity.class);
+                    tagSwipe.putExtra("TAG_KEY", tappedKey);
+                    startActivityForResult(tagSwipe, ODK_COLLECT_TAG_ACTIVITY_CODE);
+                } else {
+                    launchODKCollectSnackbar();
+                }
             }
         });
     }
@@ -709,5 +715,22 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             Log.w("Httpd", "MBTiles HTTP server could not start.");
         }
         Log.w("MBTilesServer", "MBTiles HTTP server initialized.");
+    }
+
+    private void launchODKCollectSnackbar() {
+        Snackbar.make(findViewById(R.id.mapActivity),
+                "To edit tags, OpenMapKit must be launched from within an ODK Collect survey.",
+                Snackbar.LENGTH_LONG)
+                .setAction("Launch ODK Collect", new View.OnClickListener() {
+                    // undo action
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setClassName("org.odk.collect.android","org.odk.collect.android.activities.SplashScreenActivity");
+                        startActivity(intent);
+                    }
+                })
+                .setActionTextColor(Color.rgb(126, 188, 111))
+                .show();
     }
 }
