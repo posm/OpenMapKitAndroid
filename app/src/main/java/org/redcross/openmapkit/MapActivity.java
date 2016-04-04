@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -718,19 +719,54 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     private void launchODKCollectSnackbar() {
-        Snackbar.make(findViewById(R.id.mapActivity),
-                "To edit tags, OpenMapKit must be launched from within an ODK Collect survey.",
-                Snackbar.LENGTH_LONG)
-                .setAction("Launch ODK Collect", new View.OnClickListener() {
-                    // undo action
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setClassName("org.odk.collect.android","org.odk.collect.android.activities.SplashScreenActivity");
-                        startActivity(intent);
-                    }
-                })
-                .setActionTextColor(Color.rgb(126, 188, 111))
-                .show();
+        if (isAppInstalled("org.odk.collect.android")) {
+            Snackbar.make(findViewById(R.id.mapActivity),
+                    "To edit tags, OpenMapKit must be launched from within an ODK Collect survey.",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Launch ODK Collect", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setClassName("org.odk.collect.android", "org.odk.collect.android.activities.SplashScreenActivity");
+                            startActivity(intent);
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+        } else {
+            Snackbar.make(findViewById(R.id.mapActivity),
+                    "Please install ODK Collect.",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Launch Play Store", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            final String appPackageName = "org.odk.collect.android";
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                            }
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+        }
+
     }
+
+    private boolean isAppInstalled(String uri) {
+        PackageManager pm = getPackageManager();
+        boolean app_installed;
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            app_installed = true;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            app_installed = false;
+        }
+        return app_installed;
+    }
+
 }
