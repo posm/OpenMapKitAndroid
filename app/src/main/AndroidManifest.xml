@@ -57,6 +57,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.redcross.openmapkit.deployments.DeploymentsActivity" />
         </activity>
+        <activity android:name=".ZXingActivity"
+            android:screenOrientation="fullSensor"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme"
+            android:windowSoftInputMode="stateAlwaysHidden">
+        </activity>
     </application>
 
 </manifest>

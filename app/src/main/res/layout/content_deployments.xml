@@ -22,7 +22,8 @@
         android:layout_marginTop="-2dp"
         card_view:cardCornerRadius="0dp"
         card_view:cardElevation="4dp"
-        android:id="@+id/view">
+        android:id="@+id/scanFieldPaperCard"
+        android:onClick="scanFieldPaper">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -43,14 +44,14 @@
                 android:src="@drawable/zxing_icon" />
 
             <TextView
-                android:id="@+id/scanFieldPapersTitle"
+                android:id="@+id/scanFieldPaperTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/thumbnail"
                 android:layout_alignParentTop="true"
                 android:textColor="#222"
                 android:textSize="24sp"
-                android:text="Scan Field Papers Barcode"
+                android:text="Scan Field Paper QR Code"
                 android:paddingTop="5dp"
                 android:paddingLeft="4dp" />
 
@@ -59,10 +60,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/thumbnail"
-                android:layout_below="@+id/scanFieldPapersTitle"
+                android:layout_below="@+id/scanFieldPaperTitle"
                 android:textColor="#5e5e5e"
                 android:textSize="14sp"
-                android:text="Scan a barcode on a field paper to download a deployment for the given atlas."
+                android:text="Scan a QR code on a field paper to download a deployment for the given atlas."
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
                 android:paddingBottom="2dp" />
@@ -75,7 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/view" />
+        android:layout_below="@+id/scanFieldPaperCard" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

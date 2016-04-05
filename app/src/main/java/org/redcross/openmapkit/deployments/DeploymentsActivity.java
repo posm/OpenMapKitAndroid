@@ -3,6 +3,7 @@ package org.redcross.openmapkit.deployments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,8 +22,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.redcross.openmapkit.R;
+import org.redcross.openmapkit.ZXingActivity;
 
 
 public class DeploymentsActivity extends AppCompatActivity {
@@ -98,6 +105,15 @@ public class DeploymentsActivity extends AppCompatActivity {
         return false;
     }
 
+    public void scanFieldPaper(View view) {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setCaptureActivity(ZXingActivity.class);
+        integrator.setOrientationLocked(false);
+        integrator.setPrompt("Place a field paper QR code inside the viewfinder to scan.");
+        integrator.setBeepEnabled(true);
+        integrator.initiateScan();
+    }
+
     public void deploymentsFetched(boolean success) {
         if (success) {
             progressBar.setVisibility(View.GONE);
@@ -154,6 +170,23 @@ public class DeploymentsActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+                Log.d("DeploymentsActivity", "Cancelled scan");
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d("DeploymentsActivity", "Scanned");
+                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+            }
+        } else {
+            // This is important, otherwise the result will not be passed to the fragment
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }
