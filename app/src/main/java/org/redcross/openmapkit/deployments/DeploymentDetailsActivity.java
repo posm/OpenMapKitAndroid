@@ -1,9 +1,11 @@
 package org.redcross.openmapkit.deployments;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -130,13 +132,29 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     }
 
     private void startDownload() {
-        /**
-         * Instantiate downloader.
-         */
-        downloader = new DeploymentDownloader(deployment, this);
-        downloader.addListener(this);
-        downloader.execute();
-        setCancelFab();
+        if (deployment.fileCount() > 0) {
+            /**
+             * Instantiate downloader.
+             */
+            downloader = new DeploymentDownloader(deployment, this);
+            downloader.addListener(this);
+            downloader.execute();
+            setCancelFab();
+        } else {
+            Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
+                    "Does not contain any files. Please check that your server deployment is complete.",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Retry", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            startDownload();
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+        }
+
     }
 
     private void cancelDownload() {
