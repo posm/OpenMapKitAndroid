@@ -27,7 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/thumbnail"
             android:layout_alignParentTop="true"
-            android:padding="4dp"
+            android:paddingTop="4dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
             android:textColor="#222"
             android:textSize="24sp"
             android:text="No Name" />
