@@ -1,5 +1,6 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -155,7 +156,7 @@ public class TagEdit {
         return odkTag;
     }
     
-    private void updateTagInOSMElement() {
+    public void updateTagInOSMElement() {
         // check boxes
         if (odkTag != null && checkBoxMode) {
             boolean editTextCheckBoxChecked = editTextCheckBox.isChecked();
@@ -173,18 +174,21 @@ public class TagEdit {
         }
         // radio buttons
         if (radioGroup != null && odkTag != null) {
-            LinearLayout customLL = (LinearLayout)radioGroup.getChildAt(radioGroup.getChildCount() - 1);
-            RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
-            int checkedId = radioGroup.getCheckedRadioButtonId();
-            if (customRadio.isChecked()) {
-                EditText et = (EditText)customLL.getChildAt(1);
-                tagVal = et.getText().toString();
-                osmElement.addOrEditTag(tagKey, tagVal);
-            } else if (checkedId != -1) {
-                tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
-                osmElement.addOrEditTag(tagKey, tagVal);
-            } else {
-                osmElement.deleteTag(tagKey);
+            View v = radioGroup.getChildAt(radioGroup.getChildCount() - 1);
+            if (v instanceof LinearLayout) {
+                LinearLayout customLL = (LinearLayout)v;
+                RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
+                int checkedId = radioGroup.getCheckedRadioButtonId();
+                if (customRadio.isChecked()) {
+                    EditText et = (EditText)customLL.getChildAt(1);
+                    tagVal = et.getText().toString();
+                    osmElement.addOrEditTag(tagKey, tagVal);
+                } else if (checkedId != -1) {
+                    tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
+                    osmElement.addOrEditTag(tagKey, tagVal);
+                } else {
+                    osmElement.deleteTag(tagKey);
+                }
             }
         }
         // edit text

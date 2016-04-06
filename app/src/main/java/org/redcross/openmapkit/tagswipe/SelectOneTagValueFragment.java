@@ -100,6 +100,7 @@ public class SelectOneTagValueFragment extends Fragment {
                 } else {
                     customButton.setChecked(false);
                 }
+                tagEdit.updateTagInOSMElement();
             }
 
             @Override
@@ -132,6 +133,12 @@ public class SelectOneTagValueFragment extends Fragment {
                 prevTagValInTagItems = true;
             }
             ToggleableRadioButton button = new ToggleableRadioButton(activity, tagValueRadioGroup, customButton, customEditText);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tagEdit.updateTagInOSMElement();
+                }
+            });
             button.setTextSize(18);
             TextView textView = new TextView(activity);
             textView.setPadding(66, 0, 0, 25);
