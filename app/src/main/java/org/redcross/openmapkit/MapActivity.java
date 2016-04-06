@@ -601,6 +601,20 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         downloader.execute();
     }
 
+    private void showInfo() {
+        Snackbar.make(findViewById(R.id.mapActivity),
+                "Version: " + MapActivity.getVersion(),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                })
+                .setActionTextColor(Color.rgb(126, 188, 111))
+                .show();
+    }
+
     /**
      * OSMMapBuilder sets a reference to OSMMap in this class.
      *
@@ -646,6 +660,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             return true;
         } else if (id == R.id.osmsettings) {
             presentOSMOptions();
+            return true;
+        } else if (id == R.id.info) {
+            showInfo();
             return true;
         } else if (id == R.id.action_save_to_odk_collect) {
             saveToODKCollectAndExit();
