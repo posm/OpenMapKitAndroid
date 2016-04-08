@@ -20,6 +20,7 @@ public class Deployments {
 
     private JSONArray deploymentsArray = new JSONArray();
     private DeploymentsActivity activity;
+    private String omkServerUrl;
 
 
     public static Deployments singleton() {
@@ -28,6 +29,7 @@ public class Deployments {
 
     public void fetch(DeploymentsActivity activity, String url) {
         this.activity = activity;
+        omkServerUrl = url;
         if (url == null) {
             activity.deploymentsFetched(false);
             return;
@@ -54,6 +56,10 @@ public class Deployments {
 
     public int size() {
         return deploymentsArray.length();
+    }
+
+    public String omkServerUrl() {
+        return omkServerUrl;
     }
 
     private void parseJSON(String json) {

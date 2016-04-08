@@ -37,6 +37,7 @@ import java.net.URL;
 public class DeploymentsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private URL pendingQrUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +124,13 @@ public class DeploymentsActivity extends AppCompatActivity {
             recyclerView.setVisibility(View.VISIBLE);
             DeploymentsRecyclerAdapter adapter = new DeploymentsRecyclerAdapter(DeploymentsActivity.this);
             recyclerView.setAdapter(adapter);
+            if (pendingQrUrl != null) {
+                findDeployment(pendingQrUrl);
+                pendingQrUrl = null;
+            }
         } else {
             Snackbar.make(findViewById(R.id.deploymentsActivity),
-                    "Failed to connect to OpenMapKit Server!",
+                    "OpenMapKit Server not found at: " + Deployments.singleton().omkServerUrl(),
                     Snackbar.LENGTH_LONG)
                     .setAction("Setup", new View.OnClickListener() {
                         // undo action
@@ -238,6 +243,7 @@ public class DeploymentsActivity extends AppCompatActivity {
         editor.putString("omkServerUrl", omkServerUrl);
         editor.apply();
 
+        pendingQrUrl = url;
         Deployments.singleton().fetch(this, omkServerUrl);
     }
 
