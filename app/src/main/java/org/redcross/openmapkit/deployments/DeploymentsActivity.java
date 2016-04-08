@@ -30,6 +30,9 @@ import com.google.zxing.integration.android.IntentResult;
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.ZXingActivity;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class DeploymentsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -178,15 +181,95 @@ public class DeploymentsActivity extends AppCompatActivity {
         if(result != null) {
             if(result.getContents() == null) {
                 Log.d("DeploymentsActivity", "Cancelled scan");
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Cancelled QR Code Scan", Toast.LENGTH_LONG).show();
             } else {
-                Log.d("DeploymentsActivity", "Scanned");
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                processQR(result.getContents());
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void processQR(String qr) {
+        try {
+            URL url = new URL(qr);
+            if (isDeploymentServerQRServer(url)) {
+                findDeployment(url);
+            } else {
+                setServerAndFetchForQR(url);
+            }
+        }
+        // not a valid url
+        catch (MalformedURLException e) {
+            Snackbar.make(findViewById(R.id.deploymentsActivity),
+                    "The QR code you scanned does not give us a valid URL!",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Retry", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            scanFieldPaper(null);
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+        }
+
+    }
+
+    private boolean isDeploymentServerQRServer(URL url) {
+        String protocol = url.getProtocol();
+        String authority = url.getAuthority();
+        String urlStr = protocol + "://" + authority;
+
+        SharedPreferences omkServerUrlPref = getSharedPreferences("org.redcross.openmapkit.OMK_SERVER_URL", Context.MODE_PRIVATE);
+        String omkServerUrl = omkServerUrlPref.getString("omkServerUrl", "");
+
+        return omkServerUrl.equals(urlStr) || omkServerUrl.equals(urlStr + "/");
+    }
+
+    private void setServerAndFetchForQR(URL url) {
+
+    }
+
+    private void findDeployment(URL url) {
+        String slug = findSlug(url.getPath());
+        int idx = Deployments.singleton().getIdxForName(slug);
+        if (idx > -1) {
+            Intent deploymentDetailsActivity = new Intent(this, DeploymentDetailsActivity.class);
+            deploymentDetailsActivity.putExtra("POSITION", idx);
+            startActivity(deploymentDetailsActivity);
+        } else {
+            Snackbar.make(findViewById(R.id.deploymentsActivity),
+                    "There is no deployment for the field paper: " + slug,
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Retry", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            scanFieldPaper(null);
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+        }
+    }
+
+    private String findSlug(String path) {
+        String[] urlTokens = path.split("/");
+        int len = urlTokens.length;
+        for (int i = 0; i < len; i++) {
+            String t = urlTokens[i];
+            if (t.equals("atlases")) {
+                // check to see if there is a token after atlases
+                if (i + 1 >= len) {
+                    return null;
+                }
+                return urlTokens[i+1];
+            }
+        }
+        return null;
     }
 
 }

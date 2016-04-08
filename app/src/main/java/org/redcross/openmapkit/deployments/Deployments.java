@@ -38,6 +38,10 @@ public class Deployments {
         return new Deployment(deploymentsArray.optJSONObject(idx));
     }
 
+    public int getIdxForName(String name) {
+        return -1;
+    }
+
     public int size() {
         return deploymentsArray.length();
     }
