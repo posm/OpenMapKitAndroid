@@ -19,9 +19,9 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
     private JSONArray mbtiles = new JSONArray();
     private JSONArray osms = new JSONArray();
 
-    public FileExpandableListAdapter(Context context, int deploymentPosition) {
+    public FileExpandableListAdapter(Context context, Deployment deployment) {
         this.context = context;
-        deployment = Deployments.singleton().get(deploymentPosition);
+        this.deployment = deployment;
         mbtiles = deployment.mbtiles();
         osms = deployment.osm();
     }

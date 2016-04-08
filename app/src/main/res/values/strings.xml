@@ -7,6 +7,7 @@
     <string name="action_osmdownloader">OSM XML Downloader</string>
     <!-- osm menu -->
     <string name="action_osmsettings">OSM XML Layers</string>
+    <string name="action_info">Info</string>
     <string name="osmChooserDialogTitle">Choose OSM XML Files</string>
     <string name="osmAppPath">openmapkit/osm</string>
 

@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ public class Deployments {
 
     private JSONArray deploymentsArray = new JSONArray();
     private DeploymentsActivity activity;
+    private String omkServerUrl;
 
 
     public static Deployments singleton() {
@@ -27,6 +29,7 @@ public class Deployments {
 
     public void fetch(DeploymentsActivity activity, String url) {
         this.activity = activity;
+        omkServerUrl = url;
         if (url == null) {
             activity.deploymentsFetched(false);
             return;
@@ -38,8 +41,25 @@ public class Deployments {
         return new Deployment(deploymentsArray.optJSONObject(idx));
     }
 
+    public int getIdxForName(String name) {
+        for (int i = 0; i < deploymentsArray.length(); i++) {
+            JSONObject d = deploymentsArray.optJSONObject(i);
+            if (d != null) {
+                String n = d.optString("name");
+                if (n != null && n.equals(name)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     public int size() {
         return deploymentsArray.length();
+    }
+
+    public String omkServerUrl() {
+        return omkServerUrl;
     }
 
     private void parseJSON(String json) {

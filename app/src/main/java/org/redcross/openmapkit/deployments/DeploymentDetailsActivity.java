@@ -1,13 +1,18 @@
 package org.redcross.openmapkit.deployments;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,10 +46,15 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        /**
-         * Getting deployment object from JSON
-         */
-        int position = getIntent().getIntExtra("POSITION", 0);
+        if(android.os.Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.osm_light_green));
+        }
+
+        Intent intent = getIntent();
+        int position = intent.getIntExtra("POSITION", 0);
         deployment = Deployments.singleton().get(position);
 
         String title = deployment.title();
@@ -68,7 +78,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
          * SETUP FOR EXPANDABLE LIST VIEW FOR MBTILES AND OSM FILES
          */
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        FileExpandableListAdapter fileExpandableListAdapter = new FileExpandableListAdapter(this, position);
+        FileExpandableListAdapter fileExpandableListAdapter = new FileExpandableListAdapter(this, deployment);
         expandableListView.setAdapter(fileExpandableListAdapter);
 
         /**
@@ -130,13 +140,29 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     }
 
     private void startDownload() {
-        /**
-         * Instantiate downloader.
-         */
-        downloader = new DeploymentDownloader(deployment, this);
-        downloader.addListener(this);
-        downloader.execute();
-        setCancelFab();
+        if (deployment.fileCount() > 0) {
+            /**
+             * Instantiate downloader.
+             */
+            downloader = new DeploymentDownloader(deployment, this);
+            downloader.addListener(this);
+            downloader.execute();
+            setCancelFab();
+        } else {
+            Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
+                    "Does not contain any files. Please check that your server deployment is complete.",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Retry", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            startDownload();
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+        }
+
     }
 
     private void cancelDownload() {
@@ -160,7 +186,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.black));
         progressTextView.setTypeface(null, Typeface.NORMAL);
-        progressBar.setProgress((int)bytesDownloaded);
+        progressBar.setProgress((int) bytesDownloaded);
     }
 
     @Override

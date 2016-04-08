@@ -22,7 +22,9 @@
             <item
                 android:id="@+id/osmsettings"
                 android:title="@string/action_osmsettings" />
-
+            <item
+                android:id="@+id/info"
+                android:title="@string/action_info" />
             </menu>
         </item>
 
