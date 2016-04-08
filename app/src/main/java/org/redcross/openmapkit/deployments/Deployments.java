@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -39,6 +40,15 @@ public class Deployments {
     }
 
     public int getIdxForName(String name) {
+        for (int i = 0; i < deploymentsArray.length(); i++) {
+            JSONObject d = deploymentsArray.optJSONObject(i);
+            if (d != null) {
+                String n = d.optString("name");
+                if (n != null && n.equals(name)) {
+                    return i;
+                }
+            }
+        }
         return -1;
     }
 
