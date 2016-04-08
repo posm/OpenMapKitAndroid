@@ -126,7 +126,7 @@ public class DeploymentsActivity extends AppCompatActivity {
         } else {
             Snackbar.make(findViewById(R.id.deploymentsActivity),
                     "Failed to connect to OpenMapKit Server!",
-                    Snackbar.LENGTH_INDEFINITE)
+                    Snackbar.LENGTH_LONG)
                     .setAction("Setup", new View.OnClickListener() {
                         // undo action
                         @Override
@@ -230,7 +230,15 @@ public class DeploymentsActivity extends AppCompatActivity {
     }
 
     private void setServerAndFetchForQR(URL url) {
+        final SharedPreferences omkServerUrlPref = getSharedPreferences("org.redcross.openmapkit.OMK_SERVER_URL", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = omkServerUrlPref.edit();
+        String protocol = url.getProtocol();
+        String authority = url.getAuthority();
+        String omkServerUrl = protocol + "://" + authority;
+        editor.putString("omkServerUrl", omkServerUrl);
+        editor.apply();
 
+        Deployments.singleton().fetch(this, omkServerUrl);
     }
 
     private void findDeployment(URL url) {
