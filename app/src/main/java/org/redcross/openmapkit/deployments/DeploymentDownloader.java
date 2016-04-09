@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
 
+import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
@@ -55,6 +56,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... nothing) {
+        String deploymentDir = ExternalStorage.deploymentDirRelativeToExternalDir(deployment.name());
         JSONArray osms = deployment.osm();
         int osmsLen = osms.length();
         int idx = 0;
@@ -64,7 +66,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
             String osmUrl = osm.optString("url");
             if (osmUrl == null) continue;
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(osmUrl));
-            request.setDestinationInExternalPublicDir(ExternalStorage.getOSMDirRelativeToExternalDir(), Deployment.fileNameFromUrl(osmUrl));
+            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(osmUrl));
             long downloadId = downloadManager.enqueue(request);
             downloadIds[idx++] = downloadId;
         }
@@ -76,7 +78,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
             String mbtileUrl = mbtile.optString("url");
             if (mbtileUrl == null) continue;
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mbtileUrl));
-            request.setDestinationInExternalPublicDir(ExternalStorage.getMBTilesDirRelativeToExternalDir(), Deployment.fileNameFromUrl(mbtileUrl));
+            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(mbtileUrl));
             long downloadId = downloadManager.enqueue(request);
             downloadIds[idx++] = downloadId;
         }

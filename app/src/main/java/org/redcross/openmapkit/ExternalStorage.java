@@ -24,6 +24,7 @@ public class ExternalStorage {
     public static final String APP_DIR = "openmapkit";
     public static final String MBTILES_DIR = "mbtiles";
     public static final String OSM_DIR = "osm";
+    public static final String DEPLOYMENTS_DIR = "deployments";
 
     /**
      * Creating the application directory structure.
@@ -36,7 +37,7 @@ public class ExternalStorage {
         File storageDir = Environment.getExternalStorageDirectory();
         File appDir = new File(storageDir, APP_DIR);
         if(!appDir.exists()) {
-            appDir.mkdirs();
+            appDir.mkdirs(); // mkdirs is mkdir -p
         }
         File mbtilesDir = new File(appDir, MBTILES_DIR);
         if(!mbtilesDir.exists()) {
@@ -45,6 +46,10 @@ public class ExternalStorage {
         File osmDir = new File(appDir, OSM_DIR);
         if (!osmDir.exists()) {
             osmDir.mkdirs();
+        }
+        File deploymentsDir = new File(appDir, DEPLOYMENTS_DIR);
+        if (!deploymentsDir.exists()) {
+            deploymentsDir.mkdirs();
         }
     }
 
@@ -126,6 +131,42 @@ public class ExternalStorage {
         }
         return targetFile;
     }
+
+    public static File deploymentDir(String deploymentName) {
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
+        File deploymentDir = new File(deploymentsDir, deploymentName);
+        if (!deploymentDir.exists()) {
+            deploymentDir.mkdirs();
+        }
+        return deploymentDir;
+    }
+
+    public static String deploymentDirRelativeToExternalDir(String deploymentName) {
+        // make sure deployment dir is created
+        deploymentDir(deploymentName);
+        return "/" + APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName + "/";
+    }
+
+    public static void deleteDeployment(String deploymentName) {
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
+        File deploymentDir = new File(deploymentsDir, deploymentName);
+        deleteRecursive(deploymentDir);
+    }
+
+    private static void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        }
+        fileOrDirectory.delete();
+    }
+
+
+
+
 
     /**
      * From

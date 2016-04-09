@@ -28,6 +28,15 @@ public class Deployment {
     }
 
     /**
+     * Returns the name of the deployment.
+     *
+     * @return - name
+     */
+    public String name() {
+        return json.optString("name");
+    }
+
+    /**
      * Returns the title of the deployment. If the title
      * is not available, return the name instead.
      *
