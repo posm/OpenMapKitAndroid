@@ -82,6 +82,18 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
             long downloadId = downloadManager.enqueue(request);
             downloadIds[idx++] = downloadId;
         }
+        JSONArray geojsons = deployment.geojson();
+        int geojsonsLen = geojsons.length();
+        for (int k = 0; k < geojsonsLen; ++k) {
+            JSONObject geojson = geojsons.optJSONObject(k);
+            if (geojson == null) continue;
+            String geojsonUrl = geojson.optString("url");
+            if (geojsonUrl == null) continue;
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(geojsonUrl));
+            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(geojsonUrl));
+            long downloadId = downloadManager.enqueue(request);
+            downloadIds[idx++] = downloadId;
+        }
         pollDownloadManager();
         return null;
     }

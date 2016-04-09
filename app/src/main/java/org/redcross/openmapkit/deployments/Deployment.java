@@ -71,8 +71,16 @@ public class Deployment {
         return mbtilesFiles.length();
     }
 
+    public int geojsonCount() {
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return 0;
+        JSONArray geojsonFiles = files.optJSONArray("geojson");
+        if (geojsonFiles == null) return 0;
+        return geojsonFiles.length();
+    }
+
     public int fileCount() {
-        return osmCount() + mbtilesCount();
+        return osmCount() + mbtilesCount() + geojsonCount();
     }
 
     public long totalSize() {
@@ -98,5 +106,13 @@ public class Deployment {
         JSONArray mbtilesFiles = files.optJSONArray("mbtiles");
         if (mbtilesFiles == null) return new JSONArray();
         return mbtilesFiles;
+    }
+
+    public JSONArray geojson() {
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return new JSONArray();
+        JSONArray geojsonFiles = files.optJSONArray("geojson");
+        if (geojsonFiles == null) return new JSONArray();
+        return geojsonFiles;
     }
 }
