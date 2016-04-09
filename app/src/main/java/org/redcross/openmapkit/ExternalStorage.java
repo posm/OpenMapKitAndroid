@@ -29,8 +29,12 @@ public class ExternalStorage {
      * Creating the application directory structure.
      */
     public static void checkOrCreateAppDirs() {
-        File externalDir = Environment.getExternalStorageDirectory();
-        File appDir = new File(externalDir, APP_DIR);
+
+        // NOTE: Unable to create directories in SD Card dir. Investigate further. #135
+        //  File storageDir = getSDCardDirWithExternalFallback();
+
+        File storageDir = Environment.getExternalStorageDirectory();
+        File appDir = new File(storageDir, APP_DIR);
         if(!appDir.exists()) {
             appDir.mkdirs();
         }
@@ -188,5 +192,15 @@ public class ExternalStorage {
         return dirs;
     }
 
+    /**
+     * Use last storage dir, which is ext SD card. If there is no SD card,
+     * the last in the list will be the standard ext storage.
+     *
+     * @return storage dir
+     */
+    public static File getSDCardDirWithExternalFallback() {
+        String[] dirs = getStorageDirectories();
+        return new File(dirs[dirs.length-1]);
+    }
 }
 
