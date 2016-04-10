@@ -32,7 +32,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     private ProgressBar progressBar;
 
     private enum DownloadState {
-        FRESH, DOWNLOADING, CANCELED, ERROR, COMPLETE
+        FRESH, DOWNLOADING, CANCELED, ERROR, COMPLETE, DELETED
     }
     private DownloadState downloadState = DownloadState.FRESH;
 
@@ -137,6 +137,10 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         }
         if (downloadState == DownloadState.ERROR) {
             startDownload();
+            return;
+        }
+        if (downloadState == DownloadState.DELETED) {
+            startDownload();
         }
     }
 
@@ -181,6 +185,12 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
                     @Override
                     public void onClick(View v) {
                         ExternalStorage.deleteDeployment(deployment.name());
+                        downloadState = DownloadState.DELETED;
+                        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
+                        progressTextView.setTextColor(getResources().getColor(R.color.black));
+                        progressTextView.setTypeface(null, Typeface.NORMAL);
+                        progressBar.setProgress(0);
+                        setDownloadFab();
                     }
                 })
                 .setActionTextColor(Color.RED)
@@ -227,6 +237,5 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setTextColor(getResources().getColor(R.color.osm_dark_green));
         progressTextView.setTypeface(null, Typeface.BOLD);
     }
-
 
 }
