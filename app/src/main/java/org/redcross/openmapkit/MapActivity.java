@@ -113,6 +113,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
         // create directory structure for app if needed
         ExternalStorage.checkOrCreateAppDirs();
+
+        // Move constraints assets to ExternalStorage if necessary
+        ExternalStorage.copyConstraintsToExternalStorageIfNeeded(this);
         
         // Register the intent to the ODKCollect handler
         // This will determine if we are in ODK Collect Mode or not.

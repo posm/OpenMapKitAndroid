@@ -1,12 +1,18 @@
 package org.redcross.openmapkit;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +31,8 @@ public class ExternalStorage {
     public static final String MBTILES_DIR = "mbtiles";
     public static final String OSM_DIR = "osm";
     public static final String DEPLOYMENTS_DIR = "deployments";
+    public static final String CONSTRAINTS_DIR = "constraints";
+    public static final String DEFAULT_CONSTRAINT = "default.json";
 
     /**
      * Creating the application directory structure.
@@ -50,6 +58,10 @@ public class ExternalStorage {
         File deploymentsDir = new File(appDir, DEPLOYMENTS_DIR);
         if (!deploymentsDir.exists()) {
             deploymentsDir.mkdirs();
+        }
+        File constraintsDir = new File(appDir, CONSTRAINTS_DIR);
+        if (!constraintsDir.exists()) {
+            constraintsDir.mkdirs();
         }
     }
 
@@ -163,6 +175,66 @@ public class ExternalStorage {
         }
         fileOrDirectory.delete();
     }
+
+    public static void copyConstraintsToExternalStorageIfNeeded(Context context) {
+        File storageDir = Environment.getExternalStorageDirectory();
+        File appDir = new File(storageDir, APP_DIR);
+        File constraintsDir = new File(appDir, CONSTRAINTS_DIR);
+        File defaultConstraint = new File(constraintsDir, DEFAULT_CONSTRAINT);
+        // We want to always copy over JSON while developing.
+        // In production, we only want to copy over once.
+        if (!defaultConstraint.exists() || BuildConfig.DEBUG) {
+            copyAssetsFileOrDirToExternalStorage(context, CONSTRAINTS_DIR);
+        }
+    }
+
+    private static void copyAssetsFileOrDirToExternalStorage(Context context, String path) {
+        AssetManager assetManager = context.getAssets();
+        String assets[] = null;
+        try {
+            assets = assetManager.list(path);
+            if (assets.length == 0) {
+                copyAssetsFileToExternalStorage(context, path);
+            } else {
+                String fullPath = Environment.getExternalStorageDirectory() + "/" + APP_DIR + "/" + path;
+                File dir = new File(fullPath);
+                if (!dir.exists())
+                    dir.mkdir();
+                for (int i = 0; i < assets.length; ++i) {
+                    copyAssetsFileOrDirToExternalStorage(context, path + "/" + assets[i]);
+                }
+            }
+        } catch (IOException ex) {
+            Log.e("tag", "I/O Exception", ex);
+        }
+    }
+
+    private static void copyAssetsFileToExternalStorage(Context context, String filename) {
+        AssetManager assetManager = context.getAssets();
+
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = assetManager.open(filename);
+            String newFileName = Environment.getExternalStorageDirectory() + "/" + APP_DIR + "/" + filename;
+            out = new FileOutputStream(newFileName);
+
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            in = null;
+            out.flush();
+            out.close();
+            out = null;
+        } catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+
+    }
+
 
 
 
