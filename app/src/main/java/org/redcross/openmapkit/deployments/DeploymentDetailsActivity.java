@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONObject;
+import org.redcross.openmapkit.ExternalStorage;
 import org.redcross.openmapkit.R;
 
 
@@ -172,7 +173,18 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     }
 
     private void deleteDownload() {
-        // TODO Do something!
+        Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
+                "Are you sure you want to delete this deployment?",
+                Snackbar.LENGTH_LONG)
+                .setAction("Delete", new View.OnClickListener() {
+                    // undo action
+                    @Override
+                    public void onClick(View v) {
+                        ExternalStorage.deleteDeployment(deployment.name());
+                    }
+                })
+                .setActionTextColor(Color.RED)
+                .show();
     }
 
 
