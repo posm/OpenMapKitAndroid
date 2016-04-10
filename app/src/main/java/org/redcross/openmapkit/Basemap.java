@@ -90,7 +90,7 @@ public class Basemap {
             //create dialog of mbtiles choices
             AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
             builder.setTitle(mapActivity.getString(R.string.mbtilesChooserDialogTitle));
-            CharSequence[] charSeq = mbtilesFileNames.toArray(new CharSequence[mbtilesFileNames.size()]);
+            String[] names = mbtilesFileNames.toArray(new String[mbtilesFileNames.size()]);
 
             //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
             int defaultRadioButtonIndex = 0;
@@ -119,7 +119,7 @@ public class Basemap {
             }
 
             //add choices to dialog
-            builder.setSingleChoiceItems(charSeq, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(names, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //user tapped on radio button and changed previous choice or default
