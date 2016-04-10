@@ -13,6 +13,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Clint Cabanero & Nicholas Hallahan on 3/17/15.
@@ -67,7 +68,7 @@ public class Basemap {
         String previousMBTilesChoice = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
 
         //create an array of all mbtile options
-        final ArrayList<String> mbtilesFileNames = new ArrayList<>();
+        final List<String> mbtilesFileNames = new ArrayList<>();
 
         //when device is connected, HOT OSM Basemap is the first option
         if(Connectivity.isConnected(context)) {
@@ -76,7 +77,7 @@ public class Basemap {
 
         //add mbtiles names from external storage
         File[] mbtiles = ExternalStorage.fetchMBTilesFiles();
-        if (mbtiles != null && mbtiles.length > 0) {
+        if (mbtiles.length > 0) {
             for (File file : mbtiles) {
                 String fileName = file.getName();
                 mbtilesFileNames.add(fileName);

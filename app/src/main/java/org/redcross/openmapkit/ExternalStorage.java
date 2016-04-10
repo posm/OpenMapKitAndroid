@@ -5,6 +5,8 @@ import android.content.res.AssetManager;
 import android.os.Environment;
 import android.util.Log;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -86,9 +89,12 @@ public class ExternalStorage {
     }
     
     public static File[] fetchOSMXmlFiles() {
+        List<File> osms = allDeploymentOSMXmlFiles();
         String dirPath = getOSMDir();
         File dir = new File(dirPath);
-        return dir.listFiles();
+        File[] otherOsms = dir.listFiles();
+        Collections.addAll(osms, otherOsms);
+        return osms.toArray(new File[osms.size()]);
     }
     
     public static String[] fetchOSMXmlFileNames() {
@@ -102,9 +108,12 @@ public class ExternalStorage {
     }
     
     public static File[] fetchMBTilesFiles() {
+        List<File> mbtiles = allDeploymentMBTilesFiles();
         String dirPath = getMBTilesDir();
         File dir = new File(dirPath);
-        return dir.listFiles();
+        File[] otherMBTiles =  dir.listFiles();
+        Collections.addAll(mbtiles, otherMBTiles);
+        return mbtiles.toArray(new File[mbtiles.size()]);
     }
     
     /**
@@ -158,6 +167,40 @@ public class ExternalStorage {
         // make sure deployment dir is created
         deploymentDir(deploymentName);
         return "/" + APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName + "/";
+    }
+
+    public static List<File> allDeploymentOSMXmlFiles() {
+        List<File> deploymentOSMFiles = new ArrayList<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
+        File[] deployments = deploymentsDir.listFiles();
+        for (File deploymentDir : deployments) {
+            File[] files = deploymentDir.listFiles();
+            for (File f : files) {
+                String ext = FilenameUtils.getExtension(f.getPath());
+                if (ext.equals("osm")) {
+                    deploymentOSMFiles.add(f);
+                }
+            }
+        }
+        return deploymentOSMFiles;
+    }
+
+    public static List<File> allDeploymentMBTilesFiles() {
+        List<File> deploymentMBTilesFiles = new ArrayList<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
+        File[] deployments = deploymentsDir.listFiles();
+        for (File deploymentDir : deployments) {
+            File[] files = deploymentDir.listFiles();
+            for (File f : files) {
+                String ext = FilenameUtils.getExtension(f.getPath());
+                if (ext.equals("mbtiles")) {
+                    deploymentMBTilesFiles.add(f);
+                }
+            }
+        }
+        return deploymentMBTilesFiles;
     }
 
     public static void deleteDeployment(String deploymentName) {

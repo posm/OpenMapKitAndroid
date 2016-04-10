@@ -11,8 +11,8 @@
                 android:id="@+id/deployments"
                 android:title="@string/action_deployments" />
             <item
-                android:id="@+id/mbtilessettings"
-                android:title="@string/action_mbtilessettings" />
+                android:id="@+id/basemaps"
+                android:title="@string/action_basemaps" />
             <item
                 android:id="@+id/osmcredentials"
                 android:title="@string/action_osmcredentials" />
@@ -20,7 +20,7 @@
                 android:id="@+id/osmdownloader"
                 android:title="@string/action_osmdownloader" />
             <item
-                android:id="@+id/osmsettings"
+                android:id="@+id/osmXmlLayers"
                 android:title="@string/action_osmsettings" />
             <item
                 android:id="@+id/info"

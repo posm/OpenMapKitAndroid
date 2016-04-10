@@ -499,7 +499,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     /**
-     * For presenting a dialog to allow the user to choose which OSM XML files to use that have been uploaded to their device's openmapkit/osm folder
+     * For presenting a dialog to allow the user to choose which OSM XML files to use.
      */
     private void presentOSMOptions() {
         final File[] osmFiles = ExternalStorage.fetchOSMXmlFiles();
@@ -655,13 +655,13 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         } else if (id == R.id.osmdownloader) {
             askIfDownloadOSM();
             return true;
-        } else if (id == R.id.mbtilessettings) {
+        } else if (id == R.id.basemaps) {
             basemap.presentMBTilesOptions();
             return true;
         } else if (id == R.id.osmcredentials) {
             inputOSMCredentials();
             return true;
-        } else if (id == R.id.osmsettings) {
+        } else if (id == R.id.osmXmlLayers) {
             presentOSMOptions();
             return true;
         } else if (id == R.id.info) {

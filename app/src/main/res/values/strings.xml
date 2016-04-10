@@ -13,7 +13,7 @@
 
     <!-- mbtiles menu -->
     <string name="action_deployments">Deployments</string>
-    <string name="action_mbtilessettings">Basemap</string>
+    <string name="action_basemaps">Basemap</string>
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
     <string name="downloadOSMTitle">Download OSM Data</string>
     <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
