@@ -656,7 +656,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             askIfDownloadOSM();
             return true;
         } else if (id == R.id.basemaps) {
-            basemap.presentMBTilesOptions();
+            basemap.presentBasemapsOptions();
             return true;
         } else if (id == R.id.osmcredentials) {
             inputOSMCredentials();

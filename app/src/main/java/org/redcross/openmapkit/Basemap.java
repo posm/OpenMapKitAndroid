@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
@@ -42,7 +41,7 @@ public class Basemap {
         } else if (Connectivity.isConnected(context)) {
             addOnlineDataSources();
         } else {
-            presentMBTilesOptions();
+            presentBasemapsOptions();
         }
     }
     
@@ -62,17 +61,17 @@ public class Basemap {
         mapView.setTileSource(ws);
     }
     
-    public void presentMBTilesOptions() {
+    public void presentBasemapsOptions() {
         //shared preferences private to mapActivity
         final SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
         String previousMBTilesChoice = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
 
         //create an array of all mbtile options
-        final List<String> mbtilesFileNames = new ArrayList<>();
+        final List<String> basemaps = new ArrayList<>();
 
         //when device is connected, HOT OSM Basemap is the first option
         if(Connectivity.isConnected(context)) {
-            mbtilesFileNames.add(mapActivity.getString(R.string.hotOSMOptionTitle));
+            basemaps.add(mapActivity.getString(R.string.hotOSMOptionTitle));
         }
 
         //add mbtiles names from external storage
@@ -80,89 +79,88 @@ public class Basemap {
         if (mbtiles.length > 0) {
             for (File file : mbtiles) {
                 String fileName = file.getName();
-                mbtilesFileNames.add(fileName);
+                basemaps.add(fileName);
             }
         }
 
-        //present a dialog of mbtiles options
-        if(mbtilesFileNames.size() > 0) {
-
-            //create dialog of mbtiles choices
-            AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
-            builder.setTitle(mapActivity.getString(R.string.mbtilesChooserDialogTitle));
-            String[] names = mbtilesFileNames.toArray(new String[mbtilesFileNames.size()]);
-
-            //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
-            int defaultRadioButtonIndex = 0;
-            if(previousMBTilesChoice == null) {
-                //if user DID NOT previously choose an mbtiles option...
-                if(Connectivity.isConnected(context)) {
-                    //the first radio button (for HOT OSM) will be selected by default
-                    defaultRadioButtonIndex = 0;
-                    //the default selected option is HOT OSM
-                    selectedMBTilesFile = mbtilesFileNames.get(0); //default choice
-                } else {
-                    defaultRadioButtonIndex = -1; //no selected radio button by default
-                }
-            } else {
-                //if user previously chose an mbtiles option ...
-                for(int i = 0; i < mbtilesFileNames.size(); ++i) {
-                    String fileName = mbtilesFileNames.get(i);
-                    if(fileName.equals(previousMBTilesChoice)) {
-                        defaultRadioButtonIndex = i;
-                        selectedMBTilesFile = fileName;
-                    } 
-                }
-                if (selectedMBTilesFile == null) {
-                    selectedMBTilesFile = mbtilesFileNames.get(0);
-                }
-            }
-
-            //add choices to dialog
-            builder.setSingleChoiceItems(names, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //user tapped on radio button and changed previous choice or default
-                    selectedMBTilesFile = mbtilesFileNames.get(which);
-
-                    //add user's choice to shared preferences key
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(PREVIOUS_BASEMAP, selectedMBTilesFile);
-                    editor.apply();
-                }
-            });
-
-            //handle OK tap event of dialog
-            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    //user clicked OK
-                    if(selectedMBTilesFile.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
-
-                        addOnlineDataSources();
-
-                    } else {
-
-                        addOfflineDataSources(selectedMBTilesFile);
-                    }
-                }
-            });
-
-            //handle cancel button tap event of dialog
-            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    //user clicked cancel
-                }
-            });
-
-            //present dialog to user
-            builder.show();
-
-        } else {
-            Toast prompt = Toast.makeText(context, "Please add .mbtiles file to " + ExternalStorage.getMBTilesDir(), Toast.LENGTH_LONG);
+        if (basemaps.size() == 0) {
+            Toast prompt = Toast.makeText(context, "Device is offline. Please add .mbtiles file to " + ExternalStorage.getMBTilesDir() + " or check out a deployment.", Toast.LENGTH_LONG);
             prompt.show();
+            return;
         }
+
+        //create dialog of mbtiles choices
+        AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
+        builder.setTitle(mapActivity.getString(R.string.mbtilesChooserDialogTitle));
+        String[] names = basemaps.toArray(new String[basemaps.size()]);
+
+        //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
+        int defaultRadioButtonIndex = 0;
+        if(previousMBTilesChoice == null) {
+            //if user DID NOT previously choose an mbtiles option...
+            if(Connectivity.isConnected(context)) {
+                //the first radio button (for HOT OSM) will be selected by default
+                defaultRadioButtonIndex = 0;
+                //the default selected option is HOT OSM
+                selectedMBTilesFile = basemaps.get(0); //default choice
+            } else {
+                defaultRadioButtonIndex = -1; //no selected radio button by default
+            }
+        } else {
+            //if user previously chose an mbtiles option ...
+            for(int i = 0; i < basemaps.size(); ++i) {
+                String fileName = basemaps.get(i);
+                if(fileName.equals(previousMBTilesChoice)) {
+                    defaultRadioButtonIndex = i;
+                    selectedMBTilesFile = fileName;
+                }
+            }
+            if (selectedMBTilesFile == null) {
+                selectedMBTilesFile = basemaps.get(0);
+            }
+        }
+
+        //add choices to dialog
+        builder.setSingleChoiceItems(names, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //user tapped on radio button and changed previous choice or default
+                selectedMBTilesFile = basemaps.get(which);
+
+                //add user's choice to shared preferences key
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(PREVIOUS_BASEMAP, selectedMBTilesFile);
+                editor.apply();
+            }
+        });
+
+        //handle OK tap event of dialog
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                //user clicked OK
+                if(selectedMBTilesFile.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
+
+                    addOnlineDataSources();
+
+                } else {
+
+                    addOfflineDataSources(selectedMBTilesFile);
+                }
+            }
+        });
+
+        //handle cancel button tap event of dialog
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                //user clicked cancel
+            }
+        });
+
+        //present dialog to user
+        builder.show();
+
     }
 
     /**
