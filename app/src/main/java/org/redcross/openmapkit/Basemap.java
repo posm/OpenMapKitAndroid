@@ -78,8 +78,8 @@ public class Basemap {
         File[] mbtiles = ExternalStorage.fetchMBTilesFiles();
         if (mbtiles.length > 0) {
             for (File file : mbtiles) {
-                String fileName = file.getName();
-                basemaps.add(fileName);
+                String filePath = file.getAbsolutePath();
+                basemaps.add(filePath);
             }
         }
 
@@ -92,7 +92,18 @@ public class Basemap {
         //create dialog of mbtiles choices
         AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
         builder.setTitle(mapActivity.getString(R.string.mbtilesChooserDialogTitle));
-        String[] names = basemaps.toArray(new String[basemaps.size()]);
+
+        int len = basemaps.size();
+        String[] names = new String[len];
+        for (int i = 0; i < len; ++i) {
+            String basemap = basemaps.get(i);
+            if (basemap.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
+                names[i] = basemap;
+            } else {
+                names[i] = new File(basemap).getName();
+            }
+        }
+
 
         //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
         int defaultRadioButtonIndex = 0;
@@ -109,10 +120,10 @@ public class Basemap {
         } else {
             //if user previously chose an mbtiles option ...
             for(int i = 0; i < basemaps.size(); ++i) {
-                String fileName = basemaps.get(i);
-                if(fileName.equals(previousBasemap)) {
+                String filePath = basemaps.get(i);
+                if(filePath.equals(previousBasemap)) {
                     defaultRadioButtonIndex = i;
-                    selectedBasemap = fileName;
+                    selectedBasemap = filePath;
                 }
             }
             if (selectedBasemap == null) {
@@ -166,30 +177,23 @@ public class Basemap {
     /**
      * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
      */
-    private void addOfflineDataSources(String fileName) {
-        String filePath = ExternalStorage.getMBTilesDir();
-        if(ExternalStorage.isReadable()) {
-            //fetch mbtiles from application folder (e.g. openmapkit/mbtiles)
-            File targetMBTiles = ExternalStorage.fetchFileFromExternalStorage(filePath + fileName);
-
-            if(!targetMBTiles.exists()) {
-                //inform user if no mbtiles was found
-                AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
-                builder.setTitle("Device is Offline");
-                builder.setMessage("Please add mbtiles to " + filePath);
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //placeholder
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-            } else {
-                //add mbtiles to map
-                mapView.setTileSource(new MBTilesLayer(targetMBTiles));
-            }
+    private void addOfflineDataSources(String mbtilesPath) {
+        File mbtilesFile = new File(mbtilesPath);
+        if(!mbtilesFile.exists()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
+            builder.setTitle("Device is Offline");
+            builder.setMessage("Please add MBTiles to " + ExternalStorage.getMBTilesDir());
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //placeholder
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return;
         }
+
+        //add mbtiles to map
+        mapView.setTileSource(new MBTilesLayer(mbtilesFile));
     }
 }

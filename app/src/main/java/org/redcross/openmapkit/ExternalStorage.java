@@ -138,21 +138,6 @@ public class ExternalStorage {
         return false;
     }
 
-    /**
-     * For fetching a file from external storage
-     * @param fileNameAndPath - file path + file name
-     * @return File
-     */
-    public static File fetchFileFromExternalStorage(String fileNameAndPath) {
-        File targetFile = null;
-        try {
-            targetFile = new File(fileNameAndPath);
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        return targetFile;
-    }
-
     public static File deploymentDir(String deploymentName) {
         File storageDir = Environment.getExternalStorageDirectory();
         File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
