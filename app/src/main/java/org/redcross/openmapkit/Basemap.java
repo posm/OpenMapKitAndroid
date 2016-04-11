@@ -29,15 +29,15 @@ public class Basemap {
     private MapView mapView;
     private Context context;
     
-    private static String selectedMBTilesFile;
+    private static String selectedBasemap;
     
     public Basemap(MapActivity mapActivity) {
         this.mapActivity = mapActivity;
         this.mapView = mapActivity.getMapView();
         this.context = mapActivity.getApplicationContext();
 
-        if (selectedMBTilesFile != null) {
-            addOfflineDataSources(selectedMBTilesFile);
+        if (selectedBasemap != null) {
+            addOfflineDataSources(selectedBasemap);
         } else if (Connectivity.isConnected(context)) {
             addOnlineDataSources();
         } else {
@@ -55,7 +55,7 @@ public class Basemap {
         WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
         ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
 
-        selectedMBTilesFile = null;
+        selectedBasemap = null;
         
         //add OSM tile layer to map
         mapView.setTileSource(ws);
@@ -64,7 +64,7 @@ public class Basemap {
     public void presentBasemapsOptions() {
         //shared preferences private to mapActivity
         final SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
-        String previousMBTilesChoice = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
+        String previousBasemap = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
 
         //create an array of all mbtile options
         final List<String> basemaps = new ArrayList<>();
@@ -96,13 +96,13 @@ public class Basemap {
 
         //default mbtiles option is based on previous selections (persisted in shared preferences) or connectivity state of device
         int defaultRadioButtonIndex = 0;
-        if(previousMBTilesChoice == null) {
+        if(previousBasemap == null) {
             //if user DID NOT previously choose an mbtiles option...
             if(Connectivity.isConnected(context)) {
                 //the first radio button (for HOT OSM) will be selected by default
                 defaultRadioButtonIndex = 0;
                 //the default selected option is HOT OSM
-                selectedMBTilesFile = basemaps.get(0); //default choice
+                selectedBasemap = basemaps.get(0); //default choice
             } else {
                 defaultRadioButtonIndex = -1; //no selected radio button by default
             }
@@ -110,13 +110,13 @@ public class Basemap {
             //if user previously chose an mbtiles option ...
             for(int i = 0; i < basemaps.size(); ++i) {
                 String fileName = basemaps.get(i);
-                if(fileName.equals(previousMBTilesChoice)) {
+                if(fileName.equals(previousBasemap)) {
                     defaultRadioButtonIndex = i;
-                    selectedMBTilesFile = fileName;
+                    selectedBasemap = fileName;
                 }
             }
-            if (selectedMBTilesFile == null) {
-                selectedMBTilesFile = basemaps.get(0);
+            if (selectedBasemap == null) {
+                selectedBasemap = basemaps.get(0);
             }
         }
 
@@ -125,11 +125,11 @@ public class Basemap {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //user tapped on radio button and changed previous choice or default
-                selectedMBTilesFile = basemaps.get(which);
+                selectedBasemap = basemaps.get(which);
 
                 //add user's choice to shared preferences key
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(PREVIOUS_BASEMAP, selectedMBTilesFile);
+                editor.putString(PREVIOUS_BASEMAP, selectedBasemap);
                 editor.apply();
             }
         });
@@ -139,13 +139,13 @@ public class Basemap {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 //user clicked OK
-                if(selectedMBTilesFile.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
+                if(selectedBasemap.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
 
                     addOnlineDataSources();
 
                 } else {
 
-                    addOfflineDataSources(selectedMBTilesFile);
+                    addOfflineDataSources(selectedBasemap);
                 }
             }
         });
