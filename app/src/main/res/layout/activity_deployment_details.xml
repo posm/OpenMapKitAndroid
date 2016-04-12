@@ -34,4 +34,34 @@
         app:backgroundTint="@color/black"
         android:src="@drawable/ic_file_download_white_36dp" />
 
+    <View
+        android:id="@+id/dummy"
+        android:layout_width="1dp"
+        android:layout_height="16dp"
+        app:layout_anchor="@id/fab"
+        app:layout_anchorGravity="top|right|end" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:scaleType="center"
+        android:src="@drawable/ic_map_white_36dp"
+        app:layout_anchor="@id/dummy"
+        app:backgroundTint="@color/osm_green"
+        app:layout_anchorGravity="top" />
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/action_button_location"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+
+        <!--app:layout_anchor="@id/fab"-->
+        <!--app:layout_anchorGravity="top"-->
+        <!--android:layout_gravity="top"-->
+        <!--/>-->
+
+
 </android.support.design.widget.CoordinatorLayout>

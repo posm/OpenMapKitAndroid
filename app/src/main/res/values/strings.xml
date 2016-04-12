@@ -17,15 +17,13 @@
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
     <string name="downloadOSMTitle">Download OSM Data</string>
     <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
+
+    <string name="zoomToData">Zoom to Data</string>
     <string name="ok">OK</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="add">+</string>
 
-    <string name="mbtilesAppPath">openmapkit/mbtiles</string>
-
-    <!-- private shared preferences for mapactivity -->
-    <string name="preferenceMBTileChoice"></string>
 
     <string name="tags">Tags</string>
     <string name="action_settings">Settings</string>
