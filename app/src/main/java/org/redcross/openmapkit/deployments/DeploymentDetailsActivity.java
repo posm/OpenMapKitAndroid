@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
+import org.redcross.openmapkit.MapActivity;
 import org.redcross.openmapkit.R;
 
 
@@ -240,6 +241,8 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
 
     public void fabCheckoutDeploymentClick(View v) {
         deployment.addToMap();
+        Intent mapActivity = new Intent(getApplicationContext(), MapActivity.class);
+        startActivity(mapActivity);
     }
 
 }
