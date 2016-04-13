@@ -18,7 +18,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
@@ -186,6 +188,34 @@ public class ExternalStorage {
             }
         }
         return deploymentMBTilesFiles;
+    }
+
+    public static Set<File> deploymentOSMXmlFiles(String deploymentName) {
+        Set<File> osmXmlFiles = new HashSet<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName);
+        File[] files = deploymentDir.listFiles();
+        for (File f : files) {
+            String ext = FilenameUtils.getExtension(f.getPath());
+            if (ext.equals("osm")) {
+                osmXmlFiles.add(f);
+            }
+        }
+        return osmXmlFiles;
+    }
+
+    public static Set<File> deploymentMBTilesFiles(String deploymentName) {
+        Set<File> mbtilesFiles = new HashSet<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName);
+        File[] files = deploymentDir.listFiles();
+        for (File f : files) {
+            String ext = FilenameUtils.getExtension(f.getPath());
+            if (ext.equals("mbtiles")) {
+                mbtilesFiles.add(f);
+            }
+        }
+        return mbtilesFiles;
     }
 
     public static void deleteDeployment(String deploymentName) {

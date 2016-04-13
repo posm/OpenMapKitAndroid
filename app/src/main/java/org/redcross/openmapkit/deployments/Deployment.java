@@ -3,8 +3,12 @@ package org.redcross.openmapkit.deployments;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.redcross.openmapkit.ExternalStorage;
+import org.redcross.openmapkit.OSMMapBuilder;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 
 public class Deployment {
@@ -114,5 +118,19 @@ public class Deployment {
         JSONArray geojsonFiles = files.optJSONArray("geojson");
         if (geojsonFiles == null) return new JSONArray();
         return geojsonFiles;
+    }
+
+    public void addToMap() {
+        addMBTilesToMap();
+        addOSMToMap();
+    }
+
+    public void addOSMToMap() {
+        Set<File> files = ExternalStorage.deploymentOSMXmlFiles(name());
+        OSMMapBuilder.addOSMFilesToModelExclusively(files);
+    }
+
+    public void addMBTilesToMap() {
+
     }
 }

@@ -118,7 +118,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
      * @param files
      * @return
      */
-    public static boolean[] isFileArraySelected(File[] files) {
+    public static boolean[]  isFileArraySelected(File[] files) {
         int len = files.length;
         boolean[] isLoaded = new boolean[len];
         for (int i=0; i < len; ++i) {
@@ -164,6 +164,27 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         setupProgressDialog(mapActivity);
         mapActivity.getMapView().invalidate();
         updateSharedPreferences();
+    }
+
+    /**
+     * The provided set of files gets added to the model, and all files
+     * currently in the model that are not in the set are removed.
+     *
+     * @param files - the only files we want on the map
+     */
+    public static void addOSMFilesToModelExclusively(Set<File> files) {
+        Set<String> filePaths = new HashSet<>();
+        for (File f : files) {
+            filePaths.add(f.getAbsolutePath());
+        }
+        Set<File> filesToRemove = new HashSet<>();
+        for (String lf : loadedOSMFiles) {
+            if (!filePaths.contains(lf)) {
+                filesToRemove.add(new File(lf));
+            }
+        }
+        removeOSMFilesFromModel(filesToRemove);
+        addOSMFilesToModel(files);
     }
 
     private static void updateSharedPreferences() {

@@ -238,4 +238,8 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setTypeface(null, Typeface.BOLD);
     }
 
+    public void fabCheckoutDeploymentClick(View v) {
+        deployment.addToMap();
+    }
+
 }

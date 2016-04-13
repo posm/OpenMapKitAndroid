@@ -42,7 +42,8 @@
         app:layout_anchorGravity="top|right|end" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_map"
+        android:id="@+id/fab_checkout_deployment"
+        android:onClick="fabCheckoutDeploymentClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
