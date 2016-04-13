@@ -63,7 +63,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     public static void buildMapFromExternalStorage(MapActivity ma) {
         mapActivity = ma;
         sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
-        persistedOSMFiles = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
+
+        // sets persistedOSMFiles object we are about to use
+        setPersistedOSMFilesFromSharedPreferences();
 
         // load the previously selected OSM files in OpenMapKit
         for (String absPath : persistedOSMFiles) {
@@ -311,6 +313,23 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             totalBytesLoaded += bytesLoaded;
             totalFileSizes += fileSize;
         }
+    }
+
+    /**
+     * We get the persisted OSM XML files, but we also check that they indeed are still
+     * on the file system.
+     *
+     * @return
+     */
+    private static void setPersistedOSMFilesFromSharedPreferences() {
+        Set<String> sharedPrefSet = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
+        persistedOSMFiles = new HashSet<>();
+        for (String path : sharedPrefSet) {
+            if ((new File(path).exists())) {
+                persistedOSMFiles.add(path);
+            }
+        }
+        updateSharedPreferences();
     }
     
     
