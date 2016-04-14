@@ -7,7 +7,6 @@ import org.redcross.openmapkit.ExternalStorage;
 import org.redcross.openmapkit.OSMMapBuilder;
 
 import java.io.File;
-import java.util.List;
 import java.util.Set;
 
 
@@ -127,7 +126,7 @@ public class Deployment {
 
     public void addOSMToMap() {
         Set<File> files = ExternalStorage.deploymentOSMXmlFiles(name());
-        OSMMapBuilder.addOSMFilesToModelExclusively(files);
+        OSMMapBuilder.prepareMapToShowOnlyTheseOSM(files);
     }
 
     public void addMBTilesToMap() {
