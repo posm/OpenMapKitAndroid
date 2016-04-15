@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Basemap {
 
-    private static final String ONLINE = "Online Humanitarian OpenStreetMap";
+    public static final String ONLINE = "Online Humanitarian OpenStreetMap";
     private static final String PREVIOUS_BASEMAP = "org.redcross.openmapkit.PREVIOUS_BASEMAP";
     
     private MapActivity mapActivity;
@@ -25,7 +25,20 @@ public class Basemap {
     private Context context;
     
     private static String selectedBasemap;
-    
+
+    /**
+     * This is how you select a basemap from outside of the MapActivity.
+     * We set a selected basemap static property, and when the MapActivity
+     * starts, it it instantiates a Basemap instance. In the constructor,
+     * it looks to see if we have a basemap that matches, and sets it
+     * accordingly.
+     *
+     * @param basemap - Either Basemap.ONLINE or a file path to an MBTiles file
+     */
+    public static void select(String basemap) {
+        selectedBasemap = basemap;
+    }
+
     public Basemap(MapActivity mapActivity) {
         this.mapActivity = mapActivity;
         this.mapView = mapActivity.getMapView();
@@ -44,22 +57,6 @@ public class Basemap {
         } else {
             presentBasemapsOptions();
         }
-    }
-    
-    private void selectOnlineBasemap() {
-        //create OSM tile layer
-        String defaultTilePID = mapActivity.getString(R.string.defaultTileLayerPID);
-        String defaultTileURL = mapActivity.getString(R.string.defaultTileLayerURL);
-        String defaultTileName = mapActivity.getString(R.string.defaultTileLayerName);
-        String defaultTileAttribution = mapActivity.getString(R.string.defaultTileLayerAttribution);
-
-        WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
-        ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
-
-        setSelectedBasemap(ONLINE);
-        
-        //add OSM tile layer to map
-        mapView.setTileSource(ws);
     }
     
     public void presentBasemapsOptions() {
@@ -164,6 +161,22 @@ public class Basemap {
         //present dialog to user
         builder.show();
 
+    }
+
+    private void selectOnlineBasemap() {
+        //create OSM tile layer
+        String defaultTilePID = mapActivity.getString(R.string.defaultTileLayerPID);
+        String defaultTileURL = mapActivity.getString(R.string.defaultTileLayerURL);
+        String defaultTileName = mapActivity.getString(R.string.defaultTileLayerName);
+        String defaultTileAttribution = mapActivity.getString(R.string.defaultTileLayerAttribution);
+
+        WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
+        ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
+
+        setSelectedBasemap(ONLINE);
+
+        //add OSM tile layer to map
+        mapView.setTileSource(ws);
     }
 
     private void selectMBTilesBasemap(String mbtilesPath) {
