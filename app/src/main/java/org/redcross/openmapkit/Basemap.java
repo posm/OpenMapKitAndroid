@@ -14,15 +14,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Clint Cabanero & Nicholas Hallahan on 3/17/15.
- *
- * nhallahan@spatialdev.com
- * ccabanero@spatialdev.com
- * * * * * * 
- */
+
 public class Basemap {
-    
+
+    private static final String ONLINE = "Online Humanitarian OpenStreetMap";
     private static final String PREVIOUS_BASEMAP = "org.redcross.openmapkit.PREVIOUS_BASEMAP";
     
     private MapActivity mapActivity;
@@ -36,16 +31,22 @@ public class Basemap {
         this.mapView = mapActivity.getMapView();
         this.context = mapActivity.getApplicationContext();
 
+        final SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
+        selectedBasemap = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
+
         if (selectedBasemap != null) {
-            addOfflineDataSources(selectedBasemap);
-        } else if (Connectivity.isConnected(context)) {
-            addOnlineDataSources();
+            // was online basemap
+            if (selectedBasemap.equals(ONLINE)) {
+                selectOnlineBasemap();
+            } else {
+                selectMBTilesBasemap(selectedBasemap);
+            }
         } else {
             presentBasemapsOptions();
         }
     }
     
-    private void addOnlineDataSources() {
+    private void selectOnlineBasemap() {
         //create OSM tile layer
         String defaultTilePID = mapActivity.getString(R.string.defaultTileLayerPID);
         String defaultTileURL = mapActivity.getString(R.string.defaultTileLayerURL);
@@ -55,7 +56,7 @@ public class Basemap {
         WebSourceTileLayer ws = new WebSourceTileLayer(defaultTilePID, defaultTileURL);
         ws.setName(defaultTileName).setAttribution(defaultTileAttribution);
 
-        selectedBasemap = null;
+        setSelectedBasemap(ONLINE);
         
         //add OSM tile layer to map
         mapView.setTileSource(ws);
@@ -71,7 +72,7 @@ public class Basemap {
 
         //when device is connected, HOT OSM Basemap is the first option
         if(Connectivity.isConnected(context)) {
-            basemaps.add(mapActivity.getString(R.string.hotOSMOptionTitle));
+            basemaps.add(ONLINE);
         }
 
         //add mbtiles names from external storage
@@ -97,7 +98,7 @@ public class Basemap {
         String[] names = new String[len];
         for (int i = 0; i < len; ++i) {
             String basemap = basemaps.get(i);
-            if (basemap.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
+            if (basemap.equals(ONLINE)) {
                 names[i] = basemap;
             } else {
                 names[i] = new File(basemap).getName();
@@ -135,13 +136,7 @@ public class Basemap {
         builder.setSingleChoiceItems(names, defaultRadioButtonIndex, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //user tapped on radio button and changed previous choice or default
-                selectedBasemap = basemaps.get(which);
-
-                //add user's choice to shared preferences key
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(PREVIOUS_BASEMAP, selectedBasemap);
-                editor.apply();
+                setSelectedBasemap(basemaps.get(which));
             }
         });
 
@@ -150,13 +145,10 @@ public class Basemap {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 //user clicked OK
-                if(selectedBasemap.equals(mapActivity.getString(R.string.hotOSMOptionTitle))) {
-
-                    addOnlineDataSources();
-
+                if(selectedBasemap.equals(ONLINE)) {
+                    selectOnlineBasemap();
                 } else {
-
-                    addOfflineDataSources(selectedBasemap);
+                    selectMBTilesBasemap(selectedBasemap);
                 }
             }
         });
@@ -174,14 +166,12 @@ public class Basemap {
 
     }
 
-    /**
-     * For instantiating a map (when the device is offline) and initializing the default mbtiles layer, extent, and zoom level
-     */
-    private void addOfflineDataSources(String mbtilesPath) {
+    public void selectMBTilesBasemap(String mbtilesPath) {
         File mbtilesFile = new File(mbtilesPath);
         if(!mbtilesFile.exists()) {
+            if (mapActivity == null) return;
             AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
-            builder.setTitle("Device is Offline");
+            builder.setTitle("Offline Basemap Not Found");
             builder.setMessage("Please add MBTiles to " + ExternalStorage.getMBTilesDir());
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -195,5 +185,14 @@ public class Basemap {
 
         //add mbtiles to map
         mapView.setTileSource(new MBTilesLayer(mbtilesFile));
+        setSelectedBasemap(mbtilesPath);
+    }
+
+    private void setSelectedBasemap(String basemap) {
+        selectedBasemap = basemap;
+        SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREVIOUS_BASEMAP, selectedBasemap);
+        editor.apply();
     }
 }

@@ -16,7 +16,6 @@
     <string name="action_basemaps">Basemap</string>
     <string name="mbtilesChooserDialogTitle">Choose Basemap</string>
     <string name="downloadOSMTitle">Download OSM Data</string>
-    <string name="hotOSMOptionTitle">Online Humanitarian OpenStreetMap</string>
 
     <string name="zoomToData">Zoom to Data</string>
     <string name="ok">OK</string>
