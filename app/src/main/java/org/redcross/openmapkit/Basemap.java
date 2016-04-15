@@ -166,10 +166,9 @@ public class Basemap {
 
     }
 
-    public void selectMBTilesBasemap(String mbtilesPath) {
+    private void selectMBTilesBasemap(String mbtilesPath) {
         File mbtilesFile = new File(mbtilesPath);
         if(!mbtilesFile.exists()) {
-            if (mapActivity == null) return;
             AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
             builder.setTitle("Offline Basemap Not Found");
             builder.setMessage("Please add MBTiles to " + ExternalStorage.getMBTilesDir());
