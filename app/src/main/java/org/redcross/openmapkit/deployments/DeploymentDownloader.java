@@ -56,6 +56,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... nothing) {
+        deployment.writeJSONToDisk();
         String deploymentDir = ExternalStorage.deploymentDirRelativeToExternalDir(deployment.name());
         JSONArray osms = deployment.osm();
         int osmsLen = osms.length();
