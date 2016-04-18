@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is a simple container for the JSON response from the
@@ -23,13 +26,34 @@ import java.util.List;
 public class Deployments {
     private static Deployments singleton = new Deployments();
 
-    private JSONArray deploymentsArray = new JSONArray();
+    private List<Deployment> deployments = new ArrayList<>();
     private DeploymentsActivity activity;
     private String omkServerUrl;
+
+    /**
+     * When we add a deployment to deployments, we keep
+     * track of the name to index in this HashMap. This lets
+     * us quickly find a deployment by name.
+     */
+    private Map<String, Integer> nameToIdx = new HashMap<>();
 
 
     public static Deployments singleton() {
         return singleton;
+    }
+
+    private void putDeployment(JSONObject deploymentJson) {
+        Deployment deployment = new Deployment(deploymentJson);
+        String name = deployment.name();
+        if (name == null) return; // check if deployment has name. bogus if not.
+        Integer idx = nameToIdx.get(name);
+        // new deployment
+        if (idx == null) {
+            nameToIdx.put(name, deployments.size());
+            deployments.add(deployment);
+        } else {
+            deployments.set(idx, deployment);
+        }
     }
 
     public void fetch(DeploymentsActivity activity, String url) {
@@ -43,38 +67,34 @@ public class Deployments {
     }
 
     public Deployment get(int idx) {
-        return new Deployment(deploymentsArray.optJSONObject(idx));
+        return deployments.get(idx);
     }
 
     public int getIdxForName(String name) {
-        for (int i = 0; i < deploymentsArray.length(); i++) {
-            JSONObject d = deploymentsArray.optJSONObject(i);
-            if (d != null) {
-                String n = d.optString("name");
-                if (n != null && n.equals(name)) {
-                    return i;
-                }
-            }
+        Integer idx = nameToIdx.get(name);
+        if (idx == null) {
+            return -1;
         }
-        return -1;
+        return idx;
     }
 
     public int size() {
-        return deploymentsArray.length();
+        return deployments.size();
     }
 
     public String omkServerUrl() {
         return omkServerUrl;
     }
 
-    private void parseJSON(String json) {
+    private void parseJsonFromApi(String json) {
         try {
             JSONArray jsonFromAPI = new JSONArray(json);
             int len = jsonFromAPI.length();
             for (int i = 0; i < len; ++i) {
                 JSONObject obj = jsonFromAPI.optJSONObject(i);
                 if (obj != null) {
-                    deploymentsArray.put(deploymentsArray.length(), obj);
+                    obj.put("api", true);
+                    putDeployment(obj);
                 }
             }
 
@@ -95,7 +115,7 @@ public class Deployments {
                 // We can later look and know the deployment JSON came
                 // from ExternalStorage rather than the API.
                 obj.put("persisted", true);
-                deploymentsArray.put(deploymentsArray.length(), obj);
+                putDeployment(obj);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -137,7 +157,7 @@ public class Deployments {
                     while ((line = r.readLine()) != null) {
                         response.append(line);
                     }
-                    parseJSON(response.toString());
+                    parseJsonFromApi(response.toString());
                     result = true; // Successful
                 } else {
                     result = false; //"Failed to fetch data!";
