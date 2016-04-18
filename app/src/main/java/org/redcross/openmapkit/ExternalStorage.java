@@ -156,6 +156,28 @@ public class ExternalStorage {
         return "/" + APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName + "/";
     }
 
+    /**
+     * Fetches all deployment.json files in ExternalStorage
+     *
+     * @return - list of deployment.json files
+     */
+    public static List<File> allDeploymentJSONFiles() {
+        List<File> jsonFiles = new ArrayList<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
+        File[] deployments = deploymentsDir.listFiles();
+        for (File deploymentDir : deployments) {
+            File[] files = deploymentDir.listFiles();
+            for (File f : files) {
+                String fileName = f.getName();
+                if (fileName.equals("deployment.json")) {
+                    jsonFiles.add(f);
+                }
+            }
+        }
+        return jsonFiles;
+    }
+
     public static List<File> allDeploymentOSMXmlFiles() {
         List<File> deploymentOSMFiles = new ArrayList<>();
         File storageDir = Environment.getExternalStorageDirectory();
