@@ -3,10 +3,12 @@ package org.redcross.openmapkit.deployments;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.redcross.openmapkit.Basemap;
 import org.redcross.openmapkit.ExternalStorage;
 import org.redcross.openmapkit.OSMMapBuilder;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 
@@ -130,6 +132,10 @@ public class Deployment {
     }
 
     public void addMBTilesToMap() {
-
+        List<String> paths = ExternalStorage.deploymentMBTilesFilePaths(name());
+        if (paths.size() > 0) {
+            String path = paths.get(0);
+            Basemap.select(path);
+        }
     }
 }

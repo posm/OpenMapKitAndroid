@@ -218,6 +218,20 @@ public class ExternalStorage {
         return mbtilesFiles;
     }
 
+    public static List<String> deploymentMBTilesFilePaths(String deploymentName) {
+        List<String> mbtilesFiles = new ArrayList<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName);
+        File[] files = deploymentDir.listFiles();
+        for (File f : files) {
+            String ext = FilenameUtils.getExtension(f.getPath());
+            if (ext.equals("mbtiles")) {
+                mbtilesFiles.add(f.getAbsolutePath());
+            }
+        }
+        return mbtilesFiles;
+    }
+
     public static void deleteDeployment(String deploymentName) {
         File storageDir = Environment.getExternalStorageDirectory();
         File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);

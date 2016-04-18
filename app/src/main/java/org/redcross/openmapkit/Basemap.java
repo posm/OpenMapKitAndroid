@@ -44,8 +44,10 @@ public class Basemap {
         this.mapView = mapActivity.getMapView();
         this.context = mapActivity.getApplicationContext();
 
-        final SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
-        selectedBasemap = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
+        if (selectedBasemap == null) {
+            final SharedPreferences sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
+            selectedBasemap = sharedPreferences.getString(PREVIOUS_BASEMAP, null);
+        }
 
         if (selectedBasemap != null) {
             // was online basemap
