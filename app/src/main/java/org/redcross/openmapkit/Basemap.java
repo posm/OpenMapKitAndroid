@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.MBTilesLayer;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -25,6 +26,7 @@ public class Basemap {
     private Context context;
     
     private static String selectedBasemap;
+    private static boolean needsBoundsChecking = false;
 
     /**
      * This is how you select a basemap from outside of the MapActivity.
@@ -37,6 +39,7 @@ public class Basemap {
      */
     public static void select(String basemap) {
         selectedBasemap = basemap;
+        needsBoundsChecking = true;
     }
 
     public Basemap(MapActivity mapActivity) {
@@ -198,8 +201,16 @@ public class Basemap {
         }
 
         //add mbtiles to map
-        mapView.setTileSource(new MBTilesLayer(mbtilesFile));
+        MBTilesLayer mbTilesLayer = new MBTilesLayer(mbtilesFile);
+        mapView.setTileSource(mbTilesLayer);
         setSelectedBasemap(mbtilesPath);
+
+        // if we set an MBTiles from a DeploymentDetails, the map may not start panned to the bounds
+        if (needsBoundsChecking) {
+            BoundingBox bbox = mbTilesLayer.getBoundingBox();
+            mapView.zoomToBoundingBox(bbox);
+            needsBoundsChecking = false;
+        }
     }
 
     private void setSelectedBasemap(String basemap) {
