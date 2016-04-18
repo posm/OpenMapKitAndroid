@@ -24,6 +24,9 @@ import java.util.Map;
  * deployments endpoint from OpenMapKit Server.
  */
 public class Deployments {
+
+    public enum Status { OFFLINE, SERVER_NOT_FOUND, ONLINE };
+
     private static Deployments singleton = new Deployments();
 
     private List<Deployment> deployments = new ArrayList<>();
@@ -61,10 +64,6 @@ public class Deployments {
     public void fetch(DeploymentsActivity activity, String url) {
         this.activity = activity;
         omkServerUrl = url;
-        if (url == null) {
-            activity.deploymentsFetched(false);
-            return;
-        }
         new DeploymentsListHttpTask().execute(url);
     }
 
@@ -108,7 +107,10 @@ public class Deployments {
     /**
      * Fetches the deployment JSON currently on disk
      */
-    private void fetchFromExternalStorage() {
+    private Deployments.Status fetchFromExternalStorage() {
+        Deployments.Status status = Status.SERVER_NOT_FOUND;
+        deployments.clear();
+        nameToIdx.clear();
         List<File> files = ExternalStorage.allDeploymentJSONFiles();
         for (File f : files) {
             try {
@@ -118,24 +120,25 @@ public class Deployments {
                 // from ExternalStorage rather than the API.
                 obj.put("persisted", true);
                 putDeployment(obj);
+                status = Status.OFFLINE;
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        return status;
     }
 
-    public class DeploymentsListHttpTask extends AsyncTask<String, Void, Boolean> {
+    public class DeploymentsListHttpTask extends AsyncTask<String, Void, Deployments.Status> {
         @Override
         protected void onPreExecute() {
 
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
-            Boolean result = false;
-            fetchFromExternalStorage();
+        protected Deployments.Status doInBackground(String... params) {
+            Deployments.Status status = fetchFromExternalStorage();
             HttpURLConnection urlConnection;
             try {
                 String urlStr = params[0];
@@ -160,19 +163,17 @@ public class Deployments {
                         response.append(line);
                     }
                     parseJsonFromApi(response.toString());
-                    result = true; // Successful
-                } else {
-                    result = false; //"Failed to fetch data!";
+                    status = Deployments.Status.ONLINE; // Successful
                 }
             } catch (Exception e) {
-                result = false;
+                // Status is either SERVER_NOT_FOUND or OFFLINE.
             }
-            return result;
+            return status;
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            activity.deploymentsFetched(result);
+        protected void onPostExecute(Deployments.Status status) {
+            activity.deploymentsFetched(status);
         }
     }
 }
