@@ -64,7 +64,8 @@ public class Deployments {
     public void fetch(DeploymentsActivity activity, String url) {
         this.activity = activity;
         omkServerUrl = url;
-        new DeploymentsListHttpTask().execute(url);
+        DeploymentsListHttpTask task = new DeploymentsListHttpTask();
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
     }
 
     public Deployment get(int idx) {

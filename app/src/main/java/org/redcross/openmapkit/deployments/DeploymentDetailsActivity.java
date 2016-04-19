@@ -3,6 +3,7 @@ package org.redcross.openmapkit.deployments;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -160,7 +161,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
              */
             downloader = new DeploymentDownloader(deployment, this);
             downloader.addListener(this);
-            downloader.execute();
+            downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             setCancelFab();
         } else {
             Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
