@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.deployments;
 
 
+import android.app.Activity;
 import android.os.AsyncTask;
 
 import com.google.common.io.Files;
@@ -159,8 +160,14 @@ public class Deployment {
         }
     }
 
-    public void startDownload(DeploymentDetailsActivity deploymentDetailsActivity) {
-        downloader = new DeploymentDownloader(this, deploymentDetailsActivity);
+    public void setDownloaderListener(DeploymentDownloaderListener listener) {
+        if (downloader != null) {
+            downloader.addListener(listener);
+        }
+    }
+
+    public void startDownload(Activity activity) {
+        downloader = new DeploymentDownloader(this, activity);
         downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 

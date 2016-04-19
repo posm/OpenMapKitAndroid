@@ -11,11 +11,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
-    private List<DeploymentDownloaderListener> listeners = new Vector<>();
+    private Set<DeploymentDownloaderListener> listeners = new HashSet<>();
     private DownloadManager downloadManager;
     private Deployment deployment;
     private long[] downloadIds;
@@ -25,11 +25,13 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
     private long bytesDownloaded = 0;
     private int filesCompleted = 0;
 
-    public DeploymentDownloader(Deployment deployment, DeploymentDetailsActivity activity) {
+    public DeploymentDownloader(Deployment deployment, Activity activity) {
         downloadManager = (DownloadManager)activity.getSystemService(Activity.DOWNLOAD_SERVICE);
         this.deployment = deployment;
         downloadIds = new long[deployment.fileCount()];
-        addListener(activity);
+        if (activity instanceof DeploymentDownloaderListener) {
+            addListener((DeploymentDownloaderListener)activity);
+        }
     }
 
     public void addListener(DeploymentDownloaderListener listener) {
@@ -126,19 +128,25 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     private void notifyDeploymentDownloadProgressUpdate(String msg, long bytesDownloaded) {
         for (DeploymentDownloaderListener listener : listeners) {
-            listener.onDeploymentDownloadProgressUpdate(msg, bytesDownloaded);
+            if (listener != null) {
+                listener.onDeploymentDownloadProgressUpdate(msg, bytesDownloaded);
+            }
         }
     }
 
     private void notifyDeploymentDownloadComplete() {
         for (DeploymentDownloaderListener listener : listeners) {
-            listener.onDeploymentDownloadComplete();
+            if (listener != null) {
+                listener.onDeploymentDownloadComplete();
+            }
         }
     }
 
     private void notifyDeploymentDownloadCanceled() {
         for (DeploymentDownloaderListener listener : listeners) {
-            listener.onDeploymentDownloadCancel();
+            if (listener != null) {
+                listener.onDeploymentDownloadCancel();
+            }
         }
     }
 

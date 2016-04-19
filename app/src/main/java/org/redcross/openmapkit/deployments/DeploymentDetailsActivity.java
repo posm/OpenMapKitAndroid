@@ -3,7 +3,6 @@ package org.redcross.openmapkit.deployments;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -58,6 +57,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         Intent intent = getIntent();
         int position = intent.getIntExtra("POSITION", 0);
         deployment = Deployments.singleton().get(position);
+        deployment.setDownloaderListener(this);
 
         String title = deployment.title();
         TextView nameTextView = (TextView)findViewById(R.id.nameTextView);
