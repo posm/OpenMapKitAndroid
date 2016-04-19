@@ -17,6 +17,7 @@ import java.util.Set;
 
 public class Deployment {
     private JSONObject json;
+    private DeploymentDownloader downloader;
 
     public static String fileNameFromUrl(String url) {
         int slashIdx = url.lastIndexOf("/");
@@ -155,4 +156,25 @@ public class Deployment {
             e.printStackTrace();
         }
     }
+
+    /**
+     * DeploymentDownloader setter.
+     *
+     * @param downloader - a deployment downloader
+     * @return - downloader (for chaining)
+     */
+    public DeploymentDownloader setDownloader(DeploymentDownloader downloader) {
+        this.downloader = downloader;
+        return downloader;
+    }
+
+    /**
+     * DeploymentDownloader getter.
+     *
+     * @return - downloader
+     */
+    public DeploymentDownloader getDownloader() {
+        return downloader;
+    }
+
 }

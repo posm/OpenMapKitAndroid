@@ -21,15 +21,16 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
     private Deployment deployment;
     private long[] downloadIds;
 
-    private boolean downloading = true;
+    private boolean downloading = false;
     private boolean canceled = false;
     private long bytesDownloaded = 0;
     private int filesCompleted = 0;
 
-    public DeploymentDownloader(Deployment deployment, Activity activity) {
+    public DeploymentDownloader(Deployment deployment, DeploymentDetailsActivity activity) {
         downloadManager = (DownloadManager)activity.getSystemService(Activity.DOWNLOAD_SERVICE);
         this.deployment = deployment;
         downloadIds = new long[deployment.fileCount()];
+        addListener(activity);
     }
 
     public void addListener(DeploymentDownloaderListener listener) {
@@ -47,9 +48,14 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
         notifyDeploymentDownloadCanceled();
     }
 
+    public boolean isDownloading() {
+        return downloading;
+    }
+
     @Override
     protected void onPreExecute() {
         canceled = false;
+        downloading = true;
         String msg = progressMsg();
         notifyDeploymentDownloadProgressUpdate(msg, 0);
     }

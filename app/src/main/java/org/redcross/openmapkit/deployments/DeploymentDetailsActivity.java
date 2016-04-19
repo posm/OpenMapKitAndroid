@@ -160,7 +160,6 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
              * Instantiate downloader.
              */
             downloader = new DeploymentDownloader(deployment, this);
-            downloader.addListener(this);
             downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             setCancelFab();
         } else {
