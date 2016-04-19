@@ -147,7 +147,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
             }
             // throttle the thread
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

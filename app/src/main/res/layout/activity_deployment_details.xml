@@ -52,7 +52,8 @@
         android:src="@drawable/ic_map_white_36dp"
         app:layout_anchor="@id/dummy"
         app:backgroundTint="@color/osm_green"
-        app:layout_anchorGravity="top" />
+        app:layout_anchorGravity="top"
+        android:visibility="gone" />
 
     <!--<android.support.design.widget.FloatingActionButton-->
         <!--android:id="@+id/action_button_location"-->

@@ -28,6 +28,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     private Deployment deployment;
 
     private FloatingActionButton fab;
+    private FloatingActionButton checkoutFab;
     private TextView progressTextView;
     private ProgressBar progressBar;
 
@@ -87,6 +88,8 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(this);
 
+        checkoutFab = (FloatingActionButton)findViewById(R.id.fab_checkout_deployment);
+
         setFreshUIState();
     }
 
@@ -123,6 +126,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
             progressTextView.setTypeface(null, Typeface.NORMAL);
             progressBar.setProgress(0);
             setDownloadFab();
+            checkoutFab.setVisibility(View.GONE);
         }
     }
 
@@ -217,6 +221,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(R.string.deploymentDownloadCanceled);
         progressTextView.setTextColor(getResources().getColor(R.color.holo_red_light));
         progressTextView.setTypeface(null, Typeface.BOLD);
+        checkoutFab.setVisibility(View.GONE);
     }
 
     @Override
@@ -226,6 +231,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.holo_red_light));
         progressTextView.setTypeface(null, Typeface.BOLD);
+        checkoutFab.setVisibility(View.GONE);
     }
 
     @Override
@@ -235,6 +241,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(R.string.deploymentDownloadComplete);
         progressTextView.setTextColor(getResources().getColor(R.color.osm_dark_green));
         progressTextView.setTypeface(null, Typeface.BOLD);
+        checkoutFab.setVisibility(View.VISIBLE);
     }
 
     public void fabCheckoutDeploymentClick(View v) {
