@@ -55,10 +55,16 @@ public class Deployments {
             nameToIdx.put(name, deployments.size());
             deployments.add(deployment);
         }
+
+        /**
+         * Note: Needs Server Synchronization
+         *
+         * https://github.com/AmericanRedCross/OpenMapKitAndroid/issues/137
+         */
         // replace existing deployment
-        else {
-            deployments.set(idx, deployment);
-        }
+//        else {
+//            deployments.set(idx, deployment);
+//        }
     }
 
     public void fetch(DeploymentsActivity activity, String url) {
@@ -110,8 +116,6 @@ public class Deployments {
      */
     private Deployments.Status fetchFromExternalStorage() {
         Deployments.Status status = Status.SERVER_NOT_FOUND;
-        deployments.clear();
-        nameToIdx.clear();
         List<File> files = ExternalStorage.allDeploymentJSONFiles();
         for (File f : files) {
             try {
