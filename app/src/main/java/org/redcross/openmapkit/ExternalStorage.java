@@ -18,8 +18,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -238,6 +240,21 @@ public class ExternalStorage {
             }
         }
         return mbtilesFiles;
+    }
+
+    public static Map<String, File> deploymentDownloadedFiles(String deploymentName) {
+        Map<String, File> deploymentFiles = new HashMap<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName);
+        File[] files = deploymentDir.listFiles();
+        if (files == null || files.length == 0) return deploymentFiles;
+        for (File f : files) {
+            String ext = FilenameUtils.getExtension(f.getPath());
+            if ( ext.equals("mbtiles") || ext.equals("osm") || ext.equals("geojson") ) {
+                deploymentFiles.put(f.getName(), f);
+            }
+        }
+        return deploymentFiles;
     }
 
     public static List<String> deploymentMBTilesFilePaths(String deploymentName) {

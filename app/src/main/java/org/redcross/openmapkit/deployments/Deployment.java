@@ -15,7 +15,9 @@ import org.redcross.openmapkit.OSMMapBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -131,13 +133,13 @@ public class Deployment {
 
     public List<JSONObject> filesToDownload() {
         List<JSONObject> files = new ArrayList<>();
-        addJSONArrayToList(files, osm());
-        addJSONArrayToList(files, mbtiles());
-        addJSONArrayToList(files, geojson());
+        addJSONArrayToCollection(files, osm());
+        addJSONArrayToCollection(files, mbtiles());
+        addJSONArrayToCollection(files, geojson());
         return files;
     }
 
-    private void addJSONArrayToList(List<JSONObject> list, JSONArray arr) {
+    private void addJSONArrayToCollection(Collection<JSONObject> list, JSONArray arr) {
         int len = arr.length();
         for (int i=0; i < len; ++i) {
             JSONObject obj = arr.optJSONObject(i);
@@ -197,7 +199,21 @@ public class Deployment {
     }
 
     public boolean downloadComplete() {
-        return false;
+        List<JSONObject> filesToDownload = filesToDownload();
+        Map<String, File> filesDownloaded = ExternalStorage.deploymentDownloadedFiles(name());
+        if (filesToDownload.size() != filesDownloaded.size()) {
+            return false;
+        }
+        for (JSONObject o : filesToDownload) {
+            String name = o.optString("name");
+            if (name == null) return false;
+            File f = filesDownloaded.get(name);
+            if (f == null) return false;
+            long fileSize = f.length();
+            long sz = o.optLong("size");
+            if (sz != fileSize) return false;
+        }
+        return true;
     }
 
 }
