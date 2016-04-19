@@ -71,8 +71,6 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         }
 
         progressTextView = (TextView)findViewById(R.id.progressTextView);
-        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
-
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         progressBar.setMax((int)deployment.totalSize());
 
@@ -88,6 +86,8 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
          */
         fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(this);
+
+        setFreshUIState();
     }
 
     private void setCancelFab() {
@@ -112,6 +112,14 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         } else {
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_file_download_white_36dp));
         }
+    }
+
+    private void setFreshUIState() {
+        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
+        progressTextView.setTextColor(getResources().getColor(R.color.black));
+        progressTextView.setTypeface(null, Typeface.NORMAL);
+        progressBar.setProgress(0);
+        setDownloadFab();
     }
 
     /**
@@ -187,11 +195,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
                     public void onClick(View v) {
                         ExternalStorage.deleteDeployment(deployment.name());
                         downloadState = DownloadState.DELETED;
-                        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
-                        progressTextView.setTextColor(getResources().getColor(R.color.black));
-                        progressTextView.setTypeface(null, Typeface.NORMAL);
-                        progressBar.setProgress(0);
-                        setDownloadFab();
+                        setFreshUIState();
                     }
                 })
                 .setActionTextColor(Color.RED)
