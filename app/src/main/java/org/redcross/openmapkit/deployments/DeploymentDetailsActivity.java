@@ -27,7 +27,6 @@ import org.redcross.openmapkit.R;
 public class DeploymentDetailsActivity extends AppCompatActivity implements View.OnClickListener, DeploymentDownloaderListener {
 
     private Deployment deployment;
-    private DeploymentDownloader downloader;
 
     private FloatingActionButton fab;
     private TextView progressTextView;
@@ -134,7 +133,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
             return;
         }
         if (downloadState == DownloadState.DOWNLOADING) {
-            cancelDownload();
+            deployment.cancelDownload();
             return;
         }
         if (downloadState == DownloadState.COMPLETE) {
@@ -156,11 +155,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
 
     private void startDownload() {
         if (deployment.fileCount() > 0) {
-            /**
-             * Instantiate downloader.
-             */
-            downloader = new DeploymentDownloader(deployment, this);
-            downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            deployment.startDownload(this);
             setCancelFab();
         } else {
             Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
@@ -177,12 +172,6 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
                     .show();
         }
 
-    }
-
-    private void cancelDownload() {
-        if (downloader != null) {
-            downloader.cancel();
-        }
     }
 
     private void deleteDownload() {

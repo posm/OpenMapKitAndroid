@@ -1,6 +1,8 @@
 package org.redcross.openmapkit.deployments;
 
 
+import android.os.AsyncTask;
+
 import com.google.common.io.Files;
 
 import org.json.JSONArray;
@@ -157,24 +159,16 @@ public class Deployment {
         }
     }
 
-    /**
-     * DeploymentDownloader setter.
-     *
-     * @param downloader - a deployment downloader
-     * @return - downloader (for chaining)
-     */
-    public DeploymentDownloader setDownloader(DeploymentDownloader downloader) {
-        this.downloader = downloader;
-        return downloader;
+    public void startDownload(DeploymentDetailsActivity deploymentDetailsActivity) {
+        downloader = new DeploymentDownloader(this, deploymentDetailsActivity);
+        downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /**
-     * DeploymentDownloader getter.
-     *
-     * @return - downloader
-     */
-    public DeploymentDownloader getDownloader() {
-        return downloader;
+    public void cancelDownload() {
+        if (downloader != null) {
+            downloader.cancel();
+        }
     }
+
 
 }

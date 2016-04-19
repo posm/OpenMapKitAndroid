@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
 
-import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
