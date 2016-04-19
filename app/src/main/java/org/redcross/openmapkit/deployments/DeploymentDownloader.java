@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
@@ -65,40 +66,14 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... nothing) {
         deployment.writeJSONToDisk();
         String deploymentDir = ExternalStorage.deploymentDirRelativeToExternalDir(deployment.name());
-        JSONArray osms = deployment.osm();
-        int osmsLen = osms.length();
+
         int idx = 0;
-        for (int i = 0; i < osmsLen; ++i) {
-            JSONObject osm = osms.optJSONObject(i);
-            if (osm == null) continue;
-            String osmUrl = osm.optString("url");
-            if (osmUrl == null) continue;
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(osmUrl));
-            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(osmUrl));
-            long downloadId = downloadManager.enqueue(request);
-            downloadIds[idx++] = downloadId;
-        }
-        JSONArray mbtiles = deployment.mbtiles();
-        int mbtilesLen = mbtiles.length();
-        for (int j = 0; j < mbtilesLen; ++j) {
-            JSONObject mbtile = mbtiles.optJSONObject(j);
-            if (mbtile == null) continue;
-            String mbtileUrl = mbtile.optString("url");
-            if (mbtileUrl == null) continue;
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mbtileUrl));
-            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(mbtileUrl));
-            long downloadId = downloadManager.enqueue(request);
-            downloadIds[idx++] = downloadId;
-        }
-        JSONArray geojsons = deployment.geojson();
-        int geojsonsLen = geojsons.length();
-        for (int k = 0; k < geojsonsLen; ++k) {
-            JSONObject geojson = geojsons.optJSONObject(k);
-            if (geojson == null) continue;
-            String geojsonUrl = geojson.optString("url");
-            if (geojsonUrl == null) continue;
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(geojsonUrl));
-            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(geojsonUrl));
+        List<JSONObject> files = deployment.filesToDownload();
+        for (JSONObject f : files) {
+            String url = f.optString("url");
+            if (url == null) continue;
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(url));
             long downloadId = downloadManager.enqueue(request);
             downloadIds[idx++] = downloadId;
         }

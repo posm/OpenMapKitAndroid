@@ -14,6 +14,7 @@ import org.redcross.openmapkit.OSMMapBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -128,6 +129,24 @@ public class Deployment {
         return geojsonFiles;
     }
 
+    public List<JSONObject> filesToDownload() {
+        List<JSONObject> files = new ArrayList<>();
+        addJSONArrayToList(files, osm());
+        addJSONArrayToList(files, mbtiles());
+        addJSONArrayToList(files, geojson());
+        return files;
+    }
+
+    private void addJSONArrayToList(List<JSONObject> list, JSONArray arr) {
+        int len = arr.length();
+        for (int i=0; i < len; ++i) {
+            JSONObject obj = arr.optJSONObject(i);
+            if (obj != null) {
+                list.add(obj);
+            }
+        }
+    }
+
     public void addToMap() {
         addMBTilesToMap();
         addOSMToMap();
@@ -177,5 +196,8 @@ public class Deployment {
         }
     }
 
+    public boolean downloadComplete() {
+        return false;
+    }
 
 }

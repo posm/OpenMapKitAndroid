@@ -115,11 +115,15 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
     }
 
     private void setFreshUIState() {
-        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
-        progressTextView.setTextColor(getResources().getColor(R.color.black));
-        progressTextView.setTypeface(null, Typeface.NORMAL);
-        progressBar.setProgress(0);
-        setDownloadFab();
+        if (deployment.downloadComplete()) {
+            onDeploymentDownloadComplete();
+        } else {
+            progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
+            progressTextView.setTextColor(getResources().getColor(R.color.black));
+            progressTextView.setTypeface(null, Typeface.NORMAL);
+            progressBar.setProgress(0);
+            setDownloadFab();
+        }
     }
 
     /**
