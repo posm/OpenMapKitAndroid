@@ -203,6 +203,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setTextColor(getResources().getColor(R.color.black));
         progressTextView.setTypeface(null, Typeface.NORMAL);
         progressBar.setProgress((int) bytesDownloaded);
+        setCancelFab();
     }
 
     @Override
