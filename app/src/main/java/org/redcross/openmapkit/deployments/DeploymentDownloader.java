@@ -64,6 +64,8 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... nothing) {
+        // We want to start fresh for a download, because we don't want duplicates of a file.
+        ExternalStorage.deleteDeployment(deployment.name());
         deployment.writeJSONToDisk();
         String deploymentDir = ExternalStorage.deploymentDirRelativeToExternalDir(deployment.name());
 
