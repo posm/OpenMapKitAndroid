@@ -211,6 +211,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     }
 
     private static void updateSharedPreferences() {
+        if (sharedPreferences == null) return;
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(PERSISTED_OSM_FILES, persistedOSMFiles);
         editor.apply();
