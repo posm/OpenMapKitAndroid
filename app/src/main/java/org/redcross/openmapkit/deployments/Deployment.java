@@ -151,7 +151,12 @@ public class Deployment {
 
     public void addToMap() {
         addMBTilesToMap();
+        addFPToMap();
         addOSMToMap();
+    }
+
+    public void addFPToMap() {
+
     }
 
     public void addOSMToMap() {
