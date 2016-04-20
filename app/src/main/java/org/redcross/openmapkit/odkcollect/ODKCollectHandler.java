@@ -24,7 +24,8 @@ public class ODKCollectHandler {
     private static ODKCollectData odkCollectData;
     
     public static void registerIntent(Intent intent) {
-        if(intent.getAction().equals("android.intent.action.SEND")) {
+        String action = intent.getAction();
+        if(action != null && action.equals("android.intent.action.SEND")) {
             if (intent.getType().equals("text/plain")) {
                 Bundle extras = intent.getExtras();
                 if(extras != null) {

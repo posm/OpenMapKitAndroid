@@ -63,7 +63,9 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     public static void buildMapFromExternalStorage(MapActivity ma) {
         mapActivity = ma;
         sharedPreferences = mapActivity.getPreferences(Context.MODE_PRIVATE);
-        persistedOSMFiles = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
+
+        // sets persistedOSMFiles object we are about to use
+        setPersistedOSMFilesFromSharedPreferences();
 
         // load the previously selected OSM files in OpenMapKit
         for (String absPath : persistedOSMFiles) {
@@ -118,7 +120,7 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
      * @param files
      * @return
      */
-    public static boolean[] isFileArraySelected(File[] files) {
+    public static boolean[]  isFileArraySelected(File[] files) {
         int len = files.length;
         boolean[] isLoaded = new boolean[len];
         for (int i=0; i < len; ++i) {
@@ -166,7 +168,50 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
         updateSharedPreferences();
     }
 
+    /**
+     * This is used by the deployments, because the actual files get added
+     * to the model in buildMapFromExternalStorage when the MapActivity
+     * get's re-initiated.
+     *
+     * @param files
+     */
+    private static void addOSMFilesToPersistedOSMFiles(Set<File> files) {
+        for (File f : files) {
+            persistedOSMFiles.add(f.getAbsolutePath());
+        }
+        updateSharedPreferences();
+    }
+
+    /**
+     * The provided set of files gets added to the model, and all files
+     * currently in the model that are not in the set are removed.
+     *
+     * @param files - the only files we want on the map
+     */
+    public static void prepareMapToShowOnlyTheseOSM(Set<File> files) {
+        Set<String> filePaths = new HashSet<>();
+        for (File f : files) {
+            filePaths.add(f.getAbsolutePath());
+        }
+        Set<File> filesToRemove = new HashSet<>();
+        for (String lf : loadedOSMFiles) {
+            if (!filePaths.contains(lf)) {
+                filesToRemove.add(new File(lf));
+            }
+        }
+        removeOSMFilesFromModel(filesToRemove);
+
+        // We don't want to do this, because files in the persistedOSMFiles set
+        // will get loaded by  buildMapFromExternalStorage when the MapActivity
+        // gets reloaded.
+        //addOSMFilesToModel(files);
+
+        // just adds it to the set, the set gets read later
+        addOSMFilesToPersistedOSMFiles(files);
+    }
+
     private static void updateSharedPreferences() {
+        if (sharedPreferences == null) return;
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(PERSISTED_OSM_FILES, persistedOSMFiles);
         editor.apply();
@@ -290,6 +335,23 @@ public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
             totalBytesLoaded += bytesLoaded;
             totalFileSizes += fileSize;
         }
+    }
+
+    /**
+     * We get the persisted OSM XML files, but we also check that they indeed are still
+     * on the file system.
+     *
+     * @return
+     */
+    private static void setPersistedOSMFilesFromSharedPreferences() {
+        Set<String> sharedPrefSet = sharedPreferences.getStringSet(PERSISTED_OSM_FILES, loadedOSMFiles);
+        persistedOSMFiles = new HashSet<>();
+        for (String path : sharedPrefSet) {
+            if ((new File(path).exists())) {
+                persistedOSMFiles.add(path);
+            }
+        }
+        updateSharedPreferences();
     }
     
     

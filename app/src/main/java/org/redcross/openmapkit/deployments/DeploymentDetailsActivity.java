@@ -18,20 +18,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONObject;
+import org.redcross.openmapkit.ExternalStorage;
+import org.redcross.openmapkit.MapActivity;
 import org.redcross.openmapkit.R;
 
 
 public class DeploymentDetailsActivity extends AppCompatActivity implements View.OnClickListener, DeploymentDownloaderListener {
 
     private Deployment deployment;
-    private DeploymentDownloader downloader;
 
     private FloatingActionButton fab;
+    private FloatingActionButton checkoutFab;
     private TextView progressTextView;
     private ProgressBar progressBar;
 
     private enum DownloadState {
-        FRESH, DOWNLOADING, CANCELED, ERROR, COMPLETE
+        FRESH, DOWNLOADING, CANCELED, ERROR, COMPLETE, DELETED
     }
     private DownloadState downloadState = DownloadState.FRESH;
 
@@ -56,6 +58,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         Intent intent = getIntent();
         int position = intent.getIntExtra("POSITION", 0);
         deployment = Deployments.singleton().get(position);
+        deployment.setDownloaderListener(this);
 
         String title = deployment.title();
         TextView nameTextView = (TextView)findViewById(R.id.nameTextView);
@@ -69,8 +72,6 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         }
 
         progressTextView = (TextView)findViewById(R.id.progressTextView);
-        progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
-
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         progressBar.setMax((int)deployment.totalSize());
 
@@ -86,6 +87,10 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
          */
         fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(this);
+
+        checkoutFab = (FloatingActionButton)findViewById(R.id.fab_checkout_deployment);
+
+        setFreshUIState();
     }
 
     private void setCancelFab() {
@@ -112,6 +117,19 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         }
     }
 
+    private void setFreshUIState() {
+        if (deployment.downloadComplete()) {
+            onDeploymentDownloadComplete();
+        } else {
+            progressTextView.setText(deployment.fileCount() + " files. Total Size: " + deployment.totalSizeMB());
+            progressTextView.setTextColor(getResources().getColor(R.color.black));
+            progressTextView.setTypeface(null, Typeface.NORMAL);
+            progressBar.setProgress(0);
+            setDownloadFab();
+            checkoutFab.setVisibility(View.GONE);
+        }
+    }
+
     /**
      * FAB OnClickListener method
      * @param v
@@ -123,7 +141,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
             return;
         }
         if (downloadState == DownloadState.DOWNLOADING) {
-            cancelDownload();
+            deployment.cancelDownload();
             return;
         }
         if (downloadState == DownloadState.COMPLETE) {
@@ -136,17 +154,16 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         }
         if (downloadState == DownloadState.ERROR) {
             startDownload();
+            return;
+        }
+        if (downloadState == DownloadState.DELETED) {
+            startDownload();
         }
     }
 
     private void startDownload() {
         if (deployment.fileCount() > 0) {
-            /**
-             * Instantiate downloader.
-             */
-            downloader = new DeploymentDownloader(deployment, this);
-            downloader.addListener(this);
-            downloader.execute();
+            deployment.startDownload(this);
             setCancelFab();
         } else {
             Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
@@ -165,14 +182,21 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
 
     }
 
-    private void cancelDownload() {
-        if (downloader != null) {
-            downloader.cancel();
-        }
-    }
-
     private void deleteDownload() {
-        // TODO Do something!
+        Snackbar.make(findViewById(R.id.deploymentDetailsActivity),
+                "Are you sure you want to delete this deployment?",
+                Snackbar.LENGTH_LONG)
+                .setAction("Delete", new View.OnClickListener() {
+                    // undo action
+                    @Override
+                    public void onClick(View v) {
+                        ExternalStorage.deleteDeployment(deployment.name());
+                        downloadState = DownloadState.DELETED;
+                        setFreshUIState();
+                    }
+                })
+                .setActionTextColor(Color.RED)
+                .show();
     }
 
 
@@ -187,6 +211,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setTextColor(getResources().getColor(R.color.black));
         progressTextView.setTypeface(null, Typeface.NORMAL);
         progressBar.setProgress((int) bytesDownloaded);
+        setCancelFab();
     }
 
     @Override
@@ -196,6 +221,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(R.string.deploymentDownloadCanceled);
         progressTextView.setTextColor(getResources().getColor(R.color.holo_red_light));
         progressTextView.setTypeface(null, Typeface.BOLD);
+        checkoutFab.setVisibility(View.GONE);
     }
 
     @Override
@@ -205,6 +231,7 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(msg);
         progressTextView.setTextColor(getResources().getColor(R.color.holo_red_light));
         progressTextView.setTypeface(null, Typeface.BOLD);
+        checkoutFab.setVisibility(View.GONE);
     }
 
     @Override
@@ -214,7 +241,13 @@ public class DeploymentDetailsActivity extends AppCompatActivity implements View
         progressTextView.setText(R.string.deploymentDownloadComplete);
         progressTextView.setTextColor(getResources().getColor(R.color.osm_dark_green));
         progressTextView.setTypeface(null, Typeface.BOLD);
+        checkoutFab.setVisibility(View.VISIBLE);
     }
 
+    public void fabCheckoutDeploymentClick(View v) {
+        deployment.addToMap();
+        Intent mapActivity = new Intent(getApplicationContext(), MapActivity.class);
+        startActivity(mapActivity);
+    }
 
 }

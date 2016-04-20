@@ -2,83 +2,148 @@ package org.redcross.openmapkit.deployments;
 
 import android.os.AsyncTask;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.redcross.openmapkit.ExternalStorage;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is a simple container for the JSON response from the
  * deployments endpoint from OpenMapKit Server.
  */
 public class Deployments {
+
+    public enum Status { OFFLINE, SERVER_NOT_FOUND, ONLINE };
+
     private static Deployments singleton = new Deployments();
 
-    private JSONArray deploymentsArray = new JSONArray();
+    private List<Deployment> deployments = new ArrayList<>();
     private DeploymentsActivity activity;
     private String omkServerUrl;
+
+    /**
+     * When we add a deployment to deployments, we keep
+     * track of the name to index in this HashMap. This lets
+     * us quickly find a deployment by name.
+     */
+    private Map<String, Integer> nameToIdx = new HashMap<>();
 
 
     public static Deployments singleton() {
         return singleton;
     }
 
+    private void putDeployment(JSONObject deploymentJson) {
+        Deployment deployment = new Deployment(deploymentJson);
+        String name = deployment.name();
+        if (name == null) return; // check if deployment has name. bogus if not.
+        Integer idx = nameToIdx.get(name);
+        // new deployment
+        if (idx == null) {
+            nameToIdx.put(name, deployments.size());
+            deployments.add(deployment);
+        }
+
+        /**
+         * Note: Needs Server Synchronization
+         *
+         * https://github.com/AmericanRedCross/OpenMapKitAndroid/issues/137
+         */
+        // replace existing deployment
+//        else {
+//            deployments.set(idx, deployment);
+//        }
+    }
+
     public void fetch(DeploymentsActivity activity, String url) {
         this.activity = activity;
         omkServerUrl = url;
-        if (url == null) {
-            activity.deploymentsFetched(false);
-            return;
-        }
-        new DeploymentsListHttpTask().execute(url);
+        DeploymentsListHttpTask task = new DeploymentsListHttpTask();
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
     }
 
     public Deployment get(int idx) {
-        return new Deployment(deploymentsArray.optJSONObject(idx));
+        return deployments.get(idx);
     }
 
     public int getIdxForName(String name) {
-        for (int i = 0; i < deploymentsArray.length(); i++) {
-            JSONObject d = deploymentsArray.optJSONObject(i);
-            if (d != null) {
-                String n = d.optString("name");
-                if (n != null && n.equals(name)) {
-                    return i;
-                }
-            }
+        Integer idx = nameToIdx.get(name);
+        if (idx == null) {
+            return -1;
         }
-        return -1;
+        return idx;
     }
 
     public int size() {
-        return deploymentsArray.length();
+        return deployments.size();
     }
 
     public String omkServerUrl() {
         return omkServerUrl;
     }
 
-    private void parseJSON(String json) {
+    private void parseJsonFromApi(String json) {
         try {
-            deploymentsArray = new JSONArray(json);
+            JSONArray jsonFromAPI = new JSONArray(json);
+            int len = jsonFromAPI.length();
+            for (int i = 0; i < len; ++i) {
+                JSONObject obj = jsonFromAPI.optJSONObject(i);
+                if (obj != null) {
+                    obj.put("api", true);
+                    putDeployment(obj);
+                }
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public class DeploymentsListHttpTask extends AsyncTask<String, Void, Boolean> {
+    /**
+     * Fetches the deployment JSON currently on disk
+     */
+    private Deployments.Status fetchFromExternalStorage() {
+        Deployments.Status status = Status.SERVER_NOT_FOUND;
+        List<File> files = ExternalStorage.allDeploymentJSONFiles();
+        for (File f : files) {
+            try {
+                String jsonStr = FileUtils.readFileToString(f, "UTF-8");
+                JSONObject obj = new JSONObject(jsonStr);
+                // We can later look and know the deployment JSON came
+                // from ExternalStorage rather than the API.
+                obj.put("persisted", true);
+                putDeployment(obj);
+                status = Status.OFFLINE;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return status;
+    }
+
+    public class DeploymentsListHttpTask extends AsyncTask<String, Void, Deployments.Status> {
         @Override
         protected void onPreExecute() {
 
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
-            Boolean result = false;
+        protected Deployments.Status doInBackground(String... params) {
+            Deployments.Status status = fetchFromExternalStorage();
             HttpURLConnection urlConnection;
             try {
                 String urlStr = params[0];
@@ -102,20 +167,18 @@ public class Deployments {
                     while ((line = r.readLine()) != null) {
                         response.append(line);
                     }
-                    parseJSON(response.toString());
-                    result = true; // Successful
-                } else {
-                    result = false; //"Failed to fetch data!";
+                    parseJsonFromApi(response.toString());
+                    status = Deployments.Status.ONLINE; // Successful
                 }
             } catch (Exception e) {
-                result = false;
+                // Status is either SERVER_NOT_FOUND or OFFLINE.
             }
-            return result;
+            return status;
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            activity.deploymentsFetched(result);
+        protected void onPostExecute(Deployments.Status status) {
+            activity.deploymentsFetched(status);
         }
     }
 }

@@ -1,14 +1,29 @@
 package org.redcross.openmapkit.deployments;
 
 
+import android.app.Activity;
+import android.os.AsyncTask;
+
+import com.google.common.io.Files;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.redcross.openmapkit.Basemap;
+import org.redcross.openmapkit.ExternalStorage;
+import org.redcross.openmapkit.OSMMapBuilder;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class Deployment {
     private JSONObject json;
+    private DeploymentDownloader downloader;
 
     public static String fileNameFromUrl(String url) {
         int slashIdx = url.lastIndexOf("/");
@@ -25,6 +40,15 @@ public class Deployment {
 
     public JSONObject json() {
         return json;
+    }
+
+    /**
+     * Returns the name of the deployment.
+     *
+     * @return - name
+     */
+    public String name() {
+        return json.optString("name");
     }
 
     /**
@@ -62,8 +86,16 @@ public class Deployment {
         return mbtilesFiles.length();
     }
 
+    public int geojsonCount() {
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return 0;
+        JSONArray geojsonFiles = files.optJSONArray("geojson");
+        if (geojsonFiles == null) return 0;
+        return geojsonFiles.length();
+    }
+
     public int fileCount() {
-        return osmCount() + mbtilesCount();
+        return osmCount() + mbtilesCount() + geojsonCount();
     }
 
     public long totalSize() {
@@ -90,4 +122,98 @@ public class Deployment {
         if (mbtilesFiles == null) return new JSONArray();
         return mbtilesFiles;
     }
+
+    public JSONArray geojson() {
+        JSONObject files = json.optJSONObject("files");
+        if (files == null) return new JSONArray();
+        JSONArray geojsonFiles = files.optJSONArray("geojson");
+        if (geojsonFiles == null) return new JSONArray();
+        return geojsonFiles;
+    }
+
+    public List<JSONObject> filesToDownload() {
+        List<JSONObject> files = new ArrayList<>();
+        addJSONArrayToCollection(files, osm());
+        addJSONArrayToCollection(files, mbtiles());
+        addJSONArrayToCollection(files, geojson());
+        return files;
+    }
+
+    private void addJSONArrayToCollection(Collection<JSONObject> list, JSONArray arr) {
+        int len = arr.length();
+        for (int i=0; i < len; ++i) {
+            JSONObject obj = arr.optJSONObject(i);
+            if (obj != null) {
+                list.add(obj);
+            }
+        }
+    }
+
+    public void addToMap() {
+        addMBTilesToMap();
+        addOSMToMap();
+    }
+
+    public void addOSMToMap() {
+        Set<File> files = ExternalStorage.deploymentOSMXmlFiles(name());
+        OSMMapBuilder.prepareMapToShowOnlyTheseOSM(files);
+    }
+
+    public void addMBTilesToMap() {
+        List<String> paths = ExternalStorage.deploymentMBTilesFilePaths(name());
+        if (paths.size() > 0) {
+            String path = paths.get(0);
+            Basemap.select(path);
+        }
+    }
+
+    /**
+     * Saves the JSON object to disk.
+     */
+    public void writeJSONToDisk() {
+        String jsonStr = json.toString();
+        File deploymentDir = ExternalStorage.deploymentDir(name());
+        File f = new File(deploymentDir, "deployment.json");
+        try {
+            Files.write(jsonStr.getBytes(), f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setDownloaderListener(DeploymentDownloaderListener listener) {
+        if (downloader != null) {
+            downloader.addListener(listener);
+        }
+    }
+
+    public void startDownload(Activity activity) {
+        downloader = new DeploymentDownloader(this, activity);
+        downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void cancelDownload() {
+        if (downloader != null) {
+            downloader.cancel();
+        }
+    }
+
+    public boolean downloadComplete() {
+        List<JSONObject> filesToDownload = filesToDownload();
+        Map<String, File> filesDownloaded = ExternalStorage.deploymentDownloadedFiles(name());
+        if (filesToDownload.size() != filesDownloaded.size()) {
+            return false;
+        }
+        for (JSONObject o : filesToDownload) {
+            String name = o.optString("name");
+            if (name == null) return false;
+            File f = filesDownloaded.get(name);
+            if (f == null) return false;
+            long fileSize = f.length();
+            long sz = o.optLong("size");
+            if (sz != fileSize) return false;
+        }
+        return true;
+    }
+
 }

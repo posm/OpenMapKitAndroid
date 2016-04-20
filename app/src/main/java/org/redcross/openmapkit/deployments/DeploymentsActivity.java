@@ -118,17 +118,8 @@ public class DeploymentsActivity extends AppCompatActivity {
         integrator.initiateScan();
     }
 
-    public void deploymentsFetched(boolean success) {
-        if (success) {
-            progressBar.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-            DeploymentsRecyclerAdapter adapter = new DeploymentsRecyclerAdapter(DeploymentsActivity.this);
-            recyclerView.setAdapter(adapter);
-            if (pendingQrUrl != null) {
-                findDeployment(pendingQrUrl);
-                pendingQrUrl = null;
-            }
-        } else {
+    public void deploymentsFetched(Deployments.Status status) {
+        if (status == Deployments.Status.SERVER_NOT_FOUND) {
             Snackbar.make(findViewById(R.id.deploymentsActivity),
                     "OpenMapKit Server not found at: " + Deployments.singleton().omkServerUrl(),
                     Snackbar.LENGTH_LONG)
@@ -141,7 +132,32 @@ public class DeploymentsActivity extends AppCompatActivity {
                     })
                     .setActionTextColor(Color.rgb(126, 188, 111))
                     .show();
+            return;
         }
+        if (status == Deployments.Status.OFFLINE) {
+            Snackbar.make(findViewById(R.id.deploymentsActivity),
+                    "Showing downloaded deployments only. Connect to OpenMapKit Server to fetch more deployments.",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Setup", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+                            inputOMKServer();
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126, 188, 111))
+                    .show();
+            // Continue on, we want to see the offline deployments...
+        }
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        DeploymentsRecyclerAdapter adapter = new DeploymentsRecyclerAdapter(DeploymentsActivity.this);
+        recyclerView.setAdapter(adapter);
+        if (pendingQrUrl != null) {
+            findDeployment(pendingQrUrl);
+            pendingQrUrl = null;
+        }
+
     }
 
     private void inputOMKServer() {

@@ -11,16 +11,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.redcross.openmapkit.ExternalStorage;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.Set;
 
 public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
-    private List<DeploymentDownloaderListener> listeners = new Vector<>();
+    private Set<DeploymentDownloaderListener> listeners = new HashSet<>();
     private DownloadManager downloadManager;
     private Deployment deployment;
     private long[] downloadIds;
 
-    private boolean downloading = true;
+    private boolean downloading = false;
     private boolean canceled = false;
     private long bytesDownloaded = 0;
     private int filesCompleted = 0;
@@ -29,6 +30,9 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
         downloadManager = (DownloadManager)activity.getSystemService(Activity.DOWNLOAD_SERVICE);
         this.deployment = deployment;
         downloadIds = new long[deployment.fileCount()];
+        if (activity instanceof DeploymentDownloaderListener) {
+            addListener((DeploymentDownloaderListener)activity);
+        }
     }
 
     public void addListener(DeploymentDownloaderListener listener) {
@@ -46,37 +50,32 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
         notifyDeploymentDownloadCanceled();
     }
 
+    public boolean isDownloading() {
+        return downloading;
+    }
+
     @Override
     protected void onPreExecute() {
         canceled = false;
+        downloading = true;
         String msg = progressMsg();
         notifyDeploymentDownloadProgressUpdate(msg, 0);
     }
 
     @Override
     protected Void doInBackground(Void... nothing) {
-        JSONArray osms = deployment.osm();
-        int osmsLen = osms.length();
+        // We want to start fresh for a download, because we don't want duplicates of a file.
+        ExternalStorage.deleteDeployment(deployment.name());
+        deployment.writeJSONToDisk();
+        String deploymentDir = ExternalStorage.deploymentDirRelativeToExternalDir(deployment.name());
+
         int idx = 0;
-        for (int i = 0; i < osmsLen; ++i) {
-            JSONObject osm = osms.optJSONObject(i);
-            if (osm == null) continue;
-            String osmUrl = osm.optString("url");
-            if (osmUrl == null) continue;
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(osmUrl));
-            request.setDestinationInExternalPublicDir(ExternalStorage.getOSMDirRelativeToExternalDir(), Deployment.fileNameFromUrl(osmUrl));
-            long downloadId = downloadManager.enqueue(request);
-            downloadIds[idx++] = downloadId;
-        }
-        JSONArray mbtiles = deployment.mbtiles();
-        int mbtilesLen = mbtiles.length();
-        for (int j = 0; j < mbtilesLen; ++j) {
-            JSONObject mbtile = mbtiles.optJSONObject(j);
-            if (mbtile == null) continue;
-            String mbtileUrl = mbtile.optString("url");
-            if (mbtileUrl == null) continue;
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mbtileUrl));
-            request.setDestinationInExternalPublicDir(ExternalStorage.getMBTilesDirRelativeToExternalDir(), Deployment.fileNameFromUrl(mbtileUrl));
+        List<JSONObject> files = deployment.filesToDownload();
+        for (JSONObject f : files) {
+            String url = f.optString("url");
+            if (url == null) continue;
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+            request.setDestinationInExternalPublicDir(deploymentDir, Deployment.fileNameFromUrl(url));
             long downloadId = downloadManager.enqueue(request);
             downloadIds[idx++] = downloadId;
         }
@@ -106,19 +105,25 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
 
     private void notifyDeploymentDownloadProgressUpdate(String msg, long bytesDownloaded) {
         for (DeploymentDownloaderListener listener : listeners) {
-            listener.onDeploymentDownloadProgressUpdate(msg, bytesDownloaded);
+            if (listener != null) {
+                listener.onDeploymentDownloadProgressUpdate(msg, bytesDownloaded);
+            }
         }
     }
 
     private void notifyDeploymentDownloadComplete() {
         for (DeploymentDownloaderListener listener : listeners) {
-            listener.onDeploymentDownloadComplete();
+            if (listener != null) {
+                listener.onDeploymentDownloadComplete();
+            }
         }
     }
 
     private void notifyDeploymentDownloadCanceled() {
         for (DeploymentDownloaderListener listener : listeners) {
-            listener.onDeploymentDownloadCancel();
+            if (listener != null) {
+                listener.onDeploymentDownloadCancel();
+            }
         }
     }
 
@@ -144,7 +149,7 @@ public class DeploymentDownloader extends AsyncTask<Void, Void, Void> {
             }
             // throttle the thread
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
