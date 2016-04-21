@@ -9,9 +9,14 @@ import com.mapbox.mapboxsdk.events.MapListener;
 import com.mapbox.mapboxsdk.events.RotateEvent;
 import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 import org.apache.commons.io.FileUtils;
@@ -23,11 +28,14 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FPAtlas implements MapViewListener, MapListener {
 
     private static final String PREVIOUS_FP_FILE_PATH = "org.redcross.openmapkit.PREVIOUS_FP_FILE_PATH";
+    public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+
     private static File fpGeoJson;
     private static FPAtlas atlas;
 
@@ -35,6 +43,7 @@ public class FPAtlas implements MapViewListener, MapListener {
     private String title;
 
     private Activity activity;
+    private MapView mapView;
 
     private Quadtree spatialIndex = new Quadtree();
     private Map<String, FPPage> pages = new HashMap<>();
@@ -65,6 +74,7 @@ public class FPAtlas implements MapViewListener, MapListener {
         if (atlas == null) return;
 
         atlas.setActivity(activity);
+        atlas.setMapView(mapView);
 
         mapView.setMapViewListener(atlas);
         mapView.addListener(atlas);
@@ -121,10 +131,36 @@ public class FPAtlas implements MapViewListener, MapListener {
         this.activity = activity;
     }
 
-    private FPPage findMapCenterPage() {
-
-        return null;
+    public void setMapView(MapView mapView) {
+        this.mapView = mapView;
     }
+
+    private void findMapCenterPage() {
+        LatLng center = mapView.getCenter();
+        Coordinate centerCoord = new Coordinate(center.getLongitude(), center.getLatitude());
+        Envelope env = new Envelope(centerCoord);
+        List fpPages = spatialIndex.query(env);
+        for (Object p : fpPages) {
+            FPPage page = (FPPage)p;
+            Geometry pageGeom = page.geometry();
+            if (pageGeom.contains(GEOMETRY_FACTORY.createPoint(centerCoord))) {
+                foundMapCenterPage(page);
+            }
+        }
+    }
+
+    private void foundMapCenterPage(FPPage page) {
+        if (activity != null && activity instanceof FPListener) {
+            String msg = pageMessage(page);
+            ((FPListener)activity).onMapCenterPageChangeMessage(msg);
+        }
+    }
+
+    private String pageMessage(FPPage page) {
+        return title() + " " + page.pageNumber();
+    }
+
+
 
 
     /**

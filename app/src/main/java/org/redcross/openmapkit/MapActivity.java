@@ -67,6 +67,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     protected MapView mapView;
     protected OSMMap osmMap;
+    protected TextView fieldPapersMsg;
     protected ListView mTagListView;
     protected ImageButton mCloseListViewButton;
     protected ImageButton tagButton;
@@ -141,6 +142,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
         //get map from layout
         mapView = (MapView)findViewById(R.id.mapView);
+
+        // get Field Papers Message
+        fieldPapersMsg = (TextView)findViewById(R.id.fieldPapersMsg);
         
         // initialize basemap object
         basemap = new Basemap(this);
@@ -809,7 +813,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     @Override
     public void onMapCenterPageChangeMessage(String msg) {
-
+        fieldPapersMsg.setText(msg);
     }
 
 }

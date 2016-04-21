@@ -18,10 +18,9 @@ public class FPPage {
     private String pageNumber;
     private String url;
 
-    private GeometryFactory geometryFactory = new GeometryFactory();
-
     public FPPage(JSONObject feature) {
         this.feature = feature;
+        parsePageNumber();
         buildGeometry();
         buildEnvelope();
     }
@@ -37,7 +36,15 @@ public class FPPage {
                 double lat = coord.getDouble(1);
                 coordinates[i] = new Coordinate(lng, lat);
             }
-            geom = geometryFactory.createPolygon(coordinates);
+            geom = FPAtlas.GEOMETRY_FACTORY.createPolygon(coordinates);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void parsePageNumber() {
+        try {
+            pageNumber = feature.getJSONObject("properties").getString("page_number");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -48,8 +55,7 @@ public class FPPage {
     }
 
     public String pageNumber() {
-
-        return null;
+        return pageNumber;
     }
 
     public Geometry geometry() {
