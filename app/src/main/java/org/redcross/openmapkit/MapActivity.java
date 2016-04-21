@@ -41,6 +41,9 @@ import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 
+import org.fieldpapers.listeners.FPListener;
+import org.fieldpapers.model.FPAtlas;
+import org.json.JSONException;
 import org.redcross.openmapkit.deployments.DeploymentsActivity;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
@@ -54,7 +57,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class MapActivity extends AppCompatActivity implements OSMSelectionListener {
+public class MapActivity extends AppCompatActivity implements OSMSelectionListener, FPListener {
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
@@ -141,6 +144,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         
         // initialize basemap object
         basemap = new Basemap(this);
+
+        initializeFP();
 
         initializeOsmXml();
 
@@ -330,6 +335,19 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         //update weight of top and bottom linear layouts
         mTopLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(topLayoutParams.width, topLayoutParams.height, topWeight));
         mBottomLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(bottomLayoutParams.width, bottomLayoutParams.height, bottomWeight));
+    }
+
+    /**
+     * Adds FieldPapers Overlay to the map (if we have one).
+     */
+    protected void initializeFP() {
+        try {
+            FPAtlas.addToMap(this, mapView);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -787,6 +805,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             app_installed = false;
         }
         return app_installed;
+    }
+
+    @Override
+    public void onMapCenterPageChangeMessage(String msg) {
+
     }
 
 }

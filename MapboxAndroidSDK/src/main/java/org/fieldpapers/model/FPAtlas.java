@@ -4,10 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.mapbox.mapboxsdk.api.ILatLng;
+import com.mapbox.mapboxsdk.events.MapListener;
+import com.mapbox.mapboxsdk.events.RotateEvent;
+import com.mapbox.mapboxsdk.events.ScrollEvent;
+import com.mapbox.mapboxsdk.events.ZoomEvent;
+import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 import org.apache.commons.io.FileUtils;
+import org.fieldpapers.listeners.FPListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FPAtlas {
+public class FPAtlas implements MapViewListener, MapListener {
 
     private static final String PREVIOUS_FP_FILE_PATH = "org.redcross.openmapkit.PREVIOUS_FP_FILE_PATH";
     private static File fpGeoJson;
@@ -25,6 +33,8 @@ public class FPAtlas {
 
     private JSONObject geoJson;
     private String title;
+
+    private Activity activity;
 
     private Quadtree spatialIndex = new Quadtree();
     private Map<String, FPPage> pages = new HashMap<>();
@@ -52,7 +62,14 @@ public class FPAtlas {
             editor.putString(PREVIOUS_FP_FILE_PATH, fpGeoJson.getAbsolutePath());
         }
 
+        if (atlas == null) return;
 
+        atlas.setActivity(activity);
+
+        mapView.setMapViewListener(atlas);
+        mapView.addListener(atlas);
+//        mapView.getOverlays().add(osmOverlay);
+//        mapView.invalidate();
     }
 
     /**
@@ -98,6 +115,65 @@ public class FPAtlas {
 
     public String title() {
         return title;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    private FPPage findMapCenterPage() {
+
+        return null;
+    }
+
+
+    /**
+     * LISTENERS
+     */
+
+    @Override
+    public void onScroll(ScrollEvent event) {
+        findMapCenterPage();
+    }
+
+    @Override
+    public void onZoom(ZoomEvent event) {
+        findMapCenterPage();
+    }
+
+    @Override
+    public void onRotate(RotateEvent event) {
+        findMapCenterPage();
+    }
+
+    @Override
+    public void onShowMarker(MapView pMapView, Marker pMarker) {
+
+    }
+
+    @Override
+    public void onHideMarker(MapView pMapView, Marker pMarker) {
+
+    }
+
+    @Override
+    public void onTapMarker(MapView pMapView, Marker pMarker) {
+
+    }
+
+    @Override
+    public void onLongPressMarker(MapView pMapView, Marker pMarker) {
+
+    }
+
+    @Override
+    public void onTapMap(MapView pMapView, ILatLng pPosition) {
+
+    }
+
+    @Override
+    public void onLongPressMap(MapView pMapView, ILatLng pPosition) {
+
     }
 
 }
