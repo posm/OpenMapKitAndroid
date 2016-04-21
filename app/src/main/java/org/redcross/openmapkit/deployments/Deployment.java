@@ -156,6 +156,7 @@ public class Deployment {
     }
 
     public void addFPToMap() {
+        File f = ExternalStorage.deploymentFPFile(name());
 
     }
 
