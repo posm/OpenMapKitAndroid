@@ -11,6 +11,8 @@ import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.overlay.Overlay;
+import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -27,6 +29,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,17 +73,13 @@ public class FPAtlas implements MapViewListener, MapListener {
         } else {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(PREVIOUS_FP_FILE_PATH, fpGeoJson.getAbsolutePath());
+            editor.apply();
         }
 
         if (atlas == null) return;
 
         atlas.setActivity(activity);
-        atlas.setMapView(mapView);
-
-        mapView.setMapViewListener(atlas);
-        mapView.addListener(atlas);
-//        mapView.getOverlays().add(osmOverlay);
-//        mapView.invalidate();
+        atlas.setupMapView(mapView);
     }
 
     /**
@@ -131,8 +131,11 @@ public class FPAtlas implements MapViewListener, MapListener {
         this.activity = activity;
     }
 
-    public void setMapView(MapView mapView) {
+    public void setupMapView(MapView mapView) {
         this.mapView = mapView;
+        mapView.setMapViewListener(this);
+        mapView.addListener(this);
+        addPathOverlaysToMapView();
     }
 
     private void findMapCenterPage() {
@@ -160,6 +163,14 @@ public class FPAtlas implements MapViewListener, MapListener {
         return title() + " " + page.pageNumber();
     }
 
+    private void addPathOverlaysToMapView() {
+        List<Overlay> overlays = mapView.getOverlays();
+        Collection<FPPage> pagesCollection = pages.values();
+        for (FPPage p : pagesCollection) {
+            overlays.add(p.pathOverlay());
+        }
+        mapView.invalidate();
+    }
 
 
 
