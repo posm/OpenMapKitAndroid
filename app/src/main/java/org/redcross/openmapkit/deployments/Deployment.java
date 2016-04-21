@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 
 import com.google.common.io.Files;
 
+import org.fieldpapers.model.FPAtlas;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.redcross.openmapkit.Basemap;
 import org.redcross.openmapkit.ExternalStorage;
@@ -149,6 +151,10 @@ public class Deployment {
         }
     }
 
+    /**
+     * Sets up appropriate files to be added to the map
+     * once we get back to the MapActivity.
+     */
     public void addToMap() {
         addMBTilesToMap();
         addFPToMap();
@@ -157,7 +163,13 @@ public class Deployment {
 
     public void addFPToMap() {
         File f = ExternalStorage.deploymentFPFile(name());
-
+        try {
+            FPAtlas.load(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addOSMToMap() {
