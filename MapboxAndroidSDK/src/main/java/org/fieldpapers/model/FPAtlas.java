@@ -88,6 +88,10 @@ public class FPAtlas implements MapViewListener, MapListener {
         atlas.setupMapView(mapView);
     }
 
+    public static FPAtlas singleton() {
+        return atlas;
+    }
+
     /**
      * Singleton Constructor
      *
@@ -139,26 +143,44 @@ public class FPAtlas implements MapViewListener, MapListener {
 
     public void setupMapView(MapView mapView) {
         this.mapView = mapView;
-        mapView.setMapViewListener(this);
+
+        /**
+         * There can only be one mapViewListener, so we have to reserve
+         * that privilege to OSMMap. This is ridiculous, but it's a weird
+         * oversight in the design of the Mapbox Android SDK Legacy.
+         *
+         * There can be multiple "listeners", which is a different interface
+         * that handles things like scroll. Map view listeners handle things like
+         * tap. Not sure why they are two different things...
+         *
+         * We look for the singleton of FPAtlas in OSMMap, and then notify
+         * onTapMap from there. Sorry.
+         */
+//        mapView.setMapViewListener(this);
+
         mapView.addListener(this);
         addPathOverlaysToMapView();
     }
 
     private void findMapCenterPage() {
         LatLng center = mapView.getCenter();
-        Coordinate centerCoord = new Coordinate(center.getLongitude(), center.getLatitude());
-        Envelope env = new Envelope(centerCoord);
+        findPage(center);
+    }
+
+    private void findPage(ILatLng latLng) {
+        Coordinate coord = new Coordinate(latLng.getLongitude(), latLng.getLatitude());
+        Envelope env = new Envelope(coord);
         List fpPages = spatialIndex.query(env);
         for (Object p : fpPages) {
             FPPage page = (FPPage)p;
             Geometry pageGeom = page.geometry();
-            if (pageGeom.contains(GEOMETRY_FACTORY.createPoint(centerCoord))) {
-                foundMapCenterPage(page);
+            if (pageGeom.contains(GEOMETRY_FACTORY.createPoint(coord))) {
+                foundPage(page);
             }
         }
     }
 
-    private void foundMapCenterPage(FPPage page) {
+    private void foundPage(FPPage page) {
         if (activity != null && activity instanceof FPListener) {
             String msg = pageMessage(page);
             ((FPListener)activity).onMapCenterPageChangeMessage(msg);
@@ -254,9 +276,17 @@ public class FPAtlas implements MapViewListener, MapListener {
 
     }
 
+    /**
+     * This is not called by an actual map listener. It's called by:
+     *
+     * OSMMap#onTapMap
+     *
+     * @param pMapView
+     * @param pPosition
+     */
     @Override
     public void onTapMap(MapView pMapView, ILatLng pPosition) {
-
+        findPage(pPosition);
     }
 
     @Override

@@ -28,6 +28,8 @@ import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.renderer.OSMOverlay;
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.fieldpapers.model.FPAtlas;
+
 import java.util.List;
 
 public class OSMMap implements MapViewListener, MapListener {
@@ -124,6 +126,11 @@ public class OSMMap implements MapViewListener, MapListener {
 
     @Override
     public void onTapMap(MapView pMapView, ILatLng pPosition) {
+        FPAtlas atlas = FPAtlas.singleton();
+        if (atlas != null) {
+            atlas.onTapMap(pMapView, pPosition);
+        }
+
         float zoom = pMapView.getZoomLevel();
 
         OSMElement.deselectAll();

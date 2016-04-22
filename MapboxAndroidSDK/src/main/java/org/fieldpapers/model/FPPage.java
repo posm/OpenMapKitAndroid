@@ -44,7 +44,7 @@ public class FPPage {
             pathOverlay = new PathOverlay();
             Paint paint = pathOverlay.getPaint();
             paint.setColor(Color.BLACK);
-            paint.setStrokeWidth(6.0f);
+            paint.setStrokeWidth(4.0f);
             JSONArray coords = feature.getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
             int len = coords.length();
             Coordinate[] coordinates = new Coordinate[len];
