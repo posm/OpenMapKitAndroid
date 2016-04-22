@@ -3,6 +3,7 @@ package org.fieldpapers.model;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.events.MapListener;
@@ -15,6 +16,7 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
+import com.spatialdev.osm.renderer.OSMLine;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -29,7 +31,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,9 @@ public class FPAtlas implements MapViewListener, MapListener {
 
     private Quadtree spatialIndex = new Quadtree();
     private Map<String, FPPage> pages = new HashMap<>();
+
+    private PathOverlay selectedPathOverlay;
+
 
     public static void load(File fpGeoJSON) throws IOException, JSONException {
         /**
@@ -156,6 +160,7 @@ public class FPAtlas implements MapViewListener, MapListener {
         if (activity != null && activity instanceof FPListener) {
             String msg = pageMessage(page);
             ((FPListener)activity).onMapCenterPageChangeMessage(msg);
+            setSelectedPathOverlay(page);
         }
     }
 
@@ -163,8 +168,22 @@ public class FPAtlas implements MapViewListener, MapListener {
         return title() + " " + page.pageNumber();
     }
 
+    private void setSelectedPathOverlay(FPPage page) {
+        if (selectedPathOverlay != null) {
+            selectedPathOverlay.getPaint().setColor(Color.BLACK);
+        }
+        PathOverlay pathOverlay = page.pathOverlay();
+        pathOverlay.getPaint().setARGB(255, OSMLine.DEFAULT_R, OSMLine.DEFAULT_G, OSMLine.DEFAULT_B);
+        selectedPathOverlay = pathOverlay;
+    }
+
     private void addPathOverlaysToMapView() {
         List<Overlay> overlays = mapView.getOverlays();
+        for (Overlay o : overlays) {
+            if (o instanceof PathOverlay) {
+                overlays.remove(o);
+            }
+        }
         Collection<FPPage> pagesCollection = pages.values();
         for (FPPage p : pagesCollection) {
             overlays.add(p.pathOverlay());

@@ -1,5 +1,7 @@
 package org.fieldpapers.model;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
@@ -23,14 +25,15 @@ public class FPPage {
 
     public FPPage(JSONObject feature) {
         this.feature = feature;
-        parsePageNumber();
+        parsePageNumberAndUrl();
         buildGeometryAndPathOverlay();
         buildEnvelope();
     }
 
-    private void parsePageNumber() {
+    private void parsePageNumberAndUrl() {
         try {
             pageNumber = feature.getJSONObject("properties").getString("page_number");
+            url = feature.getJSONObject("properties").getString("url");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -39,6 +42,9 @@ public class FPPage {
     private void buildGeometryAndPathOverlay() {
         try {
             pathOverlay = new PathOverlay();
+            Paint paint = pathOverlay.getPaint();
+            paint.setColor(Color.BLACK);
+            paint.setStrokeWidth(6.0f);
             JSONArray coords = feature.getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
             int len = coords.length();
             Coordinate[] coordinates = new Coordinate[len];
@@ -59,8 +65,16 @@ public class FPPage {
         env = geom.getEnvelopeInternal();
     }
 
+    /**
+     * GETTERS
+     */
+
     public String pageNumber() {
         return pageNumber;
+    }
+
+    public String url() {
+        return url;
     }
 
     public Geometry geometry() {
