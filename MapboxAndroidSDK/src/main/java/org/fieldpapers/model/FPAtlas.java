@@ -16,7 +16,9 @@ import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
+import com.spatialdev.osm.marker.OSMItemizedIconOverlay;
 import com.spatialdev.osm.renderer.OSMLine;
+import com.spatialdev.osm.renderer.OSMOverlay;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -173,6 +175,26 @@ public class FPAtlas implements MapViewListener, MapListener {
             selectedPathOverlay.getPaint().setColor(Color.BLACK);
         }
         PathOverlay pathOverlay = page.pathOverlay();
+        List<Overlay> overlays = mapView.getOverlays();
+
+        // Remove overlay to select and then put it in the right place in the list
+        // so that it is in front of the other PathOverlays but behind the OSM
+        // overlays.
+        overlays.remove(pathOverlay);
+        int len = overlays.size();
+        boolean overlayMoved = false;
+        for (int i = 0; i < len; ++i) {
+            Overlay o = overlays.get(i);
+            if (o instanceof OSMOverlay || o instanceof OSMItemizedIconOverlay) {
+                overlays.add(i-1, pathOverlay);
+                overlayMoved = true;
+                break;
+            }
+        }
+        if (!overlayMoved) {
+            overlays.add(pathOverlay);
+        }
+
         pathOverlay.getPaint().setARGB(255, OSMLine.DEFAULT_R, OSMLine.DEFAULT_G, OSMLine.DEFAULT_B);
         selectedPathOverlay = pathOverlay;
     }
