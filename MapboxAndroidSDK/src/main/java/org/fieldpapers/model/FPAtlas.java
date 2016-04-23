@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import com.vividsolutions.jts.index.strtree.STRtree;
 
 import org.apache.commons.io.FileUtils;
 import org.fieldpapers.listeners.FPListener;
@@ -52,7 +52,7 @@ public class FPAtlas implements MapViewListener, MapListener {
     private Activity activity;
     private MapView mapView;
 
-    private Quadtree spatialIndex = new Quadtree();
+    private STRtree spatialIndex = new STRtree();
     private Map<String, FPPage> pages = new HashMap<>();
 
     private PathOverlay selectedPathOverlay;
