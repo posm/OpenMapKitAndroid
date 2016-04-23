@@ -289,6 +289,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
 
+        // only open it if we render the OSM vectors,
+        // otherwise it is confusing for the user
+        if (mapView.getZoomLevel() < OSMMapBuilder.MIN_VECTOR_RENDER_ZOOM) {
+            return;
+        }
+
         int numRequiredTags = 0;
         if (ODKCollectHandler.isODKCollectMode()) {
             Collection<ODKTag> requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();

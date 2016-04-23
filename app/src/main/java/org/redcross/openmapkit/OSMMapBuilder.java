@@ -35,7 +35,7 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
  */
 public class OSMMapBuilder extends AsyncTask<File, Long, JTSModel> {
     
-    private static final float MIN_VECTOR_RENDER_ZOOM = 18;
+    public static final float MIN_VECTOR_RENDER_ZOOM = 18;
     private static final String PERSISTED_OSM_FILES = "org.redcross.openmapkit.PERSISTED_OSM_FILES";
 
     private static MapActivity mapActivity;

@@ -35,7 +35,7 @@ import java.util.List;
 public class OSMMap implements MapViewListener, MapListener {
 
     // DEBUG MODE - SHOW ENVELOPE AROUND TAP ON MAP
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private MapView mapView;
     private JTSModel jtsModel;
