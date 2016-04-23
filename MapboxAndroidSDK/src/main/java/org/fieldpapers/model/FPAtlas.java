@@ -183,6 +183,7 @@ public class FPAtlas implements MapViewListener, MapListener {
     }
 
     private void noPageFound() {
+        clearSelectedPathOverlay();
         if (activity != null && activity instanceof FPListener) {
             ((FPListener)activity).onMapCenterPageChangeMessage(null);
         }
@@ -200,10 +201,15 @@ public class FPAtlas implements MapViewListener, MapListener {
         return title() + " " + page.pageNumber();
     }
 
-    private void setSelectedPathOverlay(FPPage page) {
+    private void clearSelectedPathOverlay() {
         if (selectedPathOverlay != null) {
             selectedPathOverlay.getPaint().setColor(Color.BLACK);
+            selectedPathOverlay = null;
         }
+    }
+
+    private void setSelectedPathOverlay(FPPage page) {
+        clearSelectedPathOverlay();
         PathOverlay pathOverlay = page.pathOverlay();
         List<Overlay> overlays = mapView.getOverlays();
 
