@@ -13,24 +13,24 @@ import com.spatialdev.osm.model.OSMWay;
 public class OSMLine extends OSMPath {
 
     // OSM GREEN
-    private static final int DEFAULT_A = 125;
-    private static final int DEFAULT_R = 126;
-    private static final int DEFAULT_G = 188;
-    private static final int DEFAULT_B = 111;
-    private static final float DEFAULT_WIDTH = 13.0f;
+    public static final int DEFAULT_A = 125;
+    public static final int DEFAULT_R = 126;
+    public static final int DEFAULT_G = 188;
+    public static final int DEFAULT_B = 111;
+    public static final float DEFAULT_WIDTH = 13.0f;
     
     // GOLD
-    private static final int DEFAULT_SELECTED_A = 180;
-    private static final int DEFAULT_SELECTED_R = 255;
-    private static final int DEFAULT_SELECTED_G = 140;
-    private static final int DEFAULT_SELECTED_B = 0;
-    private static final float DEFAULT_SELECTED_WIDTH = 15.0f;
+    public static final int DEFAULT_SELECTED_A = 180;
+    public static final int DEFAULT_SELECTED_R = 255;
+    public static final int DEFAULT_SELECTED_G = 140;
+    public static final int DEFAULT_SELECTED_B = 0;
+    public static final float DEFAULT_SELECTED_WIDTH = 15.0f;
 
     // MAROON
-    private static final int DEFAULT_EDITED_A = 100;
-    private static final int DEFAULT_EDITED_R = 245;
-    private static final int DEFAULT_EDITED_G = 17;
-    private static final int DEFAULT_EDITED_B = 135;
+    public static final int DEFAULT_EDITED_A = 100;
+    public static final int DEFAULT_EDITED_R = 245;
+    public static final int DEFAULT_EDITED_G = 17;
+    public static final int DEFAULT_EDITED_B = 135;
     
     private float width;
     private int a;

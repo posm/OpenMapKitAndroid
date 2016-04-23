@@ -166,8 +166,11 @@ public class JTSModel {
 
         }
 
-//        Log.i("queryFromTap closestElement", closestElement.toString());
-        return closestElement;
+        Geometry closestElementGeom = closestElement.getJTSGeom();
+        if (closestElementGeom != null && closestElementGeom.intersects(geometryFactory.createPoint(coord))) {
+            return closestElement;
+        }
+        return null;
     }
     
     private Envelope createTapEnvelope(Coordinate coord, double lat, double lng, float zoom) {

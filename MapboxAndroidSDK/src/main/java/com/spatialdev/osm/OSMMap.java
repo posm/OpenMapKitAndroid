@@ -28,12 +28,14 @@ import com.spatialdev.osm.model.OSMNode;
 import com.spatialdev.osm.renderer.OSMOverlay;
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.fieldpapers.model.FPAtlas;
+
 import java.util.List;
 
 public class OSMMap implements MapViewListener, MapListener {
 
     // DEBUG MODE - SHOW ENVELOPE AROUND TAP ON MAP
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private MapView mapView;
     private JTSModel jtsModel;
@@ -124,6 +126,11 @@ public class OSMMap implements MapViewListener, MapListener {
 
     @Override
     public void onTapMap(MapView pMapView, ILatLng pPosition) {
+        FPAtlas atlas = FPAtlas.singleton();
+        if (atlas != null) {
+            atlas.onTapMap(pMapView, pPosition);
+        }
+
         float zoom = pMapView.getZoomLevel();
 
         OSMElement.deselectAll();

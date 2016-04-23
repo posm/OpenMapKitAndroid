@@ -228,6 +228,19 @@ public class ExternalStorage {
         return osmXmlFiles;
     }
 
+    public static File deploymentFPFile(String deploymentName) {
+        Set<File> osmXmlFiles = new HashSet<>();
+        File storageDir = Environment.getExternalStorageDirectory();
+        File deploymentDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR + "/" + deploymentName);
+        File[] files = deploymentDir.listFiles();
+        for (File f : files) {
+            if (f.getName().equals("fp.geojson")) {
+                return f;
+            }
+        }
+        return null;
+    }
+
     public static Set<File> deploymentMBTilesFiles(String deploymentName) {
         Set<File> mbtilesFiles = new HashSet<>();
         File storageDir = Environment.getExternalStorageDirectory();

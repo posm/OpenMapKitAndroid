@@ -41,6 +41,9 @@ import com.spatialdev.osm.events.OSMSelectionListener;
 import com.spatialdev.osm.model.OSMElement;
 import com.spatialdev.osm.model.OSMNode;
 
+import org.fieldpapers.listeners.FPListener;
+import org.fieldpapers.model.FPAtlas;
+import org.json.JSONException;
 import org.redcross.openmapkit.deployments.DeploymentsActivity;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
@@ -54,7 +57,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class MapActivity extends AppCompatActivity implements OSMSelectionListener {
+public class MapActivity extends AppCompatActivity implements OSMSelectionListener, FPListener {
 
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
@@ -64,6 +67,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     protected MapView mapView;
     protected OSMMap osmMap;
+    protected TextView fieldPapersMsg;
     protected ListView mTagListView;
     protected ImageButton mCloseListViewButton;
     protected ImageButton tagButton;
@@ -138,9 +142,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
         //get map from layout
         mapView = (MapView)findViewById(R.id.mapView);
+
+        // get Field Papers Message
+        fieldPapersMsg = (TextView)findViewById(R.id.fieldPapersMsg);
         
         // initialize basemap object
         basemap = new Basemap(this);
+
+        initializeFP();
 
         initializeOsmXml();
 
@@ -280,6 +289,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
 
+        // only open it if we render the OSM vectors,
+        // otherwise it is confusing for the user
+        if (mapView.getZoomLevel() < OSMMapBuilder.MIN_VECTOR_RENDER_ZOOM) {
+            return;
+        }
+
         int numRequiredTags = 0;
         if (ODKCollectHandler.isODKCollectMode()) {
             Collection<ODKTag> requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
@@ -330,6 +345,19 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         //update weight of top and bottom linear layouts
         mTopLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(topLayoutParams.width, topLayoutParams.height, topWeight));
         mBottomLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(bottomLayoutParams.width, bottomLayoutParams.height, bottomWeight));
+    }
+
+    /**
+     * Adds FieldPapers Overlay to the map (if we have one).
+     */
+    protected void initializeFP() {
+        try {
+            FPAtlas.addToMap(this, mapView);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -787,6 +815,16 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             app_installed = false;
         }
         return app_installed;
+    }
+
+    @Override
+    public void onMapCenterPageChangeMessage(String msg) {
+        if (msg != null) {
+            fieldPapersMsg.setText(msg);
+            fieldPapersMsg.setVisibility(View.VISIBLE);
+        } else {
+            fieldPapersMsg.setVisibility(View.GONE);
+        }
     }
 
 }
