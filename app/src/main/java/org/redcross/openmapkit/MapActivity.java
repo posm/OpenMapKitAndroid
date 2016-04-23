@@ -813,7 +813,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     @Override
     public void onMapCenterPageChangeMessage(String msg) {
-        fieldPapersMsg.setText(msg);
+        if (msg != null) {
+            fieldPapersMsg.setText(msg);
+            fieldPapersMsg.setVisibility(View.VISIBLE);
+        } else {
+            fieldPapersMsg.setVisibility(View.GONE);
+        }
     }
 
 }

@@ -176,7 +176,15 @@ public class FPAtlas implements MapViewListener, MapListener {
             Geometry pageGeom = page.geometry();
             if (pageGeom.contains(GEOMETRY_FACTORY.createPoint(coord))) {
                 foundPage(page);
+                return;
             }
+        }
+        noPageFound();
+    }
+
+    private void noPageFound() {
+        if (activity != null && activity instanceof FPListener) {
+            ((FPListener)activity).onMapCenterPageChangeMessage(null);
         }
     }
 

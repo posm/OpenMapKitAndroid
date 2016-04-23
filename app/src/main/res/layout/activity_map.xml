@@ -22,7 +22,8 @@
             android:id="@+id/fieldPapersMsg"
             android:background="@color/black"
             android:textColor="@color/osm_light_green"
-            android:paddingLeft="6dp" />
+            android:paddingLeft="6dp"
+            android:visibility="gone" />
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
