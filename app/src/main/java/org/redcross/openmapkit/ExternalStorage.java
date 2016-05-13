@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -359,7 +360,12 @@ public class ExternalStorage {
 
     }
 
-
+    public static File fetchConstraintsFile(String formName) {
+        File storageDir = Environment.getExternalStorageDirectory();
+        File appDir = new File(storageDir, APP_DIR);
+        File constraintsDir = new File(appDir, CONSTRAINTS_DIR);
+        return new File(constraintsDir, formName + ".json");
+    }
 
 
 
