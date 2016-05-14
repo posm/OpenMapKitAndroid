@@ -32,6 +32,7 @@ public class TagListAdapter extends BaseAdapter {
         tagMap = new LinkedHashMap<>();
 
         if (ODKCollectHandler.isODKCollectMode()) {
+            Constraints constraints = new Constraints(osmElement);
             Map<String,String> tags = osmElement.getTags();
             Map<String, String> readOnlyTags = new LinkedHashMap<>(tags);
             ODKCollectData odkCollectData = ODKCollectHandler.getODKCollectData();

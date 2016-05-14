@@ -9,6 +9,7 @@ import android.widget.RadioGroup;
 
 import com.spatialdev.osm.model.OSMElement;
 
+import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.odkcollect.ODKCollectData;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
@@ -33,6 +34,7 @@ public class TagEdit {
     private static LinkedHashMap<String, TagEdit> tagEditHash;
     private static List<TagEdit> tagEdits;
     private static OSMElement osmElement;
+    private static Constraints constraints;
     
     private String tagKey;
     private String tagVal;
@@ -48,12 +50,19 @@ public class TagEdit {
      */
     private CheckBox editTextCheckBox;
     private EditText checkBoxEditText;
-    
+
+    /**
+     * Factory Method that gives collection of instances.
+     *
+     * @return
+     */
     public static List<TagEdit> buildTagEdits() {
-        int idx = 0;
         tagEditHash = new LinkedHashMap<>();
         tagEdits = new ArrayList<>();
         osmElement = OSMElement.getSelectedElements().getFirst();
+        constraints = new Constraints(osmElement);
+
+        int idx = 0;
         Map<String, String> tags = osmElement.getTags();
         
         // Tag Edits for ODK Collect Mode
