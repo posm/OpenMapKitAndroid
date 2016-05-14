@@ -1,3 +1,46 @@
 {
-  "test": "value1"
+  "addr:city": {
+    "default": "Sacramento"
+  },
+  "addr:housenumber": {
+    "numeric": true
+  },
+  "addr:state": {
+    "default": "CA"
+  },
+  "amenity": {
+    "hide_if": {
+      "building": "residential"
+    },
+    "custom_value": true
+  },
+  "building": {
+    "default": "yes"
+  },
+  "building:levels": {
+    "numeric": true,
+    "custom_value": true
+  },
+  "name": {
+    "hide_if": {
+      "building": "residential"
+    }
+  },
+  "network": {
+    "custom_value": true,
+    "select_multiple": true
+  },
+  "operator": {
+    "select_multiple": true,
+    "required": true,
+    "show_if": {
+      "amenity": "bank"
+    }
+  },
+  "shop": {
+    "custom_value": true
+  },
+  "source": {
+    "implicit": "survey"
+  }
 }

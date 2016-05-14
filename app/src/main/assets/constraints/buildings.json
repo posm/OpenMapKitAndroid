@@ -1,0 +1,20 @@
+{
+  "addr:city": {
+    "default": "Sacramento",
+    "required": true
+  },
+  "addr:housenumber": {
+    "numeric": true,
+    "required": true
+  },
+  "addr:state": {
+    "default": "CA",
+    "required": true
+  },
+  "addr:street": {
+    "required": true
+  }
+  "building": {
+    "required": true
+  }
+}
