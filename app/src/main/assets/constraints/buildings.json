@@ -13,7 +13,7 @@
   },
   "addr:street": {
     "required": true
-  }
+  },
   "building": {
     "required": true
   }

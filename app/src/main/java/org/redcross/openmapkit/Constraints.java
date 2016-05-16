@@ -3,6 +3,7 @@ package org.redcross.openmapkit;
 import com.spatialdev.osm.model.OSMElement;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
@@ -41,8 +42,8 @@ public class Constraints {
         this.osmElement = osmElement;
     }
 
-    public boolean isNumeric(String tagKey) {
-        return true;
+    public boolean tagIsNumeric(String tagKey) {
+        return cascadeBooleanTagConstraint(tagKey, "numeric", false);
     }
 
     private Constraints() {
@@ -75,4 +76,47 @@ public class Constraints {
         }
     }
 
+    private boolean cascadeBooleanTagConstraint(String tagKey, String tagConstraint, boolean defaultVal) {
+        boolean val = defaultVal;
+
+        try {
+            JSONObject tagConstraints = defaultConstraintsJson.getJSONObject(tagKey);
+            val = tagConstraints.getBoolean(tagConstraint);
+        } catch (JSONException e) {
+            // do nothing
+        }
+
+        if (formConstraintsJson != null) {
+            try {
+                JSONObject tagConstraints = formConstraintsJson.getJSONObject(tagKey);
+                val = tagConstraints.getBoolean(tagConstraint);
+            } catch (JSONException e) {
+                // do nothing
+            }
+        }
+
+        return val;
+    }
+
+    private String cascadeStringTagConstraint(String tagKey, String tagConstraint, String defaultVal) {
+        String val = defaultVal;
+
+        try {
+            JSONObject tagConstraints = defaultConstraintsJson.getJSONObject(tagKey);
+            val = tagConstraints.getString(tagConstraint);
+        } catch (JSONException e) {
+            // do nothing
+        }
+
+        if (formConstraintsJson != null) {
+            try {
+                JSONObject tagConstraints = formConstraintsJson.getJSONObject(tagKey);
+                val = tagConstraints.getString(tagConstraint);
+            } catch (JSONException e) {
+                // do nothing
+            }
+        }
+
+        return val;
+    }
 }

@@ -58,7 +58,7 @@ public class StringTagValueFragment extends Fragment {
         tagValueEditText.setText(val);
         tagEdit.setEditText(tagValueEditText);
 
-        if (Constraints.singleton().isNumeric(key)) {
+        if (Constraints.singleton().tagIsNumeric(key)) {
             /**
              * You could use Configuration.KEYBOARD_12KEY but this does not allow
              * switching back to the normal alphabet keyboard. That needs to be
