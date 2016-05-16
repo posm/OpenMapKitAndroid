@@ -14,8 +14,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.spatialdev.osm.model.OSMDataSet;
+
 import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.R;
+
+import java.util.Set;
 
 
 public class StringTagValueFragment extends Fragment {
@@ -73,12 +77,12 @@ public class StringTagValueFragment extends Fragment {
     }
 
     private void setupAutoComplete() {
-        final String[] COUNTRIES = new String[] {
-                "Belgium", "France", "Italy", "Germany", "Spain"
-        };
+        Set<String> tagValues = OSMDataSet.tagValues();
+        String[] tagValuesArr = (String[]) tagValues.toArray(new String[tagValues.size()]);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+                android.R.layout.simple_dropdown_item_1line, tagValuesArr);
         tagValueEditText.setAdapter(adapter);
+        tagValueEditText.setThreshold(1);
     }
 
     public StringTagValueFragment() {

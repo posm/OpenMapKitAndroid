@@ -54,6 +54,15 @@ public class OSMDataSet {
      */
     private List<OSMWay> openWays = new ArrayList<>();
 
+    private static Set<String> tagValues = new HashSet<>();
+
+    public static void addTagValue(String tagValue) {
+        tagValues.add(tagValue);
+    }
+
+    public static Set<String> tagValues() {
+        return tagValues;
+    }
 
     public OSMDataSet() {}
 

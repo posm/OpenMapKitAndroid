@@ -211,6 +211,7 @@ public class OSMXmlParser {
         String k = parser.getAttributeValue(ns, "k");
         String v = parser.getAttributeValue(ns, "v");
         el.addParsedTag(k, v);
+        OSMDataSet.addTagValue(v);
         // we do this twice, because these are singular nodes that
         // function as start and end tags
         parser.nextTag();
