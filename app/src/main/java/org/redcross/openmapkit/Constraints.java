@@ -46,6 +46,10 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "numeric", false);
     }
 
+    public boolean tagAllowsCustomValue(String tagKey) {
+        return cascadeBooleanTagConstraint(tagKey, "custom_value", false);
+    }
+
     private Constraints() {
         loadConstraintsJson();
     }
@@ -64,9 +68,9 @@ public class Constraints {
 
         if (!ODKCollectHandler.isODKCollectMode()) return;
 
-        String formId = ODKCollectHandler.getODKCollectData().getFormId();
+        String formFileName = ODKCollectHandler.getODKCollectData().getFormFileName();
         try {
-            File formConstraintsFile = ExternalStorage.fetchConstraintsFile(formId);
+            File formConstraintsFile = ExternalStorage.fetchConstraintsFile(formFileName);
             String formConstraintsStr = FileUtils.readFileToString(formConstraintsFile);
             formConstraintsJson = new JSONObject(formConstraintsStr);
         } catch (Exception e) {

@@ -164,14 +164,16 @@ public class SelectMultipleTagValueFragment extends Fragment {
         });
         tagEdit.setupEditCheckbox(editTextCheckBox, editText);
 
-        LinearLayout customLinearLayout = new LinearLayout(activity);
-        customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-        customLinearLayout.setFocusableInTouchMode(true);
-        customLinearLayout.addView(editTextCheckBox);
-        customLinearLayout.addView(editText);
-        checkboxLinearLayout.addView(customLinearLayout);
+        if (Constraints.singleton().tagAllowsCustomValue(tagEdit.getTagKey())) {
+            LinearLayout customLinearLayout = new LinearLayout(activity);
+            customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+            customLinearLayout.setFocusableInTouchMode(true);
+            customLinearLayout.addView(editTextCheckBox);
+            customLinearLayout.addView(editText);
+            checkboxLinearLayout.addView(customLinearLayout);
+        }
 
     }
 

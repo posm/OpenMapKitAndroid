@@ -175,14 +175,16 @@ public class SelectOneTagValueFragment extends Fragment {
          * Adding customButton and customEditText to a horizontal linear layout
          * and puts that as the last item in the tag value radio group.
          */
-        LinearLayout customLinearLayout = new LinearLayout(activity);
-        customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-        customLinearLayout.setFocusableInTouchMode(true);
-        customLinearLayout.addView(customButton);
-        customLinearLayout.addView(customEditText);
-        tagValueRadioGroup.addView(customLinearLayout);
+        if (Constraints.singleton().tagAllowsCustomValue(tagEdit.getTagKey())) {
+            LinearLayout customLinearLayout = new LinearLayout(activity);
+            customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+            customLinearLayout.setFocusableInTouchMode(true);
+            customLinearLayout.addView(customButton);
+            customLinearLayout.addView(customEditText);
+            tagValueRadioGroup.addView(customLinearLayout);
+        }
 
     }
 

@@ -1,7 +1,7 @@
 {
   "addr:city": {
-    "default": "Sacramento",
-    "required": true
+    "required": true,
+    "custom_value": true
   },
   "addr:housenumber": {
     "numeric": true,
