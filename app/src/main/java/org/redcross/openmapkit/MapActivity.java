@@ -125,6 +125,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         // This will determine if we are in ODK Collect Mode or not.
         ODKCollectHandler.registerIntent(getIntent());
 
+        // Initialize the constraints singleton.
+        // Loads up all the constraints JSON configs.
+        Constraints.initialize();
+
         //set layout
         setContentView(R.layout.activity_map);
 
@@ -294,6 +298,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         if (mapView.getZoomLevel() < OSMMapBuilder.MIN_VECTOR_RENDER_ZOOM) {
             return;
         }
+
+        /**
+         * This is the appropriate time Constraints should have a new OSMElement
+         * to determine the constraint properties.
+         */
+        Constraints.singleton().setOSMElement(osmElement);
 
         int numRequiredTags = 0;
         if (ODKCollectHandler.isODKCollectMode()) {

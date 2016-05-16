@@ -34,7 +34,6 @@ public class TagEdit {
     private static LinkedHashMap<String, TagEdit> tagEditHash;
     private static List<TagEdit> tagEdits;
     private static OSMElement osmElement;
-    private static Constraints constraints;
     
     private String tagKey;
     private String tagVal;
@@ -60,7 +59,6 @@ public class TagEdit {
         tagEditHash = new LinkedHashMap<>();
         tagEdits = new ArrayList<>();
         osmElement = OSMElement.getSelectedElements().getFirst();
-        constraints = new Constraints(osmElement);
 
         int idx = 0;
         Map<String, String> tags = osmElement.getTags();

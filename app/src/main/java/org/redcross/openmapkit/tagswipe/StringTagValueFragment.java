@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.R;
 
 
@@ -55,6 +57,15 @@ public class StringTagValueFragment extends Fragment {
         
         tagValueEditText.setText(val);
         tagEdit.setEditText(tagValueEditText);
+
+        if (Constraints.singleton().isNumeric(key)) {
+            /**
+             * You could use Configuration.KEYBOARD_12KEY but this does not allow
+             * switching back to the normal alphabet keyboard. That needs to be
+             * an option.
+             */
+            tagValueEditText.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        }
     }
 
     public StringTagValueFragment() {
