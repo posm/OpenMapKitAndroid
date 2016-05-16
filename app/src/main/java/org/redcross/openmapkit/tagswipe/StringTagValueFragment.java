@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -25,7 +27,7 @@ public class StringTagValueFragment extends Fragment {
     
     private TextView tagKeyLabelTextView;
     private TextView tagKeyTextView;
-    private EditText tagValueEditText;
+    private AutoCompleteTextView tagValueEditText;
     
     private OnFragmentInteractionListener mListener;
 
@@ -41,7 +43,9 @@ public class StringTagValueFragment extends Fragment {
     private void setupWidgets() {
         tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
         tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
-        tagValueEditText = (EditText)rootView.findViewById(R.id.tagValueEditText);
+        tagValueEditText = (AutoCompleteTextView)rootView.findViewById(R.id.tagValueEditText);
+
+        setupAutoComplete();
         
         String keyLabel = tagEdit.getTagKeyLabel();
         String key = tagEdit.getTagKey();
@@ -66,6 +70,15 @@ public class StringTagValueFragment extends Fragment {
              */
             tagValueEditText.setRawInputType(Configuration.KEYBOARD_QWERTY);
         }
+    }
+
+    private void setupAutoComplete() {
+        final String[] COUNTRIES = new String[] {
+                "Belgium", "France", "Italy", "Germany", "Spain"
+        };
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+        tagValueEditText.setAdapter(adapter);
     }
 
     public StringTagValueFragment() {
