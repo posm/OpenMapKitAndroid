@@ -2,6 +2,7 @@ package org.redcross.openmapkit.tagswipe;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
@@ -107,6 +109,12 @@ public class SelectOneTagValueFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
+
+        // Numeric Input Constraint
+        if (Constraints.singleton().tagIsNumeric(tagEdit.getTagKey())) {
+            customEditText.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        }
+
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
