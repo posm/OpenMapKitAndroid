@@ -12,11 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import com.spatialdev.osm.model.OSMDataSet;
 
 import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.R;
@@ -24,6 +28,7 @@ import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -87,7 +92,7 @@ public class SelectOneTagValueFragment extends Fragment {
         /**
          * Special EditText that is next to the customButton
          */
-        final EditText customEditText = new EditText(activity);
+        final AutoCompleteTextView customEditText = new AutoCompleteTextView(activity);
         customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         customEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -176,6 +181,10 @@ public class SelectOneTagValueFragment extends Fragment {
          * and puts that as the last item in the tag value radio group.
          */
         if (Constraints.singleton().tagAllowsCustomValue(tagEdit.getTagKey())) {
+
+            // Only setup this more expensive model for AutoComplete when we know we need it.
+            setupAutoComplete(customEditText);
+
             LinearLayout customLinearLayout = new LinearLayout(activity);
             customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
             customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -238,6 +247,15 @@ public class SelectOneTagValueFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void setupAutoComplete(AutoCompleteTextView autoCompleteTextView) {
+        Set<String> tagValues = OSMDataSet.tagValues();
+        String[] tagValuesArr = tagValues.toArray(new String[tagValues.size()]);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, tagValuesArr);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setThreshold(1);
     }
 
     /**

@@ -78,7 +78,7 @@ public class StringTagValueFragment extends Fragment {
 
     private void setupAutoComplete() {
         Set<String> tagValues = OSMDataSet.tagValues();
-        String[] tagValuesArr = (String[]) tagValues.toArray(new String[tagValues.size()]);
+        String[] tagValuesArr = tagValues.toArray(new String[tagValues.size()]);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
                 android.R.layout.simple_dropdown_item_1line, tagValuesArr);
         tagValueEditText.setAdapter(adapter);

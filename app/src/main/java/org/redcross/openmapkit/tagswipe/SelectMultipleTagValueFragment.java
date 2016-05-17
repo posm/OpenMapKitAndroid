@@ -12,10 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.spatialdev.osm.model.OSMDataSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.redcross.openmapkit.Constraints;
@@ -119,7 +123,7 @@ public class SelectMultipleTagValueFragment extends Fragment {
         }
 
         final CheckBox editTextCheckBox = new CheckBox(activity);
-        final EditText editText = new EditText(activity);
+        final AutoCompleteTextView editText = new AutoCompleteTextView(activity);
         editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if (prevTagValsNotInChoices.size() > 0) {
             String joinedNotInChoices = StringUtils.join(prevTagValsNotInChoices, ";");
@@ -165,6 +169,10 @@ public class SelectMultipleTagValueFragment extends Fragment {
         tagEdit.setupEditCheckbox(editTextCheckBox, editText);
 
         if (Constraints.singleton().tagAllowsCustomValue(tagEdit.getTagKey())) {
+
+            // Only setup this more expensive model for AutoComplete when we know we need it.
+            setupAutoComplete(editText);
+
             LinearLayout customLinearLayout = new LinearLayout(activity);
             customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
             customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -222,6 +230,15 @@ public class SelectMultipleTagValueFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void setupAutoComplete(AutoCompleteTextView autoCompleteTextView) {
+        Set<String> tagValues = OSMDataSet.tagValues();
+        String[] tagValuesArr = tagValues.toArray(new String[tagValues.size()]);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, tagValuesArr);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setThreshold(1);
     }
 
     /**
