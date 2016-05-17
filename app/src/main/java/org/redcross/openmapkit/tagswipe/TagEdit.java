@@ -35,7 +35,7 @@ public class TagEdit {
     private static List<TagEdit> tagEdits;
     private static OSMElement osmElement;
     
-    private String tagKey;
+    private final String tagKey; // a given TagEdit always associates to an immutable key
     private String tagVal;
     private ODKTag odkTag;
     private boolean readOnly;
@@ -173,9 +173,9 @@ public class TagEdit {
                 } else {
                     tagVal = odkTag.getSemiColonDelimitedTagValues(null);
                 }
-                osmElement.addOrEditTag(tagKey, tagVal);
+                addOrEditTag(tagKey, tagVal);
             } else {
-                osmElement.deleteTag(tagKey);
+                deleteTag(tagKey);
             }
             return;
         }
@@ -189,20 +189,30 @@ public class TagEdit {
                 if (customRadio.isChecked()) {
                     EditText et = (EditText)customLL.getChildAt(1);
                     tagVal = et.getText().toString();
-                    osmElement.addOrEditTag(tagKey, tagVal);
+                    addOrEditTag(tagKey, tagVal);
                 } else if (checkedId != -1) {
                     tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
-                    osmElement.addOrEditTag(tagKey, tagVal);
+                    addOrEditTag(tagKey, tagVal);
                 } else {
-                    osmElement.deleteTag(tagKey);
+                    deleteTag(tagKey);
                 }
             }
         }
         // edit text
         else if (editText != null) {
             tagVal = editText.getText().toString();
-            osmElement.addOrEditTag(tagKey, tagVal);
+            addOrEditTag(tagKey, tagVal);
         }
+    }
+
+    private void addOrEditTag(String tagKey, String tagVal) {
+        osmElement.addOrEditTag(tagKey, tagVal);
+        Constraints.singleton().tagAddedOrEdited(tagKey, tagVal);
+    }
+
+    private void deleteTag(String tagKey) {
+        osmElement.deleteTag(tagKey);
+        Constraints.singleton().tagDeleted(tagKey);
     }
     
     public String getTitle() {

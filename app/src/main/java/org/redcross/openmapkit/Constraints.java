@@ -50,6 +50,20 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "custom_value", false);
     }
 
+    public void tagAddedOrEdited(String key, String val) {
+
+        // THIS IS JUST TO THINK THINGS THROUGH.
+        // Example of hiding shop if amenity is selected...
+        if (key.equals("amenity")) {
+
+        }
+
+    }
+
+    public void tagDeleted(String key) {
+
+    }
+
     private Constraints() {
         loadConstraintsJson();
     }
