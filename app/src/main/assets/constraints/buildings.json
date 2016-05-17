@@ -4,8 +4,7 @@
     "custom_value": true
   },
   "addr:housenumber": {
-    "numeric": true,
-    "required": true
+    "numeric": true
   },
   "addr:state": {
     "default": "CA",
@@ -16,5 +15,10 @@
   },
   "building": {
     "required": true
+  },
+  "name": {
+    "hide_if": {
+      "building": "house"
+    }
   }
 }
