@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,6 +31,7 @@ public class TagSwipeActivity extends ActionBarActivity {
     
     private void setupModel() {
         tagEdits = TagEdit.buildTagEdits();
+        TagEdit.setTagSwipeActivity(this);
         userNamePref = getSharedPreferences("org.redcross.openmapkit.USER_NAME", Context.MODE_PRIVATE);
     }
 
@@ -132,7 +133,12 @@ public class TagSwipeActivity extends ActionBarActivity {
         builder.show();
     }
 
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+    public void updateUI() {
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
         
         private Fragment fragment;
 

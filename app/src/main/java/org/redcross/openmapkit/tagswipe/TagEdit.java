@@ -34,6 +34,7 @@ public class TagEdit {
     private static LinkedHashMap<String, TagEdit> tagEditHash;
     private static List<TagEdit> tagEdits;
     private static OSMElement osmElement;
+    private static TagSwipeActivity tagSwipeActivity;
     
     private final String tagKey; // a given TagEdit always associates to an immutable key
     private String tagVal;
@@ -95,6 +96,10 @@ public class TagEdit {
         
         return tagEdits;
     }
+
+    public static void setTagSwipeActivity(TagSwipeActivity tagSwipeActivity) {
+        TagEdit.tagSwipeActivity = tagSwipeActivity;
+    }
     
     public static TagEdit getTag(int idx) {
         return tagEdits.get(idx);
@@ -102,6 +107,16 @@ public class TagEdit {
     
     public static TagEdit getTag(String key) {
         return tagEditHash.get(key);        
+    }
+
+    public static void removeTag(String key) {
+        if (tagEditHash.get(key) == null) return;
+        int idx = getIndexForTagKey(key);
+        tagEditHash.remove(key);
+        tagEdits.remove(idx);
+        if (tagSwipeActivity != null) {
+            tagSwipeActivity.updateUI();
+        }
     }
 
     public static int getIndexForTagKey(String key) {

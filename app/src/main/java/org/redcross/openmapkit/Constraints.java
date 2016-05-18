@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.tagswipe.TagEdit;
 
 import java.io.File;
 
@@ -55,7 +56,8 @@ public class Constraints {
         // THIS IS JUST TO THINK THINGS THROUGH.
         // Example of hiding shop if amenity is selected...
         if (key.equals("amenity")) {
-
+            TagEdit.removeTag("shop");
+//            TagEdit.removeTag("name");
         }
 
     }
