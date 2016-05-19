@@ -9,16 +9,32 @@ import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.tagswipe.TagEdit;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class Constraints {
 
     private static Constraints instance;
 
-    private OSMElement osmElement;
     private JSONObject defaultConstraintsJson;
     private JSONObject formConstraintsJson;
 
-    boolean active = true;
+    /**
+     * We feed tag key, values through this map of maps to find the set
+     * of tags with keys that should be hidden. The inner map may have
+     * a "" key that is the wildcard of tags to hide.
+     */
+    private Map<String, Map<String, Set<String>>> hideMap = new HashMap<>();
+
+    private boolean active = true;
+
+    public class TagAction {
+        public Set<String> hide = new HashSet<>();
+        public Set<String> show = new HashSet<>();
+    }
 
     public static Constraints initialize() {
         instance = new Constraints();
@@ -39,10 +55,6 @@ public class Constraints {
         return active;
     }
 
-    public void setOSMElement(OSMElement osmElement) {
-        this.osmElement = osmElement;
-    }
-
     public boolean tagIsNumeric(String tagKey) {
         return cascadeBooleanTagConstraint(tagKey, "numeric", false);
     }
@@ -51,7 +63,13 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "custom_value", false);
     }
 
-    public void tagAddedOrEdited(String key, String val) {
+    public boolean tagShouldBeShown(String tagKey) {
+
+        return true;
+    }
+
+    public TagAction tagAddedOrEdited(String key, String val) {
+        TagAction tagAction = new TagAction();
 
         // THIS IS JUST TO THINK THINGS THROUGH.
         // Example of hiding shop if amenity is selected...
@@ -60,14 +78,18 @@ public class Constraints {
 //            TagEdit.removeTag("name");
         }
 
+        return tagAction;
     }
 
-    public void tagDeleted(String key) {
+    public TagAction tagDeleted(String key) {
+        TagAction tagAction = new TagAction();
 
+        return tagAction;
     }
 
     private Constraints() {
         loadConstraintsJson();
+        buildSkipLogic();
     }
 
     private void loadConstraintsJson() {
@@ -139,4 +161,43 @@ public class Constraints {
 
         return val;
     }
+
+    private void buildSkipLogic() {
+        Iterator<String> tagKeys = defaultConstraintsJson.keys();
+        // iterate through main tag keys
+        while (tagKeys.hasNext()) {
+            String tag = tagKeys.next();
+            // look for hide_if and show_if constraints
+            try {
+                JSONObject constraints = defaultConstraintsJson.getJSONObject(tag);
+                try {
+                    JSONObject hideIf = constraints.getJSONObject("hide_if");
+                    Iterator<String> hideIfKeys = hideIf.keys();
+                    while (hideIfKeys.hasNext()) {
+                        String hideIfKey = hideIfKeys.next();
+                        String hideIfVal = hideIf.optString(hideIfKey);
+                        Map<String, Set<String>> hideMapVal = hideMap.get(hideIfKey);
+                        // check to make sure inner objects are created
+                        if (hideMapVal == null) {
+                            hideMapVal = new HashMap<>();
+                            hideMapVal.put(hideIfVal, new HashSet<String>());
+                            hideMap.put(hideIfKey, hideMapVal);
+                        } else if (hideMapVal.get(hideIfVal) == null) {
+                            hideMapVal.put(hideIfVal, new HashSet<String>());
+                        }
+                        // Under the right conditions,
+                        // this tag in this set should be hidden.
+                        hideMapVal.get(hideIfVal).add(tag);
+                    }
+                } catch (JSONException e) {
+                    // do nothing
+                }
+
+            } catch (JSONException e) {
+                // do nothing
+            }
+
+        }
+    }
+
 }

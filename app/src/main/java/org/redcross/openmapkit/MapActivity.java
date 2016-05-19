@@ -299,12 +299,6 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             return;
         }
 
-        /**
-         * This is the appropriate time Constraints should have a new OSMElement
-         * to determine the constraint properties.
-         */
-        Constraints.singleton().setOSMElement(osmElement);
-
         int numRequiredTags = 0;
         if (ODKCollectHandler.isODKCollectMode()) {
             Collection<ODKTag> requiredTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
