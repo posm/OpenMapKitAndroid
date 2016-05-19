@@ -23,16 +23,15 @@ public class Constraints {
     private JSONObject formConstraintsJson;
 
     /**
-     * We feed tag key, values through this map of maps to find the set
-     * of tags with keys that should be hidden. The inner map may have
-     * a "" key that is the wildcard of tags to hide.
-     *
-     * Map < the key that might cause something to be hidden,
-     *          Map < the value that might cause something to be hidden,
-     *              Set < the set of keys that should be hidden >>
+     * Contains a map of constraint keys with the key value pairs of the
+     * OSM Element conditions in which a tag view should be hidden.
      */
-    private Map<String, Map<String, Set<String>>> hideMap = new HashMap<>();
+    private Map<String, Map<String, String>> hideMap = new HashMap<>();
 
+    /**
+     * Contains a map of constraint keys with the key value pairs of the
+     * OSM Element conditions in which a tag view should be shown.
+     */
     private Map<String, Map<String, String>> showMap = new HashMap<>();
 
     private boolean active = true;
@@ -99,9 +98,23 @@ public class Constraints {
         }
 
         // Check hideMap
-        Map<String, Set<String>> hideMapMap = hideMap.get(tagKey);
+        Map<String, String> hideMapMap = hideMap.get(tagKey);
         if (hideMapMap != null) {
-            
+            Set<String> hideMapMapKeys = hideMapMap.keySet();
+            for (String key : hideMapMapKeys) {
+                String val = hideMapMap.get(key);
+                // wildcard
+                if (val.equals("")) {
+                    if (osmElement.getTags().keySet().contains(key)) {
+                        return false;
+                    }
+                } else {
+                    String osmElementTagVal = osmElement.getTags().get(key);
+                    if (osmElementTagVal != null && osmElementTagVal.equals(val)) {
+                        return false;
+                    }
+                }
+            }
         }
 
         // If the tag isn't mentioned in the showMap or the hideMap, then we should show it!
@@ -226,18 +239,13 @@ public class Constraints {
                 while (hideIfKeys.hasNext()) {
                     String hideIfKey = hideIfKeys.next();
                     String hideIfVal = hideIf.optString(hideIfKey);
-                    Map<String, Set<String>> hideMapMap = hideMap.get(hideIfKey);
+                    Map<String, String> hideMapMap = hideMap.get(hideIfKey);
                     // check to make sure inner objects are created
                     if (hideMapMap == null) {
                         hideMapMap = new HashMap<>();
-                        hideMapMap.put(hideIfVal, new HashSet<String>());
                         hideMap.put(hideIfKey, hideMapMap);
-                    } else if (hideMapMap.get(hideIfVal) == null) {
-                        hideMapMap.put(hideIfVal, new HashSet<String>());
                     }
-                    // Under the right conditions,
-                    // this tag in this set should be hidden.
-                    hideMapMap.get(hideIfVal).add(tag);
+                    hideMapMap.put(hideIfKey, hideIfVal);
                 }
             } catch (JSONException e) {
                 // do nothing
