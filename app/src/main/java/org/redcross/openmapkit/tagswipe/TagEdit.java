@@ -119,20 +119,6 @@ public class TagEdit {
         return tagEditHiddenHash.keySet();
     }
 
-    public static void removeTag(String key) {
-        if (tagEditHash.get(key) == null) return;
-        int idx = getIndexForTagKey(key);
-        tagEditHash.remove(key);
-        tagEdits.remove(idx);
-        if (tagSwipeActivity != null) {
-            tagSwipeActivity.updateUI();
-        }
-    }
-
-    public static void addTag(String key, String afterKey) {
-
-    }
-
     public static int getIndexForTagKey(String key) {
         TagEdit tagEdit = tagEditHash.get(key);
         if (tagEdit != null) {
@@ -145,6 +131,20 @@ public class TagEdit {
     public static void saveToODKCollect(String osmUserName) {
         updateTagsInOSMElement();
         ODKCollectHandler.saveXmlInODKCollect(osmElement, osmUserName);
+    }
+
+    private static void removeTag(String key) {
+        if (tagEditHash.get(key) == null) return;
+        int idx = getIndexForTagKey(key);
+        tagEditHash.remove(key);
+        tagEdits.remove(idx);
+        if (tagSwipeActivity != null) {
+            tagSwipeActivity.updateUI();
+        }
+    }
+
+    private static void addTag(String key, String afterKey) {
+
     }
     
     private static void updateTagsInOSMElement() {
@@ -236,12 +236,16 @@ public class TagEdit {
 
     private void addOrEditTag(String tagKey, String tagVal) {
         osmElement.addOrEditTag(tagKey, tagVal);
-        Constraints.singleton().tagAddedOrEdited(tagKey, tagVal, osmElement);
+        Constraints.TagAction tagAction = Constraints.singleton().tagAddedOrEdited(tagKey, tagVal);
+        Set<String> tagsToHide = tagAction.hide;
+        for (String tag : tagsToHide) {
+            removeTag(tag);
+        }
     }
 
     private void deleteTag(String tagKey) {
         osmElement.deleteTag(tagKey);
-        Constraints.singleton().tagDeleted(tagKey, osmElement);
+        Constraints.TagAction tagAction = Constraints.singleton().tagDeleted(tagKey);
     }
     
     public String getTitle() {

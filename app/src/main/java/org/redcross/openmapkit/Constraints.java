@@ -94,7 +94,7 @@ public class Constraints {
             for (String key : showMapMapKeys) {
                 String val = showMapMap.get(key);
                 // wildcard
-                if (val.equals("")) {
+                if (val.equals("true")) {
                     if (osmElement.getTags().keySet().contains(key)) {
                         // OSM Element has a tag key that is required (declared with true)
                         // by the show_if condition for the given tag_key.
@@ -120,7 +120,7 @@ public class Constraints {
             for (String key : hideMapMapKeys) {
                 String val = hideMapMap.get(key);
                 // wildcard
-                if (val.equals("")) {
+                if (val.equals("true")) {
                     if (osmElement.getTags().keySet().contains(key)) {
                         return false;
                     }
@@ -137,34 +137,22 @@ public class Constraints {
         return true;
     }
 
-    public TagAction tagAddedOrEdited(String key, String val, OSMElement osmElement) {
+    public TagAction tagAddedOrEdited(String key, String val) {
         TagAction tagAction = new TagAction();
         if (!isActive()) return tagAction;
 
-        Set<String> shownTagKeys = TagEdit.shownTagKeys();
-        Set<String> hiddenTagKeys = TagEdit.hiddenTagKeys();
-
-        for (String k : shownTagKeys) {
-//            tagShouldBeShown(, osmElement);
-        }
-
-        for (String k : hiddenTagKeys) {
-
-        }
-
-        // THIS IS JUST TO THINK THINGS THROUGH.
-        // Example of hiding shop if amenity is selected...
-        if (key.equals("amenity")) {
-            TagEdit.removeTag("shop");
-//            TagEdit.removeTag("name");
-        }
+        tagAction.hide = findTagsToBeHiddenFromUpdate(key, val);
+        tagAction.show = findTagsToBeShownFromUpdate(key, val);
 
         return tagAction;
     }
 
-    public TagAction tagDeleted(String key, OSMElement osmElement) {
+    public TagAction tagDeleted(String key) {
         TagAction tagAction = new TagAction();
         if (!isActive()) return tagAction;
+
+        tagAction.hide = findTagsToBeHiddenFromDelete(key);
+        tagAction.show = findTagsToBeShownFromDelete(key);
 
         return tagAction;
     }
@@ -247,10 +235,14 @@ public class Constraints {
     }
 
     private void buildSkipLogic() {
-        buildHideMaps(defaultConstraintsJson);
-        buildHideMaps(formConstraintsJson);
-        buildShowMaps(defaultConstraintsJson);
-        buildHideMaps(formConstraintsJson);
+        if (defaultConstraintsJson != null) {
+            buildHideMaps(defaultConstraintsJson);
+            buildShowMaps(defaultConstraintsJson);
+        }
+        if (formConstraintsJson != null) {
+            buildHideMaps(formConstraintsJson);
+            buildHideMaps(formConstraintsJson);
+        }
     }
 
     private void buildHideMaps(JSONObject constraintsJson) {
@@ -260,19 +252,26 @@ public class Constraints {
             String tag = tagKeys.next();
             try {
                 JSONObject constraints = constraintsJson.getJSONObject(tag);
-                // look for hide_if constraints
+                Map<String, String> hideMapMap = hideMap.get(tag);
+                if (hideMapMap == null) {
+                    hideMapMap = new HashMap<>();
+                    hideMap.put(tag, hideMapMap);
+                }
                 JSONObject hideIf = constraints.getJSONObject("hide_if");
                 Iterator<String> hideIfKeys = hideIf.keys();
                 while (hideIfKeys.hasNext()) {
                     String hideIfKey = hideIfKeys.next();
                     String hideIfVal = hideIf.optString(hideIfKey);
-                    Map<String, String> hideMapMap = hideMap.get(hideIfKey);
-                    // check to make sure inner objects are created
-                    if (hideMapMap == null) {
-                        hideMapMap = new HashMap<>();
-                        hideMap.put(hideIfKey, hideMapMap);
+                    Map<String, Set<String>> causeHideMapMap = causeHideMap.get(hideIfKey);
+                    if (causeHideMapMap == null) {
+                        causeHideMapMap = new HashMap<>();
+                        causeHideMapMap.put(hideIfVal, new HashSet<String>());
+                        causeHideMap.put(hideIfKey, causeHideMapMap);
+                    } else if (causeHideMapMap.get(hideIfVal) == null) {
+                        causeHideMapMap.put(hideIfVal, new HashSet<String>());
                     }
                     hideMapMap.put(hideIfKey, hideIfVal);
+                    causeHideMapMap.get(hideIfVal).add(tag);
                 }
             } catch (JSONException e) {
                 // do nothing
@@ -287,21 +286,85 @@ public class Constraints {
             String tag = tagKeys.next();
             try {
                 JSONObject constraints = constraintsJson.getJSONObject(tag);
+                Map<String, String> showMapMap = showMap.get(tag);
+                if (showMapMap == null) {
+                    showMapMap = new HashMap<>();
+                    showMap.put(tag, showMapMap);
+                }
                 JSONObject showIf = constraints.getJSONObject("show_if");
                 Iterator<String> showIfKeys = showIf.keys();
                 while (showIfKeys.hasNext()) {
                     String showIfKey = showIfKeys.next();
                     String showIfVal = showIf.optString(showIfKey);
-                    Map<String, String> showMapMap = showMap.get(showIfKey);
-                    if (showMapMap == null) {
-                        showMapMap = new HashMap<>();
-                        showMap.put(showIfKey, showMapMap);
+                    Map<String, Set<String>> causeShowMapMap = causeShowMap.get(showIfKey);
+                    if (causeShowMapMap == null) {
+                        causeShowMapMap = new HashMap<>();
+                        causeShowMapMap.put(showIfVal, new HashSet<String>());
+                        causeShowMap.put(showIfKey, causeShowMapMap);
+                    } else if (causeShowMapMap.get(showIfVal) == null) {
+                        causeShowMapMap.put(showIfVal, new HashSet<String>());
                     }
                     showMapMap.put(showIfKey, showIfVal);
+                    causeShowMapMap.get(showIfVal).add(tag);
                 }
             } catch (JSONException e) {
                 // do nothing
             }
         }
     }
+
+    private Set<String> findTagsToBeHiddenFromUpdate(String key, String val) {
+        Set<String> tags = new HashSet<>();
+
+        Set<String> set = causeHideMap.get(key).get("true");
+        if (set != null) {
+            tags.addAll(set);
+        }
+        set = causeHideMap.get(key).get(val);
+        if (set != null) {
+            tags.addAll(set);
+        }
+
+        return tags;
+    }
+
+    private Set<String> findTagsToBeShownFromUpdate(String key, String val) {
+        Set<String> tags = new HashSet<>();
+
+        Set<String> set = causeShowMap.get(key).get("true");
+        if (set != null) {
+            tags.addAll(set);
+        }
+        set = causeShowMap.get(key).get(val);
+        if (set != null) {
+            tags.addAll(set);
+        }
+
+        return tags;
+    }
+
+    private Set<String> findTagsToBeHiddenFromDelete(String key) {
+        Set<String> tags = new HashSet<>();
+
+        Map<String, Set<String>> allTags = causeShowMap.get(key);
+        Set<String> vals = allTags.keySet();
+        for (String v : vals) {
+            tags.addAll(allTags.get(v));
+        }
+
+        return tags;
+    }
+
+    private Set<String> findTagsToBeShownFromDelete(String key) {
+        Set<String> tags = new HashSet<>();
+
+        Map<String, Set<String>> allTags = causeHideMap.get(key);
+        Set<String> vals = allTags.keySet();
+        for (String v : vals) {
+            tags.addAll(allTags.get(v));
+        }
+
+        return tags;
+    }
+
 }
