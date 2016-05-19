@@ -32,6 +32,7 @@ import java.util.Set;
 public class TagEdit {
 
     private static LinkedHashMap<String, TagEdit> tagEditHash;
+    private static LinkedHashMap<String, TagEdit> tagEditHiddenHash;
     private static List<TagEdit> tagEdits;
     private static OSMElement osmElement;
     private static TagSwipeActivity tagSwipeActivity;
@@ -58,6 +59,7 @@ public class TagEdit {
      */
     public static List<TagEdit> buildTagEdits() {
         tagEditHash = new LinkedHashMap<>();
+        tagEditHiddenHash = new LinkedHashMap<>();
         tagEdits = new ArrayList<>();
         osmElement = OSMElement.getSelectedElements().getFirst();
 
@@ -109,6 +111,14 @@ public class TagEdit {
         return tagEditHash.get(key);        
     }
 
+    public static Set<String> hiddenTagKeys() {
+        return tagEditHash.keySet();
+    }
+
+    public static Set<String> shownTagKeys() {
+        return tagEditHiddenHash.keySet();
+    }
+
     public static void removeTag(String key) {
         if (tagEditHash.get(key) == null) return;
         int idx = getIndexForTagKey(key);
@@ -117,6 +127,10 @@ public class TagEdit {
         if (tagSwipeActivity != null) {
             tagSwipeActivity.updateUI();
         }
+    }
+
+    public static void addTag(String key, String afterKey) {
+
     }
 
     public static int getIndexForTagKey(String key) {
@@ -222,12 +236,12 @@ public class TagEdit {
 
     private void addOrEditTag(String tagKey, String tagVal) {
         osmElement.addOrEditTag(tagKey, tagVal);
-        Constraints.singleton().tagAddedOrEdited(tagKey, tagVal);
+        Constraints.singleton().tagAddedOrEdited(tagKey, tagVal, osmElement);
     }
 
     private void deleteTag(String tagKey) {
         osmElement.deleteTag(tagKey);
-        Constraints.singleton().tagDeleted(tagKey);
+        Constraints.singleton().tagDeleted(tagKey, osmElement);
     }
     
     public String getTitle() {

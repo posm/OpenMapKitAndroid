@@ -25,14 +25,30 @@ public class Constraints {
     /**
      * Contains a map of constraint keys with the key value pairs of the
      * OSM Element conditions in which a tag view should be hidden.
+     *
+     * The key of the outer map is to the tag in question
      */
     private Map<String, Map<String, String>> hideMap = new HashMap<>();
 
     /**
+     * This map is similar, but the key to the outer map is of tag keys
+     * that will cause the inner Set of tag keys to be hidden.
+     */
+    private Map<String, Map<String, Set<String>>> causeHideMap = new HashMap<>();
+
+    /**
      * Contains a map of constraint keys with the key value pairs of the
      * OSM Element conditions in which a tag view should be shown.
+     *
+     * The key of the outer map is to the tag in question.
      */
     private Map<String, Map<String, String>> showMap = new HashMap<>();
+
+    /**
+     * The key of the outer map is to the tag key that causes the inner
+     * set of tag keys to be shown.
+     */
+    private Map<String, Map<String, Set<String>>> causeShowMap = new HashMap<>();
 
     private boolean active = true;
 
@@ -124,6 +140,17 @@ public class Constraints {
     public TagAction tagAddedOrEdited(String key, String val, OSMElement osmElement) {
         TagAction tagAction = new TagAction();
         if (!isActive()) return tagAction;
+
+        Set<String> shownTagKeys = TagEdit.shownTagKeys();
+        Set<String> hiddenTagKeys = TagEdit.hiddenTagKeys();
+
+        for (String k : shownTagKeys) {
+//            tagShouldBeShown(, osmElement);
+        }
+
+        for (String k : hiddenTagKeys) {
+
+        }
 
         // THIS IS JUST TO THINK THINGS THROUGH.
         // Example of hiding shop if amenity is selected...
@@ -220,13 +247,13 @@ public class Constraints {
     }
 
     private void buildSkipLogic() {
-        buildHideMap(defaultConstraintsJson);
-        buildHideMap(formConstraintsJson);
-        buildShowMap(defaultConstraintsJson);
-        buildHideMap(formConstraintsJson);
+        buildHideMaps(defaultConstraintsJson);
+        buildHideMaps(formConstraintsJson);
+        buildShowMaps(defaultConstraintsJson);
+        buildHideMaps(formConstraintsJson);
     }
 
-    private void buildHideMap(JSONObject constraintsJson) {
+    private void buildHideMaps(JSONObject constraintsJson) {
         Iterator<String> tagKeys = constraintsJson.keys();
         // iterate through main tag keys
         while (tagKeys.hasNext()) {
@@ -253,7 +280,7 @@ public class Constraints {
         }
     }
 
-    private void buildShowMap(JSONObject constraintsJson) {
+    private void buildShowMaps(JSONObject constraintsJson) {
         Iterator<String> tagKeys = constraintsJson.keys();
         // iterate through main tag keys
         while (tagKeys.hasNext()) {
