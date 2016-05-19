@@ -42,7 +42,6 @@ public class TagEdit {
     private ODKTag odkTag;
     private boolean readOnly;
     private boolean checkBoxMode = false;
-    private int idx = -1;
     private EditText editText;
     private RadioGroup radioGroup;
 
@@ -63,7 +62,6 @@ public class TagEdit {
         tagEdits = new ArrayList<>();
         osmElement = OSMElement.getSelectedElements().getFirst();
 
-        int idx = 0;
         Map<String, String> tags = osmElement.getTags();
         
         // Tag Edits for ODK Collect Mode
@@ -73,14 +71,14 @@ public class TagEdit {
             Collection<ODKTag> requiredTags = odkCollectData.getRequiredTags();
             for (ODKTag odkTag : requiredTags) {
                 String tagKey = odkTag.getKey();
-                TagEdit tagEdit = new TagEdit(tagKey, tags.get(tagKey), odkTag, false, idx++);
+                TagEdit tagEdit = new TagEdit(tagKey, tags.get(tagKey), odkTag, false);
                 tagEditHash.put(tagKey, tagEdit);
                 tagEdits.add(tagEdit);
                 readOnlyTags.remove(tagKey);
             }
             Set<String> readOnlyKeys = readOnlyTags.keySet();
             for (String readOnlyKey : readOnlyKeys) {
-                TagEdit tagEdit = new TagEdit(readOnlyKey, readOnlyTags.get(readOnlyKey), true, idx++);
+                TagEdit tagEdit = new TagEdit(readOnlyKey, readOnlyTags.get(readOnlyKey), true);
                 tagEditHash.put(readOnlyKey, tagEdit);
                 tagEdits.add(tagEdit);
             }
@@ -90,7 +88,7 @@ public class TagEdit {
         else {
             Set<String> keys = tags.keySet();
             for (String key : keys) {
-                TagEdit tagEdit = new TagEdit(key, tags.get(key), false, idx++);
+                TagEdit tagEdit = new TagEdit(key, tags.get(key), false);
                 tagEditHash.put(key, tagEdit);
                 tagEdits.add(tagEdit);
             }
@@ -122,7 +120,7 @@ public class TagEdit {
     public static int getIndexForTagKey(String key) {
         TagEdit tagEdit = tagEditHash.get(key);
         if (tagEdit != null) {
-            return tagEdit.getIndex();
+            return tagEdits.indexOf(tagEdit);
         }
         // If its not there, just go to the first TagEdit
         return 0;
@@ -153,19 +151,17 @@ public class TagEdit {
         }
     }
     
-    private TagEdit(String tagKey, String tagVal, ODKTag odkTag, boolean readOnly, int idx) {
+    private TagEdit(String tagKey, String tagVal, ODKTag odkTag, boolean readOnly) {
         this.tagKey = tagKey;
         this.tagVal = tagVal;
         this.odkTag = odkTag;
         this.readOnly = readOnly;
-        this.idx = idx;
     }
     
-    private TagEdit(String tagKey, String tagVal, boolean readOnly, int idx) {
+    private TagEdit(String tagKey, String tagVal, boolean readOnly) {
         this.tagKey = tagKey;
         this.tagVal = tagVal;
         this.readOnly = readOnly;
-        this.idx = idx;
     }
 
     /**
@@ -300,10 +296,6 @@ public class TagEdit {
             return true;
         }
         return false;
-    }
-    
-    public int getIndex() {
-        return idx;
     }
     
 }
