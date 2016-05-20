@@ -150,6 +150,7 @@ public class TagEdit {
         if (tagEditHiddenHash.get(key) == null) return;
         int idx = getIndexForTagKey(afterKey) + 1;
         TagEdit tagEdit = tagEditHiddenHash.remove(key);
+        tagEditHash.put(key, tagEdit);
         tagEdits.add(idx, tagEdit);
         if (tagSwipeActivity != null) {
             tagSwipeActivity.updateUI();
@@ -244,17 +245,22 @@ public class TagEdit {
     private void addOrEditTag(String tagKey, String tagVal) {
         osmElement.addOrEditTag(tagKey, tagVal);
         Constraints.TagAction tagAction = Constraints.singleton().tagAddedOrEdited(tagKey, tagVal);
+        executeTagAction(tagAction);
+    }
+
+    private void deleteTag(String tagKey) {
+        osmElement.deleteTag(tagKey);
+        Constraints.TagAction tagAction = Constraints.singleton().tagDeleted(tagKey);
+        executeTagAction(tagAction);
+    }
+
+    private void executeTagAction(Constraints.TagAction tagAction) {
         for (String tag : tagAction.hide) {
             removeTag(tag);
         }
         for (String tag : tagAction.show) {
             addTag(tag, tagKey);
         }
-    }
-
-    private void deleteTag(String tagKey) {
-        osmElement.deleteTag(tagKey);
-        Constraints.TagAction tagAction = Constraints.singleton().tagDeleted(tagKey);
     }
     
     public String getTitle() {
