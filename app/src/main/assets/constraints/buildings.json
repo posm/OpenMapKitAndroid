@@ -1,5 +1,6 @@
 {
   "addr:city": {
+    "default": "Sacramento",
     "required": true,
     "custom_value": true
   },

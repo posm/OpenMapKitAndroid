@@ -84,6 +84,10 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "custom_value", false);
     }
 
+    public String tagDefaultValue(String tagKey) {
+        return cascadeStringTagConstraint(tagKey, "default", null);
+    }
+
     public boolean tagShouldBeShown(String tagKey, OSMElement osmElement) {
         if (!isActive()) return true;
 

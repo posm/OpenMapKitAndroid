@@ -71,7 +71,7 @@ public class TagEdit {
             Collection<ODKTag> requiredTags = odkCollectData.getRequiredTags();
             for (ODKTag odkTag : requiredTags) {
                 String tagKey = odkTag.getKey();
-                TagEdit tagEdit = new TagEdit(tagKey, tags.get(tagKey), odkTag, false);
+                TagEdit tagEdit = new TagEdit(tagKey, tagValueOrDefaultValue(tags, tagKey), odkTag, false);
                 if (Constraints.singleton().tagShouldBeShown(tagKey, osmElement)) {
                     tagEditHash.put(tagKey, tagEdit);
                     tagEdits.add(tagEdit);
@@ -99,6 +99,15 @@ public class TagEdit {
         }
         
         return tagEdits;
+    }
+
+    private static String tagValueOrDefaultValue(Map<String,String> tags, String tagKey) {
+        String tagVal = tags.get(tagKey);
+        if (tagVal == null) {
+            // null if there is no default
+            tagVal = Constraints.singleton().tagDefaultValue(tagKey);
+        }
+        return tagVal;
     }
 
     public static void setTagSwipeActivity(TagSwipeActivity tagSwipeActivity) {
