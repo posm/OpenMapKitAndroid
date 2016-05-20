@@ -316,13 +316,16 @@ public class Constraints {
     private Set<String> findTagsToBeHiddenFromUpdate(String key, String val) {
         Set<String> tags = new HashSet<>();
 
-        Set<String> set = causeHideMap.get(key).get("true");
-        if (set != null) {
-            tags.addAll(set);
-        }
-        set = causeHideMap.get(key).get(val);
-        if (set != null) {
-            tags.addAll(set);
+        Map<String, Set<String>> causeHideMapMap = causeHideMap.get(key);
+        if (causeHideMapMap != null) {
+            Set<String> set = causeHideMapMap.get("true");
+            if (set != null) {
+                tags.addAll(set);
+            }
+            set = causeHideMap.get(key).get(val);
+            if (set != null) {
+                tags.addAll(set);
+            }
         }
 
         return tags;
@@ -331,13 +334,16 @@ public class Constraints {
     private Set<String> findTagsToBeShownFromUpdate(String key, String val) {
         Set<String> tags = new HashSet<>();
 
-        Set<String> set = causeShowMap.get(key).get("true");
-        if (set != null) {
-            tags.addAll(set);
-        }
-        set = causeShowMap.get(key).get(val);
-        if (set != null) {
-            tags.addAll(set);
+        Map<String, Set<String>> causeShowMapMap = causeShowMap.get(key);
+        if (causeShowMapMap != null) {
+            Set<String> set = causeShowMapMap.get("true");
+            if (set != null) {
+                tags.addAll(set);
+            }
+            set = causeShowMap.get(key).get(val);
+            if (set != null) {
+                tags.addAll(set);
+            }
         }
 
         return tags;

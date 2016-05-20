@@ -138,8 +138,8 @@ public class TagEdit {
     private static void removeTag(String key) {
         if (tagEditHash.get(key) == null) return;
         int idx = getIndexForTagKey(key);
-        TagEdit removedTagEdit = tagEditHash.remove(key);
-        tagEditHiddenHash.put(key, removedTagEdit);
+        TagEdit tagEdit = tagEditHash.remove(key);
+        tagEditHiddenHash.put(key, tagEdit);
         tagEdits.remove(idx);
         if (tagSwipeActivity != null) {
             tagSwipeActivity.updateUI();
@@ -147,7 +147,13 @@ public class TagEdit {
     }
 
     private static void addTag(String key, String afterKey) {
-
+        if (tagEditHiddenHash.get(key) == null) return;
+        int idx = getIndexForTagKey(afterKey) + 1;
+        TagEdit tagEdit = tagEditHiddenHash.remove(key);
+        tagEdits.add(idx, tagEdit);
+        if (tagSwipeActivity != null) {
+            tagSwipeActivity.updateUI();
+        }
     }
     
     private static void updateTagsInOSMElement() {
@@ -238,9 +244,11 @@ public class TagEdit {
     private void addOrEditTag(String tagKey, String tagVal) {
         osmElement.addOrEditTag(tagKey, tagVal);
         Constraints.TagAction tagAction = Constraints.singleton().tagAddedOrEdited(tagKey, tagVal);
-        Set<String> tagsToHide = tagAction.hide;
-        for (String tag : tagsToHide) {
+        for (String tag : tagAction.hide) {
             removeTag(tag);
+        }
+        for (String tag : tagAction.show) {
+            addTag(tag, tagKey);
         }
     }
 
