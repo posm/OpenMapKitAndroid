@@ -328,6 +328,17 @@ public class Constraints {
             }
         }
 
+        Map<String, Set<String>> causeShowMapMap = causeShowMap.get(key);
+        if (causeShowMapMap != null) {
+            Set<String> keys = causeShowMapMap.keySet();
+            for (String k : keys) {
+                // We should still show the keys that should be shown by
+                // the key wildcard and the specific new value selected.
+                if (k.equals("true") || k.equals(val)) continue;
+                Set<String> tagsToHide = causeShowMapMap.get(k);
+                tags.addAll(tagsToHide);
+            }
+        }
         return tags;
     }
 
