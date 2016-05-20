@@ -135,25 +135,25 @@ public class TagEdit {
         ODKCollectHandler.saveXmlInODKCollect(osmElement, osmUserName);
     }
 
-    private static void removeTag(String key) {
+    private static void removeTag(String key, String activeTagKey) {
         if (tagEditHash.get(key) == null) return;
         int idx = getIndexForTagKey(key);
         TagEdit tagEdit = tagEditHash.remove(key);
         tagEditHiddenHash.put(key, tagEdit);
         tagEdits.remove(idx);
         if (tagSwipeActivity != null) {
-            tagSwipeActivity.updateUI();
+            tagSwipeActivity.updateUI(activeTagKey);
         }
     }
 
-    private static void addTag(String key, String afterKey) {
+    private static void addTag(String key, String activeTagKey) {
         if (tagEditHiddenHash.get(key) == null) return;
-        int idx = getIndexForTagKey(afterKey) + 1;
+        int idx = getIndexForTagKey(activeTagKey) + 1;
         TagEdit tagEdit = tagEditHiddenHash.remove(key);
         tagEditHash.put(key, tagEdit);
         tagEdits.add(idx, tagEdit);
         if (tagSwipeActivity != null) {
-            tagSwipeActivity.updateUI();
+            tagSwipeActivity.updateUI(activeTagKey);
         }
     }
     
@@ -257,7 +257,7 @@ public class TagEdit {
 
     private void executeTagAction(Constraints.TagAction tagAction) {
         for (String tag : tagAction.hide) {
-            removeTag(tag);
+            removeTag(tag, tagKey);
         }
         for (String tag : tagAction.show) {
             addTag(tag, tagKey);

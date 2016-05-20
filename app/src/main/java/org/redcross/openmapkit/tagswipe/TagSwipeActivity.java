@@ -134,8 +134,10 @@ public class TagSwipeActivity extends ActionBarActivity {
         builder.show();
     }
 
-    public void updateUI() {
+    public void updateUI(String activeTagKey) {
         mSectionsPagerAdapter.notifyDataSetChanged();
+        int idx = TagEdit.getIndexForTagKey(activeTagKey);
+        mViewPager.setCurrentItem(idx);
     }
 
 
