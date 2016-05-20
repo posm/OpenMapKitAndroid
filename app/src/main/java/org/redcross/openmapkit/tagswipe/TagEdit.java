@@ -250,6 +250,7 @@ public class TagEdit {
 
     private void deleteTag(String tagKey) {
         osmElement.deleteTag(tagKey);
+        tagVal = null;
         Constraints.TagAction tagAction = Constraints.singleton().tagDeleted(tagKey);
         executeTagAction(tagAction);
     }

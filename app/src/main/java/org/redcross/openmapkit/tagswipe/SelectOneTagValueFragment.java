@@ -165,7 +165,7 @@ public class SelectOneTagValueFragment extends Fragment {
             }
             tagValueRadioGroup.addView(button);
             if (prevTagVal != null && value.equals(prevTagVal)) {
-                button.toggle();
+                button.toggleOn();
             }
             int id = button.getId();
             odkTag.putButtonIdToTagItemHash(id, item);
@@ -311,6 +311,21 @@ public class SelectOneTagValueFragment extends Fragment {
                     if (customEditText != null) {
                         customEditText.clearFocus();
                     }
+                }
+            }
+        }
+
+        public void toggleOn() {
+            setChecked(true);
+            // if custom button
+            if(!(getParent() instanceof RadioGroup)) {
+                radioGroup.clearCheck();
+            }
+            // not custom button
+            else if (customButton != null){
+                customButton.setChecked(false);
+                if (customEditText != null) {
+                    customEditText.clearFocus();
                 }
             }
         }
