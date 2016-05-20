@@ -353,9 +353,11 @@ public class Constraints {
         Set<String> tags = new HashSet<>();
 
         Map<String, Set<String>> allTags = causeShowMap.get(key);
-        Set<String> vals = allTags.keySet();
-        for (String v : vals) {
-            tags.addAll(allTags.get(v));
+        if (allTags != null && allTags.size() > 0) {
+            Set<String> vals = allTags.keySet();
+            for (String v : vals) {
+                tags.addAll(allTags.get(v));
+            }
         }
 
         return tags;
@@ -365,9 +367,11 @@ public class Constraints {
         Set<String> tags = new HashSet<>();
 
         Map<String, Set<String>> allTags = causeHideMap.get(key);
-        Set<String> vals = allTags.keySet();
-        for (String v : vals) {
-            tags.addAll(allTags.get(v));
+        if (allTags != null && allTags.size() > 0) {
+            Set<String> vals = allTags.keySet();
+            for (String v : vals) {
+                tags.addAll(allTags.get(v));
+            }
         }
 
         return tags;
