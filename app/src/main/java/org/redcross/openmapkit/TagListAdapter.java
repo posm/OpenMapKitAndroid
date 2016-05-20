@@ -39,7 +39,9 @@ public class TagListAdapter extends BaseAdapter {
             for (ODKTag odkTag : requiredTags) {
                 String key = odkTag.getKey();
                 String val = tags.get(key);
-                tagMap.put(key, val);
+                if (Constraints.singleton().tagShouldBeShown(key, osmElement)) {
+                    tagMap.put(key, val);
+                }
                 readOnlyTags.remove(key);
             }
             Set<String> readOnlyKeys = readOnlyTags.keySet();
