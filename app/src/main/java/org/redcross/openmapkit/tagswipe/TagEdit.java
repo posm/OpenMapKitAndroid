@@ -72,8 +72,12 @@ public class TagEdit {
             for (ODKTag odkTag : requiredTags) {
                 String tagKey = odkTag.getKey();
                 TagEdit tagEdit = new TagEdit(tagKey, tags.get(tagKey), odkTag, false);
-                tagEditHash.put(tagKey, tagEdit);
-                tagEdits.add(tagEdit);
+                if (Constraints.singleton().tagShouldBeShown(tagKey, osmElement)) {
+                    tagEditHash.put(tagKey, tagEdit);
+                    tagEdits.add(tagEdit);
+                } else {
+                    tagEditHiddenHash.put(tagKey, tagEdit);
+                }
                 readOnlyTags.remove(tagKey);
             }
             Set<String> readOnlyKeys = readOnlyTags.keySet();
@@ -134,7 +138,8 @@ public class TagEdit {
     private static void removeTag(String key) {
         if (tagEditHash.get(key) == null) return;
         int idx = getIndexForTagKey(key);
-        tagEditHash.remove(key);
+        TagEdit removedTagEdit = tagEditHash.remove(key);
+        tagEditHiddenHash.put(key, removedTagEdit);
         tagEdits.remove(idx);
         if (tagSwipeActivity != null) {
             tagSwipeActivity.updateUI();

@@ -89,7 +89,7 @@ public class Constraints {
 
         // Check showMap
         Map<String, String> showMapMap = showMap.get(tagKey);
-        if (showMapMap != null) {
+        if (showMapMap != null && showMapMap.size() > 0) {
             Set<String> showMapMapKeys = showMapMap.keySet();
             for (String key : showMapMapKeys) {
                 String val = showMapMap.get(key);
@@ -115,7 +115,7 @@ public class Constraints {
 
         // Check hideMap
         Map<String, String> hideMapMap = hideMap.get(tagKey);
-        if (hideMapMap != null) {
+        if (hideMapMap != null && hideMapMap.size() > 0) {
             Set<String> hideMapMapKeys = hideMapMap.keySet();
             for (String key : hideMapMapKeys) {
                 String val = hideMapMap.get(key);
@@ -241,7 +241,7 @@ public class Constraints {
         }
         if (formConstraintsJson != null) {
             buildHideMaps(formConstraintsJson);
-            buildHideMaps(formConstraintsJson);
+            buildShowMaps(formConstraintsJson);
         }
     }
 
