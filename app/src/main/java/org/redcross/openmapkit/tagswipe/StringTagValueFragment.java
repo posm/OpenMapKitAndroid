@@ -54,6 +54,10 @@ public class StringTagValueFragment extends Fragment {
         String keyLabel = tagEdit.getTagKeyLabel();
         String key = tagEdit.getTagKey();
         String val = tagEdit.getTagVal();
+
+        if (Constraints.singleton().tagIsRequired(key)) {
+            rootView.findViewById(R.id.requiredTextView).setVisibility(View.VISIBLE);
+        }
         
         if (keyLabel != null) {
             tagKeyLabelTextView.setText(keyLabel);

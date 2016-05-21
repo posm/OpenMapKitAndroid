@@ -68,6 +68,10 @@ public class SelectMultipleTagValueFragment extends Fragment {
         String keyLabel = tagEdit.getTagKeyLabel();
         String key = tagEdit.getTagKey();
 
+        if (Constraints.singleton().tagIsRequired(key)) {
+            rootView.findViewById(R.id.requiredTextView).setVisibility(View.VISIBLE);
+        }
+
         if (keyLabel != null) {
             tagKeyLabelTextView.setText(keyLabel);
             tagKeyTextView.setText(key);

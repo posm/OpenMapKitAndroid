@@ -84,6 +84,10 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "custom_value", false);
     }
 
+    public boolean tagIsRequired(String tagKey) {
+        return cascadeBooleanTagConstraint(tagKey, "required", false);
+    }
+
     public String tagDefaultValue(String tagKey) {
         return cascadeStringTagConstraint(tagKey, "default", null);
     }
