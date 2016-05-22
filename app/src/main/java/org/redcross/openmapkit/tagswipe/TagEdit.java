@@ -139,9 +139,17 @@ public class TagEdit {
         return 0;
     }
     
-    public static void saveToODKCollect(String osmUserName) {
+    public static boolean saveToODKCollect(String osmUserName) {
         updateTagsInOSMElement();
-        ODKCollectHandler.saveXmlInODKCollect(osmElement, osmUserName);
+
+        Set<String> missingTags = Constraints.singleton().requiredTagsNotMet(osmElement);
+        if (missingTags.size() > 0) {
+            tagSwipeActivity.notifyMissingTags(missingTags);
+            return false;
+        } else {
+            ODKCollectHandler.saveXmlInODKCollect(osmElement, osmUserName);
+            return true;
+        }
     }
 
     private static void removeTag(String key, String activeTagKey) {

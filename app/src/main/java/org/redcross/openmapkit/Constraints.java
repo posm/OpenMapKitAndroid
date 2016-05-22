@@ -88,6 +88,12 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "required", false);
     }
 
+    public Set<String> requiredTagsNotMet(OSMElement osmElement) {
+        Set<String> missingTags = new HashSet<>();
+        
+        return missingTags;
+    }
+
     public String tagDefaultValue(String tagKey) {
         return cascadeStringTagConstraint(tagKey, "default", null);
     }
