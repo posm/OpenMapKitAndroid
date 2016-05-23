@@ -8,6 +8,9 @@
   "addr:state": {
     "default": "CA"
   },
+  "addr:postcode": {
+    "numeric": true
+  },
   "amenity": {
     "hide_if": {
       "building": "residential",
