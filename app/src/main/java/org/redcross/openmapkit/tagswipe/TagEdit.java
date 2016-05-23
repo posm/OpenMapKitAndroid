@@ -106,6 +106,9 @@ public class TagEdit {
         if (tagVal == null) {
             // null if there is no default
             tagVal = Constraints.singleton().tagDefaultValue(tagKey);
+            if (tagVal != null) {
+                osmElement.addOrEditTag(tagKey, tagVal);
+            }
         }
         return tagVal;
     }
@@ -236,15 +239,25 @@ public class TagEdit {
         // radio buttons
         if (radioGroup != null && odkTag != null) {
             View v = radioGroup.getChildAt(radioGroup.getChildCount() - 1);
+            int checkedId = radioGroup.getCheckedRadioButtonId();
+            // has custom value input
             if (v instanceof LinearLayout) {
                 LinearLayout customLL = (LinearLayout)v;
                 RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
-                int checkedId = radioGroup.getCheckedRadioButtonId();
                 if (customRadio.isChecked()) {
                     EditText et = (EditText)customLL.getChildAt(1);
                     tagVal = et.getText().toString();
                     addOrEditTag(tagKey, tagVal);
                 } else if (checkedId != -1) {
+                    tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
+                    addOrEditTag(tagKey, tagVal);
+                } else {
+                    deleteTag(tagKey);
+                }
+            }
+            // no custom value input
+            else {
+                if (checkedId != -1) {
                     tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
                     addOrEditTag(tagKey, tagVal);
                 } else {

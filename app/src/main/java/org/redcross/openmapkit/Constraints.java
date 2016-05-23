@@ -100,8 +100,8 @@ public class Constraints {
                 String odkTagKey = odkTag.getKey();
                 if (cascadeBooleanTagConstraint(odkTagKey, "required", false)) {
                     String osmTagVal = tags.get(odkTagKey);
-                    if (osmTagVal != null && osmTagVal.length() > 0) {
-                        missingTags.add(osmTagVal);
+                    if (osmTagVal == null || osmTagVal.length() < 1) {
+                        missingTags.add(odkTagKey);
                     }
                 }
             }

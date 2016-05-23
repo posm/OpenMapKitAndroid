@@ -154,8 +154,8 @@ public class TagSwipeActivity extends ActionBarActivity {
      */
     public void notifyMissingTags(final Set<String> missingTags) {
         Snackbar.make(findViewById(R.id.tagSwipeActivity),
-                "There are " + missingTags.size() + " required tags that you need to complete.",
-                Snackbar.LENGTH_INDEFINITE)
+                "There are " + missingTags.size() + " required tags that you need to complete: " + missingTagsText(missingTags),
+                Snackbar.LENGTH_LONG)
                 .setAction("OK", new View.OnClickListener() {
                     // undo action
                     @Override
@@ -171,6 +171,20 @@ public class TagSwipeActivity extends ActionBarActivity {
                 })
                 .setActionTextColor(Color.rgb(126, 188, 111))
                 .show();
+    }
+
+    private String missingTagsText(Set<String> missingTags) {
+        String str = "";
+        boolean first = true;
+        for (String tag: missingTags) {
+            if (first) {
+                str += tag;
+            } else {
+                str += ", " + tag;
+            }
+            first = false;
+        }
+        return str;
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
