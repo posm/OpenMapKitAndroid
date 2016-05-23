@@ -61,7 +61,7 @@ public class TagSwipeActivity extends ActionBarActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.tagSwipeActivity);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     
         pageToCorrectTag();

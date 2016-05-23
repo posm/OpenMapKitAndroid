@@ -6,9 +6,11 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
+import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.tagswipe.TagEdit;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -90,7 +92,21 @@ public class Constraints {
 
     public Set<String> requiredTagsNotMet(OSMElement osmElement) {
         Set<String> missingTags = new HashSet<>();
-        
+
+        if (ODKCollectHandler.isODKCollectMode()) {
+            Map<String, String> tags = osmElement.getTags();
+            Collection<ODKTag> odkTags =  ODKCollectHandler.getODKCollectData().getRequiredTags();
+            for (ODKTag odkTag : odkTags) {
+                String odkTagKey = odkTag.getKey();
+                if (cascadeBooleanTagConstraint(odkTagKey, "required", false)) {
+                    String osmTagVal = tags.get(odkTagKey);
+                    if (osmTagVal != null && osmTagVal.length() > 0) {
+                        missingTags.add(osmTagVal);
+                    }
+                }
+            }
+        }
+
         return missingTags;
     }
 
