@@ -167,6 +167,19 @@ public class Constraints {
         return true;
     }
 
+    /**
+     * If the tag has an implicit value, it returns it.
+     * Otherwise, it returns null.
+     *
+     * This is how to test if the tag should be considered implicit.
+     *
+     * @param tagKey
+     * @return implicit value or null
+     */
+    public String implicitVal(String tagKey) {
+        return cascadeStringTagConstraint(tagKey, "implicit", null);
+    }
+
     public TagAction tagAddedOrEdited(String key, String val) {
         TagAction tagAction = new TagAction();
         if (!isActive()) return tagAction;

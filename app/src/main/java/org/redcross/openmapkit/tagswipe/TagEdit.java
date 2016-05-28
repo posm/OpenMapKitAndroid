@@ -72,7 +72,11 @@ public class TagEdit {
             for (ODKTag odkTag : requiredTags) {
                 String tagKey = odkTag.getKey();
                 TagEdit tagEdit = new TagEdit(tagKey, tagValueOrDefaultValue(tags, tagKey), odkTag, false);
-                if (Constraints.singleton().tagShouldBeShown(tagKey, osmElement)) {
+                String implicitVal = Constraints.singleton().implicitVal(tagKey);
+                if (implicitVal != null) {
+                    tagEditHiddenHash.put(tagKey, tagEdit);
+                    osmElement.addOrEditTag(tagKey, implicitVal);
+                } else if (Constraints.singleton().tagShouldBeShown(tagKey, osmElement)) {
                     tagEditHash.put(tagKey, tagEdit);
                     tagEdits.add(tagEdit);
                 } else {
