@@ -32,7 +32,6 @@
     }
   },
   "network": {
-    "custom_value": true,
     "select_multiple": true
   },
   "office": {
@@ -41,12 +40,12 @@
       "shop": true
     }
   },
+  "opening_hours": {
+    "select_multiple": true
+  },
   "operator": {
     "select_multiple": true,
-    "required": true,
-    "show_if": {
-      "amenity": "bank"
-    }
+    "custom_value": true
   },
   "religion": {
     "show_if": {
