@@ -2,6 +2,7 @@ package org.redcross.openmapkit.tagswipe;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,17 +12,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.spatialdev.osm.model.OSMDataSet;
+
+import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
 import org.redcross.openmapkit.odkcollect.tag.ODKTagItem;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +63,10 @@ public class SelectOneTagValueFragment extends Fragment {
         String keyLabel = tagEdit.getTagKeyLabel();
         String key = tagEdit.getTagKey();
 
+        if (Constraints.singleton().tagIsRequired(key)) {
+            rootView.findViewById(R.id.requiredTextView).setVisibility(View.VISIBLE);
+        }
+
         if (keyLabel != null) {
             tagKeyLabelTextView.setText(keyLabel);
             tagKeyTextView.setText(key);
@@ -85,7 +96,7 @@ public class SelectOneTagValueFragment extends Fragment {
         /**
          * Special EditText that is next to the customButton
          */
-        final EditText customEditText = new EditText(activity);
+        final AutoCompleteTextView customEditText = new AutoCompleteTextView(activity);
         customEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         customEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -107,6 +118,12 @@ public class SelectOneTagValueFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
+
+        // Numeric Input Constraint
+        if (Constraints.singleton().tagIsNumeric(tagEdit.getTagKey())) {
+            customEditText.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        }
+
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,7 +169,7 @@ public class SelectOneTagValueFragment extends Fragment {
             }
             tagValueRadioGroup.addView(button);
             if (prevTagVal != null && value.equals(prevTagVal)) {
-                button.toggle();
+                button.toggleOn();
             }
             int id = button.getId();
             odkTag.putButtonIdToTagItemHash(id, item);
@@ -167,14 +184,20 @@ public class SelectOneTagValueFragment extends Fragment {
          * Adding customButton and customEditText to a horizontal linear layout
          * and puts that as the last item in the tag value radio group.
          */
-        LinearLayout customLinearLayout = new LinearLayout(activity);
-        customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-        customLinearLayout.setFocusableInTouchMode(true);
-        customLinearLayout.addView(customButton);
-        customLinearLayout.addView(customEditText);
-        tagValueRadioGroup.addView(customLinearLayout);
+        if (Constraints.singleton().tagAllowsCustomValue(tagEdit.getTagKey())) {
+
+            // Only setup this more expensive model for AutoComplete when we know we need it.
+            setupAutoComplete(customEditText);
+
+            LinearLayout customLinearLayout = new LinearLayout(activity);
+            customLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            customLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            customLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+            customLinearLayout.setFocusableInTouchMode(true);
+            customLinearLayout.addView(customButton);
+            customLinearLayout.addView(customEditText);
+            tagValueRadioGroup.addView(customLinearLayout);
+        }
 
     }
 
@@ -230,6 +253,15 @@ public class SelectOneTagValueFragment extends Fragment {
         mListener = null;
     }
 
+    private void setupAutoComplete(AutoCompleteTextView autoCompleteTextView) {
+        Set<String> tagValues = OSMDataSet.tagValues();
+        String[] tagValuesArr = tagValues.toArray(new String[tagValues.size()]);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, tagValuesArr);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setThreshold(1);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -283,6 +315,21 @@ public class SelectOneTagValueFragment extends Fragment {
                     if (customEditText != null) {
                         customEditText.clearFocus();
                     }
+                }
+            }
+        }
+
+        public void toggleOn() {
+            setChecked(true);
+            // if custom button
+            if(!(getParent() instanceof RadioGroup)) {
+                radioGroup.clearCheck();
+            }
+            // not custom button
+            else if (customButton != null){
+                customButton.setChecked(false);
+                if (customEditText != null) {
+                    customEditText.clearFocus();
                 }
             }
         }

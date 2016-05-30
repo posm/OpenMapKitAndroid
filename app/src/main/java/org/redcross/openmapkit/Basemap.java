@@ -87,7 +87,7 @@ public class Basemap {
         }
 
         if (basemaps.size() == 0) {
-            Toast prompt = Toast.makeText(context, "Device is offline. Please add .mbtiles file to " + ExternalStorage.getMBTilesDir() + " or check out a deployment.", Toast.LENGTH_LONG);
+            Toast prompt = Toast.makeText(context, "No basemap downloaded yet. You may 1) download a deployment, 2) connect to the internet, or 3) add .mbtiles file to " + ExternalStorage.getMBTilesDir() + ".", Toast.LENGTH_LONG);
             prompt.show();
             return;
         }
@@ -189,7 +189,7 @@ public class Basemap {
         if(!mbtilesFile.exists()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mapActivity);
             builder.setTitle("Offline Basemap Not Found");
-            builder.setMessage("Please add MBTiles to " + ExternalStorage.getMBTilesDir());
+            builder.setMessage("Please check out a deployment or add MBTiles files to " + ExternalStorage.getMBTilesDir());
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //placeholder

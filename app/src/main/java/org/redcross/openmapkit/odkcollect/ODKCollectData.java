@@ -30,6 +30,7 @@ public class ODKCollectData {
     public static final String APP_NAME = "OpenMapKit Android";
             
     private String formId;
+    private String formFileName;
     private String instanceId;
     private String instanceDir;
     private String previousOSMEditFileName;
@@ -47,6 +48,7 @@ public class ODKCollectData {
                             String previousOSMEditFileName,
                             LinkedHashMap<String, ODKTag> requiredTags ) {
         this.formId = formId;
+        this.formFileName = formFileName;
         this.instanceId = instanceId;
         this.instanceDir = instanceDir;
         this.previousOSMEditFileName = previousOSMEditFileName;
@@ -89,6 +91,10 @@ public class ODKCollectData {
 
     public String getFormId() {
         return formId;
+    }
+
+    public String getFormFileName() {
+        return formFileName;
     }
 
     public String getInstanceId() {

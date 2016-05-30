@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.tagswipe;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,10 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.spatialdev.osm.model.OSMDataSet;
+
+import org.redcross.openmapkit.Constraints;
 import org.redcross.openmapkit.R;
+
+import java.util.Set;
 
 
 public class StringTagValueFragment extends Fragment {
@@ -23,7 +31,7 @@ public class StringTagValueFragment extends Fragment {
     
     private TextView tagKeyLabelTextView;
     private TextView tagKeyTextView;
-    private EditText tagValueEditText;
+    private AutoCompleteTextView tagValueEditText;
     
     private OnFragmentInteractionListener mListener;
 
@@ -39,11 +47,17 @@ public class StringTagValueFragment extends Fragment {
     private void setupWidgets() {
         tagKeyLabelTextView = (TextView)rootView.findViewById(R.id.tagKeyLabelTextView);
         tagKeyTextView = (TextView)rootView.findViewById(R.id.tagKeyTextView);
-        tagValueEditText = (EditText)rootView.findViewById(R.id.tagValueEditText);
+        tagValueEditText = (AutoCompleteTextView)rootView.findViewById(R.id.tagValueEditText);
+
+        setupAutoComplete();
         
         String keyLabel = tagEdit.getTagKeyLabel();
         String key = tagEdit.getTagKey();
         String val = tagEdit.getTagVal();
+
+        if (Constraints.singleton().tagIsRequired(key)) {
+            rootView.findViewById(R.id.requiredTextView).setVisibility(View.VISIBLE);
+        }
         
         if (keyLabel != null) {
             tagKeyLabelTextView.setText(keyLabel);
@@ -55,6 +69,24 @@ public class StringTagValueFragment extends Fragment {
         
         tagValueEditText.setText(val);
         tagEdit.setEditText(tagValueEditText);
+
+        if (Constraints.singleton().tagIsNumeric(key)) {
+            /**
+             * You could use Configuration.KEYBOARD_12KEY but this does not allow
+             * switching back to the normal alphabet keyboard. That needs to be
+             * an option.
+             */
+            tagValueEditText.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        }
+    }
+
+    private void setupAutoComplete() {
+        Set<String> tagValues = OSMDataSet.tagValues();
+        String[] tagValuesArr = tagValues.toArray(new String[tagValues.size()]);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, tagValuesArr);
+        tagValueEditText.setAdapter(adapter);
+        tagValueEditText.setThreshold(1);
     }
 
     public StringTagValueFragment() {

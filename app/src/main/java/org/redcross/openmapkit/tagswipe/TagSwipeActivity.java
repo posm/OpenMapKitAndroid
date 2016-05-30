@@ -1,24 +1,28 @@
 package org.redcross.openmapkit.tagswipe;
 
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -33,18 +37,11 @@ public class TagSwipeActivity extends ActionBarActivity {
     
     private void setupModel() {
         tagEdits = TagEdit.buildTagEdits();
+        TagEdit.setTagSwipeActivity(this);
         userNamePref = getSharedPreferences("org.redcross.openmapkit.USER_NAME", Context.MODE_PRIVATE);
     }
 
-    
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
@@ -64,7 +61,7 @@ public class TagSwipeActivity extends ActionBarActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.tagSwipeActivity);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     
         pageToCorrectTag();
@@ -109,9 +106,10 @@ public class TagSwipeActivity extends ActionBarActivity {
         if (userName == null) {
             askForOSMUsername();
         } else {
-            TagEdit.saveToODKCollect(userName);
-            setResult(Activity.RESULT_OK);
-            finish();
+            if (TagEdit.saveToODKCollect(userName)) {
+                setResult(Activity.RESULT_OK);
+                finish();
+            }
         }
     }
     
@@ -134,19 +132,62 @@ public class TagSwipeActivity extends ActionBarActivity {
                 SharedPreferences.Editor editor = userNamePref.edit();
                 editor.putString("userName", userName);
                 editor.apply();
-                TagEdit.saveToODKCollect(userName);
-                setResult(Activity.RESULT_OK);
-                finish();
+                if (TagEdit.saveToODKCollect(userName)) {
+                    setResult(Activity.RESULT_OK);
+                    finish();
+                }
             }
         });
         builder.show();
     }
 
+    public void updateUI(String activeTagKey) {
+        mSectionsPagerAdapter.notifyDataSetChanged();
+        int idx = TagEdit.getIndexForTagKey(activeTagKey);
+        mViewPager.setCurrentItem(idx);
+    }
+
     /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
+     * Only call if you have more than one missing tag.
+     *
+     * @param missingTags - tags that are required that are missing.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public void notifyMissingTags(final Set<String> missingTags) {
+        Snackbar.make(findViewById(R.id.tagSwipeActivity),
+                "There are " + missingTags.size() + " required tags that you need to complete: " + missingTagsText(missingTags),
+                Snackbar.LENGTH_LONG)
+                .setAction("OK", new View.OnClickListener() {
+                    // undo action
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            String missingTag = missingTags.iterator().next();
+                            int idx = TagEdit.getIndexForTagKey(missingTag);
+                            mViewPager.setCurrentItem(idx);
+                        } catch (Exception e) {
+                            // do nothing
+                        }
+                    }
+                })
+                .setActionTextColor(Color.rgb(126, 188, 111))
+                .show();
+    }
+
+    private String missingTagsText(Set<String> missingTags) {
+        String str = "";
+        boolean first = true;
+        for (String tag: missingTags) {
+            if (first) {
+                str += tag;
+            } else {
+                str += ", " + tag;
+            }
+            first = false;
+        }
+        return str;
+    }
+
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
         
         private Fragment fragment;
 
@@ -179,7 +220,10 @@ public class TagSwipeActivity extends ActionBarActivity {
                         return fragment;
                     } else if (tagEdit.isSelectOne()) {
                         fragment = SelectOneTagValueFragment.newInstance(position);
-//                        fragment = SelectMultipleTagValueFragment.newInstance(position);
+                        return fragment;
+                    }
+                    else if (tagEdit.isSelectMultiple()) {
+                        fragment = SelectMultipleTagValueFragment.newInstance(position);
                         return fragment;
                     } else {
                         fragment = StringTagValueFragment.newInstance(position);
@@ -199,6 +243,14 @@ public class TagSwipeActivity extends ActionBarActivity {
         public int getCount() {
             return tagEdits.size() + 1;
         }
+
+        //this is called when notifyDataSetChanged() is called
+        @Override
+        public int getItemPosition(Object object) {
+            // refresh all fragments when data set changed
+            return PagerAdapter.POSITION_NONE;
+        }
+
 
         @Override
         public CharSequence getPageTitle(int position) {

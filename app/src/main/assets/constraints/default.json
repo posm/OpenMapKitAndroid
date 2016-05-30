@@ -1,3 +1,66 @@
 {
-  "test": "value1"
+  "addr:city": {
+    "default": "Sacramento"
+  },
+  "addr:housenumber": {
+    "numeric": true
+  },
+  "addr:state": {
+    "default": "CA"
+  },
+  "addr:postcode": {
+    "numeric": true
+  },
+  "amenity": {
+    "hide_if": {
+      "building": "residential",
+      "shop": true,
+      "office": true
+    },
+    "custom_value": true
+  },
+  "building": {
+    "default": "yes"
+  },
+  "building:levels": {
+    "numeric": true,
+    "custom_value": true
+  },
+  "cuisine": {
+    "show_if": {
+      "amenity": true
+    }
+  },
+  "network": {
+    "select_multiple": true
+  },
+  "office": {
+    "hide_if": {
+      "amenity": true,
+      "shop": true
+    }
+  },
+  "opening_hours": {
+    "select_multiple": true
+  },
+  "operator": {
+    "select_multiple": true,
+    "custom_value": true
+  },
+  "religion": {
+    "show_if": {
+      "amenity": "place_of_worship"
+    }
+  },
+  "shop": {
+    "custom_value": true,
+    "hide_if": {
+      "building": "residential",
+      "amenity": true,
+      "office": true
+    }
+  },
+  "source": {
+    "implicit": "survey"
+  }
 }
