@@ -18,17 +18,19 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
     private Deployment deployment;
     private JSONArray mbtiles = new JSONArray();
     private JSONArray osms = new JSONArray();
+    private JSONArray geojsons = new JSONArray();
 
     public FileExpandableListAdapter(Context context, Deployment deployment) {
         this.context = context;
         this.deployment = deployment;
         mbtiles = deployment.mbtiles();
         osms = deployment.osm();
+        geojsons = deployment.geojson();
     }
 
     @Override
     public int getGroupCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -38,6 +40,8 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
                 return mbtiles.length();
             case 1:
                 return osms.length();
+            case 2:
+                return geojsons.length();
             default:
                 return 0;
         }
@@ -50,6 +54,8 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
                 return "MBTiles";
             case 1:
                 return "OSM XML";
+            case 2:
+                return "Field Papers GeoJSON";
             default:
                 return "Other";
         }
@@ -70,6 +76,12 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
                 String osmName = osm.optString("name");
                 if (osmName == null) return "";
                 return osmName;
+            case 2:
+                JSONObject geojson = geojsons.optJSONObject(childPosition);
+                if (geojson == null) return "";
+                String geojsonName = geojson.optString("name");
+                if (geojsonName == null) return "";
+                return geojsonName;
             default:
                 return "";
         }
@@ -103,8 +115,10 @@ public class FileExpandableListAdapter extends BaseExpandableListAdapter {
         int fileCount = 0;
         if (groupPosition == 0) {
             fileCount = deployment.mbtilesCount();
-        } else {
+        } else if (groupPosition == 1) {
             fileCount = deployment.osmCount();
+        } else {
+            fileCount = deployment.geojsonCount();
         }
         TextView listDetails = (TextView)convertView.findViewById(R.id.listDetails);
         listDetails.setText(fileCount + " Files");
