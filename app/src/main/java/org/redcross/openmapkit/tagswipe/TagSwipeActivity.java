@@ -220,7 +220,10 @@ public class TagSwipeActivity extends ActionBarActivity {
                         return fragment;
                     } else if (tagEdit.isSelectOne()) {
                         fragment = SelectOneTagValueFragment.newInstance(position);
-//                        fragment = SelectMultipleTagValueFragment.newInstance(position);
+                        return fragment;
+                    }
+                    else if (tagEdit.isSelectMultiple()) {
+                        fragment = SelectMultipleTagValueFragment.newInstance(position);
                         return fragment;
                     } else {
                         fragment = StringTagValueFragment.newInstance(position);

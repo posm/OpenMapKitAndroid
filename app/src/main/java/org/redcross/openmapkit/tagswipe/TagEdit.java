@@ -344,12 +344,17 @@ public class TagEdit {
     }
     
     public boolean isSelectOne() {
-        if ( !readOnly &&
+        return  !readOnly &&
                 odkTag != null &&
-                odkTag.getItems().size() > 0 ) {
-            return true;
-        }
-        return false;
+                odkTag.getItems().size() > 0 &&
+                !Constraints.singleton().tagIsSelectMultiple(odkTag.getKey());
+    }
+
+    public boolean isSelectMultiple() {
+        return  !readOnly &&
+                odkTag != null &&
+                odkTag.getItems().size() > 0 &&
+                Constraints.singleton().tagIsSelectMultiple(odkTag.getKey());
     }
     
 }

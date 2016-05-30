@@ -90,6 +90,10 @@ public class Constraints {
         return cascadeBooleanTagConstraint(tagKey, "required", false);
     }
 
+    public boolean tagIsSelectMultiple(String tagKey) {
+        return cascadeBooleanTagConstraint(tagKey, "select_multiple", false);
+    }
+
     public Set<String> requiredTagsNotMet(OSMElement osmElement) {
         Set<String> missingTags = new HashSet<>();
 
