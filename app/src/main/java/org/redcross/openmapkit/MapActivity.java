@@ -576,8 +576,18 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             });
             builder.show();
         } else {
-            Toast prompt = Toast.makeText(getApplicationContext(), "Please add .osm files to " + ExternalStorage.getOSMDir(), Toast.LENGTH_LONG);
-            prompt.show();
+            Snackbar.make(findViewById(R.id.mapActivity),
+                    "You have not yet downloaded any OSM data. Please check out a deployment or add .osm files to external storage.",
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction("OK", new View.OnClickListener() {
+                        // undo action
+                        @Override
+                        public void onClick(View v) {
+
+                        }
+                    })
+                    .setActionTextColor(Color.rgb(126,188,111))
+                    .show();
         }
     }
 
