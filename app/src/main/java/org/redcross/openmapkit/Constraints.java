@@ -224,6 +224,7 @@ public class Constraints {
         if (!ODKCollectHandler.isODKCollectMode()) return;
 
         String formFileName = ODKCollectHandler.getODKCollectData().getFormFileName();
+        ExternalStorage.copyFormConstraintsFromOdk(formFileName);
         try {
             File formConstraintsFile = ExternalStorage.fetchConstraintsFile(formFileName);
             String formConstraintsStr = FileUtils.readFileToString(formConstraintsFile);
