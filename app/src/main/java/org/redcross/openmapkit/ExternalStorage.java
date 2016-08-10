@@ -47,7 +47,7 @@ public class ExternalStorage {
     /**
      * The name of the form specific constraints file if it were to be delivered as an ODK media file
      */
-    private static final String CONSTRAINTS_FILE_NAME_ON_ODK = "omk-constraints.json";
+    public static final String CONSTRAINTS_FILE_NAME_ON_ODK = "omk-constraints.json";
 
     /**
      * Creating the application directory structure.
