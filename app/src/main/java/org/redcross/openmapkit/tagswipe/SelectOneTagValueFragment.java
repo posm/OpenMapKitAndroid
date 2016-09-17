@@ -175,7 +175,7 @@ public class SelectOneTagValueFragment extends Fragment {
             odkTag.putButtonIdToTagItemHash(id, item);
             tagValueRadioGroup.addView(textView);
         }
-        if (!prevTagValInTagItems) {
+        if (prevTagVal != null && !prevTagValInTagItems) {
             customEditText.setText(prevTagVal);
         }
 
