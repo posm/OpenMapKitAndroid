@@ -1,0 +1,50 @@
+language: android
+# sudo set to required because of an issue with how TravisCI handles builds in Docker containers https://github.com/travis-ci/travis-ci/issues/3695.
+# Setting sudo to required prevents Travis from testing the project in a Docker container.
+sudo: required
+jdk: oraclejdk8
+env:
+  matrix:
+    - ANDROID_TARGET=android-21 ANDROID_ABI=armeabi-v7a
+  global:
+    # wait up to 10 minutes for adb to connect to emulator
+    - ADB_INSTALL_TIMEOUT=10
+    - MALLOC_ARENA_MAX=2
+
+android:
+  components:
+  - platform-tools
+  - tools
+  - build-tools-23.0.3
+  - android-21
+  - android-23
+  - extra-android-m2repository
+
+  # Emulator for the tests
+  - sys-img-armeabi-v7a-android-21
+
+addons:
+  apt_packages:
+    - pandoc
+  artifacts:
+    paths:
+      - $(git ls-files -o | grep build/outputs | tr "\n" ":")
+
+before_script:
+  - echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI
+  - mksdcard 32M sdcard.img
+  - emulator -avd test -no-skin -no-audio -no-window -sdcard sdcard.img &
+
+script:
+  - android-wait-for-emulator
+  - adb devices
+  - (sleep 120; adb shell input keyevent 82 &) &
+  - ./gradlew connectedAndroidTest -i --stacktrace -x MapboxAndroidSDK:connectedAndroidTest
+
+after_failure:
+  - pandoc app/build/reports/androidTests/connected/index.html -t plain
+
+after_script:
+  # print lint results details
+  - for f in app/build/outputs/lint-results.html; do pandoc $f -t plain; done
+  - for f in data/build/outputs/lint-results.html; do pandoc $f -t plain; done
