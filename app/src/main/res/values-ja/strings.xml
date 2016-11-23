@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">OpenMapKit</string>
+
+    <string name="action_osmcredentials">OSM ユーザー名</string>
+    <string name="action_osmdownloader">OSM XML ダウンローダー</string>
+    <!-- osm menu -->
+    <string name="action_osmsettings">OSM XML レイヤー</string>
+    <string name="action_info">情報</string>
+    <string name="osmChooserDialogTitle">OSM XML ファイルを選択</string>
+    <string name="osmAppPath">openmapkit/osm</string>
+
+    <!-- mbtiles menu -->
+    <string name="action_deployments">配置</string>
+    <string name="action_basemaps">基本地図</string>
+    <string name="mbtilesChooserDialogTitle">基本地図を選択</string>
+    <string name="downloadOSMTitle">OSM データをダウンロード</string>
+
+    <string name="zoomToData">データにズーム</string>
+    <string name="ok">OK</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="add">+</string>
+
+
+    <string name="tags">タグ</string>
+    <string name="action_settings">設定</string>
+
+    <!-- default tile layer -->
+    <string name="defaultTileLayerPID">hot</string>
+    <string name="defaultTileLayerURL">"http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"</string>
+    <string name="defaultTileLayerName">"人道的な OpenStreetMap"</string>
+    <string name="defaultTileLayerAttribution">"© OpenStreetMap 貢献者"</string>
+
+    <!-- map activity -->
+    <string name="tagPromptTitle">オプションを選択</string>
+    <!-- list view under map-->
+    <string name="tagListViewTitle">タグ</string>
+
+    <!-- tag editing activity -->
+    <string name="title_activity_tag_editor">OSM タグ エディター</string>
+    <string name="editMessage">既存の OSM タグを選択して編集</string>
+
+    <!-- tag creation activity -->
+    <string name="title_activity_tag_creator">OSM タグ クリエーター</string>
+    <string name="tagNameHint">タグ名を編集</string>
+    <string name="tagValueHint">タグ値を編集</string>
+    <string name="cancelButtonTitle">キャンセル</string>
+    <string name="saveButtonTitle">保存</string>
+
+    <string name="title_activity_odkcollect_tag">タグ</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="odkcollect_tag_instructions">次の OpenStreetMap タグのすべての値を入力してください:</string>
+    <string name="save_to_odk_collect">ODK Collect に保存</string>
+    <string name="title_activity_tag_swipe">タグ</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="odkcollect_fragment_title">確認</string>
+    <string name="odkcollect_fragment_question">ODK Collect にタグの編集を保存しますか?</string>
+    <string name="standalone_fragment_title">追加または確認</string>
+    <string name="standalone_fragment_question1">タグに追加しますか?</string>
+    <string name="standalone_fragment_question2">タグの編集を保存しますか?</string>
+
+    <string name="downloadOSMMessage">地図の領域ボックス内に OSM XML データをダウンロードしますか?</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+
+    <string name="action_controlpanel">コントロール パネル</string>
+    <string name="title_activity_deployments">配置</string>
+    <string name="title_activity_deployment_details">配置詳細</string>
+    <string name="noname">名前なし</string>
+    <string name="download_complete">配置が完了しました!</string>
+    <string name="download_failed">ダウンロードに失敗しました!</string>
+    <string name="serverUrl">OpenMapKit サーバー URL</string>
+    <string name="deploymentDownloadCanceled">配置のダウンロードをキャンセルしました!</string>
+    <string name="deploymentDownloadComplete">配置のダウンロードが完了しました!</string>
+
+</resources>

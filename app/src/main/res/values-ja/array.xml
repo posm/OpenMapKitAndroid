@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="editoptions">
+        <item>OSM タグを編集</item>
+        <item>OSM タグを作成</item>
+    </array>
+    <string-array name="testTags">
+        <item>平均所得</item>
+        <item>世帯の人数</item>
+        <item>所得階層</item>
+        <item>壁の損傷</item>
+        <item>トイレの数</item>
+        <item>居住年数</item>
+    </string-array>
+</resources>
