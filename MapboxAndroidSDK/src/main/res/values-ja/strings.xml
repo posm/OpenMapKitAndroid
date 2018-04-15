@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toolTipTitle">タイトル</string>
+    <string name="toolTipDescription">説明</string>
+    <string name="toolTipAddress">住所</string>
+</resources>
