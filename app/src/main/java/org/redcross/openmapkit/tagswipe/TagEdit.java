@@ -27,6 +27,8 @@ import java.util.Set;
 /**
  * Created by Nicholas Hallahan on 3/4/15.
  * nhallahan@spatialdev.com
+ * Updated by Jacob Lesser on 4/7/19
+ * jacob.lesser@critigen.com
  * * *
  */
 public class TagEdit {
@@ -39,6 +41,7 @@ public class TagEdit {
     
     private final String tagKey; // a given TagEdit always associates to an immutable key
     private String tagVal;
+    private String prevTagVal;
     private ODKTag odkTag;
     private boolean readOnly;
     private boolean checkBoxMode = false;
@@ -189,14 +192,14 @@ public class TagEdit {
     
     private TagEdit(String tagKey, String tagVal, ODKTag odkTag, boolean readOnly) {
         this.tagKey = tagKey;
-        this.tagVal = tagVal;
+        setTagVal(tagVal);
         this.odkTag = odkTag;
         this.readOnly = readOnly;
     }
     
     private TagEdit(String tagKey, String tagVal, boolean readOnly) {
         this.tagKey = tagKey;
-        this.tagVal = tagVal;
+        setTagVal(tagVal);
         this.readOnly = readOnly;
     }
 
@@ -230,9 +233,9 @@ public class TagEdit {
             boolean editTextCheckBoxChecked = editTextCheckBox.isChecked();
             if (odkTag.hasCheckedTagValues() || editTextCheckBoxChecked) {
                 if (editTextCheckBoxChecked) {
-                    tagVal = odkTag.getSemiColonDelimitedTagValues(checkBoxEditText.getText().toString());
+                    setTagVal(odkTag.getSemiColonDelimitedTagValues(checkBoxEditText.getText().toString()));
                 } else {
-                    tagVal = odkTag.getSemiColonDelimitedTagValues(null);
+                    setTagVal(odkTag.getSemiColonDelimitedTagValues(null));
                 }
                 addOrEditTag(tagKey, tagVal);
             } else {
@@ -250,10 +253,10 @@ public class TagEdit {
                 RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
                 if (customRadio.isChecked()) {
                     EditText et = (EditText)customLL.getChildAt(1);
-                    tagVal = et.getText().toString();
+                    setTagVal(et.getText().toString());
                     addOrEditTag(tagKey, tagVal);
                 } else if (checkedId != -1) {
-                    tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
+                    setTagVal(odkTag.getTagItemValueFromButtonId(checkedId));
                     addOrEditTag(tagKey, tagVal);
                 } else {
                     deleteTag(tagKey);
@@ -262,7 +265,7 @@ public class TagEdit {
             // no custom value input
             else {
                 if (checkedId != -1) {
-                    tagVal = odkTag.getTagItemValueFromButtonId(checkedId);
+                    setTagVal(odkTag.getTagItemValueFromButtonId(checkedId));
                     addOrEditTag(tagKey, tagVal);
                 } else {
                     deleteTag(tagKey);
@@ -271,7 +274,7 @@ public class TagEdit {
         }
         // edit text
         else if (editText != null) {
-            tagVal = editText.getText().toString();
+            setTagVal(editText.getText().toString());
             addOrEditTag(tagKey, tagVal);
         }
     }
@@ -284,12 +287,27 @@ public class TagEdit {
 
     private void deleteTag(String tagKey) {
         osmElement.deleteTag(tagKey);
-        tagVal = null;
+        setTagVal(null);
         Constraints.TagAction tagAction = Constraints.singleton().tagDeleted(tagKey);
         executeTagAction(tagAction);
     }
 
     private void executeTagAction(Constraints.TagAction tagAction) {
+
+        // Reset tags shown and hidden from previous value
+        if (prevTagVal != null) {
+            Set<String> prevHiddenTags = Constraints.singleton().findTagsToBeHiddenFromUpdate(tagKey, prevTagVal);
+            Set<String> prevShownTags = Constraints.singleton().findTagsToBeShownFromUpdate(tagKey, prevTagVal);
+
+            for (String prevHiddenTag : prevHiddenTags) {
+                addTag(prevHiddenTag, tagKey);
+            }
+
+            for (String prevShownTag : prevShownTags) {
+                removeTag(prevShownTag, tagKey);
+            }
+        }
+
         for (String tag : tagAction.hide) {
             removeTag(tag, tagKey);
         }
@@ -324,6 +342,12 @@ public class TagEdit {
     
     public String getTagVal() {
         return tagVal;
+    }
+
+    public String setTagVal(String tag) {
+        prevTagVal = tagVal;
+        tagVal = tag;
+        return tag;
     }
 
     public Set<String> getTagVals() {
