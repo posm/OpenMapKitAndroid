@@ -16,12 +16,11 @@ Android mobile application for browsing OpenStreetMap features to create and edi
 
 ## Documentation
 
-See the [wiki](https://github.com/AmericanRedCross/openmapkitandroid/wiki) for details on how to setup and load data into the app.
+See the [docs](http://posm.io/docs/omk/intro/) for details on how to setup and load data into the app.
 
-###License (BSD)
+### License (BSD)
 
 See license [here](https://github.com/AmericanRedCross/openmapkitandroid/blob/master/LICENSE.md).
 
-###Related Projects
-The OpenMapKit is being used on the [POSM] (https://github.com/AmericanRedCross/posm)
-
+### Related Projects
+The OpenMapKit is being used on the [POSM](https://github.com/posm/posm).
