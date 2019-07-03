@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Created by Nicholas Hallahan on 3/4/15.
  * nhallahan@spatialdev.com
- * Updated by Jacob Lesser on 4/7/19
+ * Updated by Jacob Lesser on 4/12/19
  * jacob.lesser@critigen.com
  * * *
  */
@@ -35,7 +35,9 @@ public class TagEdit {
 
     private static LinkedHashMap<String, TagEdit> tagEditHash;
     private static LinkedHashMap<String, TagEdit> tagEditHiddenHash;
+    private static LinkedHashMap<String, TagEdit> tagEditOrderHash;
     private static List<TagEdit> tagEdits;
+    private static List<TagEdit> tagEditsOrder;
     private static OSMElement osmElement;
     private static TagSwipeActivity tagSwipeActivity;
     
@@ -62,7 +64,9 @@ public class TagEdit {
     public static List<TagEdit> buildTagEdits() {
         tagEditHash = new LinkedHashMap<>();
         tagEditHiddenHash = new LinkedHashMap<>();
+        tagEditOrderHash = new LinkedHashMap<>(); // Keeps track of intended tag order
         tagEdits = new ArrayList<>();
+        tagEditsOrder = new ArrayList<>(); // Keeps track of intended tag order
         osmElement = OSMElement.getSelectedElements().getFirst();
 
         Map<String, String> tags = osmElement.getTags();
@@ -76,6 +80,8 @@ public class TagEdit {
                 String tagKey = odkTag.getKey();
                 TagEdit tagEdit = new TagEdit(tagKey, tagValueOrDefaultValue(tags, tagKey), odkTag, false);
                 String implicitVal = Constraints.singleton().implicitVal(tagKey);
+                tagEditOrderHash.put(tagKey, tagEdit);
+                tagEditsOrder.add(tagEdit);
                 if (implicitVal != null) {
                     tagEditHiddenHash.put(tagKey, tagEdit);
                     osmElement.addOrEditTag(tagKey, implicitVal);
@@ -92,6 +98,8 @@ public class TagEdit {
                 TagEdit tagEdit = new TagEdit(readOnlyKey, readOnlyTags.get(readOnlyKey), true);
                 tagEditHash.put(readOnlyKey, tagEdit);
                 tagEdits.add(tagEdit);
+                tagEditOrderHash.put(readOnlyKey, tagEdit);
+                tagEditsOrder.add(tagEdit);
             }
         }
         
@@ -102,6 +110,8 @@ public class TagEdit {
                 TagEdit tagEdit = new TagEdit(key, tags.get(key), false);
                 tagEditHash.put(key, tagEdit);
                 tagEdits.add(tagEdit);
+                tagEditOrderHash.put(key, tagEdit);
+                tagEditsOrder.add(tagEdit);
             }
         }
         
@@ -140,6 +150,27 @@ public class TagEdit {
         return tagEditHiddenHash.keySet();
     }
 
+    /*
+     * Attempt to find the appropriate insertion index to preserve the
+     * relative order of tags as defined in the xml
+     */
+    public static int getIndexForTagInsertion(String keyToAdd) {
+        TagEdit originalTag = tagEditOrderHash.get(keyToAdd);
+        if (originalTag != null) {
+            int idx = 0;
+            int origIdx = tagEditsOrder.indexOf(originalTag);
+            while (idx < tagEditOrderHash.size()) {
+                if (idx >= tagEdits.size()) return idx; // Return last index
+                if (tagEditsOrder.indexOf(tagEdits.get(idx)) >= origIdx) {
+                    return idx;
+                }
+                idx++;
+            }
+            return idx;
+        }
+        return 0;
+    }
+
     public static int getIndexForTagKey(String key) {
         TagEdit tagEdit = tagEditHash.get(key);
         if (tagEdit != null) {
@@ -175,7 +206,7 @@ public class TagEdit {
 
     private static void addTag(String key, String activeTagKey) {
         if (tagEditHiddenHash.get(key) == null) return;
-        int idx = getIndexForTagKey(activeTagKey) + 1;
+        int idx = getIndexForTagInsertion(key);
         TagEdit tagEdit = tagEditHiddenHash.remove(key);
         tagEditHash.put(key, tagEdit);
         tagEdits.add(idx, tagEdit);
