@@ -361,7 +361,7 @@ public class Constraints {
         }
     }
 
-    private Set<String> findTagsToBeHiddenFromUpdate(String key, String val) {
+    public Set<String> findTagsToBeHiddenFromUpdate(String key, String val) {
         Set<String> tags = new HashSet<>();
 
         Map<String, Set<String>> causeHideMapMap = causeHideMap.get(key);
@@ -390,7 +390,7 @@ public class Constraints {
         return tags;
     }
 
-    private Set<String> findTagsToBeShownFromUpdate(String key, String val) {
+    public Set<String> findTagsToBeShownFromUpdate(String key, String val) {
         Set<String> tags = new HashSet<>();
 
         Map<String, Set<String>> causeShowMapMap = causeShowMap.get(key);
