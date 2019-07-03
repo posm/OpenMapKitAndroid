@@ -193,7 +193,7 @@ public class OSMDownloader extends AsyncTask<Void, String, Long> {
         q.setFilterById(downloadId);
         Cursor cursor = downloadManager.query(q);
         cursor.moveToFirst();
-        String localFilename = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+        String localFilename = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
         Set<File> fileSet = new HashSet<>();
         fileSet.add(new File(localFilename));
         OSMMapBuilder.addOSMFilesToModel(fileSet);
