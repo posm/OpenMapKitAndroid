@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
 
 ext {
-    supportLibVersion = '23.1.1'
+    supportLibVersion = '28.0.0'
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "org.redcross.openmapkit"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 29
         versionCode 23
         versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -22,7 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'META-INF/LICENSE.txt'
@@ -35,19 +38,23 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile group: 'com.google.guava', name: 'guava', version: '18.0'
-    compile 'org.apache.commons:commons-lang3:3.0'
-    compile 'commons-io:commons-io:2.4'
-    compile 'com.nanohttpd:nanohttpd-webserver:2.1.1'
-    compile 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
-    compile 'com.google.zxing:core:3.2.1'
-    compile project(':MapboxAndroidSDK')
-    compile "com.android.support:support-annotations:${supportLibVersion}"
-    compile "com.android.support:support-v4:${supportLibVersion}"
-    compile "com.android.support:appcompat-v7:${supportLibVersion}"
-    compile "com.android.support:design:${supportLibVersion}"
-    compile "com.android.support:cardview-v7:${supportLibVersion}"
-    compile "com.android.support:recyclerview-v7:${supportLibVersion}"
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation group: 'com.google.guava', name: 'guava', version: '18.0'
+    implementation 'org.apache.commons:commons-lang3:3.0'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'com.nanohttpd:nanohttpd-webserver:2.1.1'
+    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation project(':MapboxAndroidSDK')
+//    implementation('com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.0') {
+//        transitive = true
+//    }
+    implementation "com.android.support:support-annotations:${supportLibVersion}"
+//    implementation "com.android.support:support-v4:${supportLibVersion}"
+//    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
+    implementation "com.android.support:design:${supportLibVersion}"
+//    implementation "com.android.support:cardview-v7:${supportLibVersion}"
+//    implementation "com.android.support:recyclerview-v7:${supportLibVersion}"
+    //noinspection GradleCompatible
+    implementation "com.android.support:appcompat-v7:28.0.0"
 }

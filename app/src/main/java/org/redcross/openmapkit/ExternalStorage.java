@@ -35,7 +35,7 @@ public class ExternalStorage {
 
     /**
      * Directories used by the app.
-     * * * 
+     * * *
      */
     public static final String APP_DIR = "openmapkit";
     public static final String MBTILES_DIR = "mbtiles";
@@ -59,16 +59,19 @@ public class ExternalStorage {
 
         File storageDir = Environment.getExternalStorageDirectory();
         File appDir = new File(storageDir, APP_DIR);
-        if(!appDir.exists()) {
+        Log.d("apple", "checkOrCreateAppDirs: "+appDir);
+        if (!appDir.exists()) {
             appDir.mkdirs(); // mkdirs is mkdir -p
         }
         File mbtilesDir = new File(appDir, MBTILES_DIR);
-        if(!mbtilesDir.exists()) {
+        if (!mbtilesDir.exists()) {
             mbtilesDir.mkdirs();
         }
         File osmDir = new File(appDir, OSM_DIR);
+        Log.d("apple", "checkOrCreateAppDirs: "+osmDir.exists());
         if (!osmDir.exists()) {
             osmDir.mkdirs();
+            Log.d("apple", "checkOrCreateAppDirs: "+osmDir.exists());
         }
         File deploymentsDir = new File(appDir, DEPLOYMENTS_DIR);
         if (!deploymentsDir.exists()) {
@@ -95,11 +98,11 @@ public class ExternalStorage {
                 + APP_DIR + "/"
                 + OSM_DIR + "/";
     }
-    
+
     public static String getOSMDirRelativeToExternalDir() {
         return "/" + APP_DIR + "/" + OSM_DIR + "/";
     }
-    
+
     public static File[] fetchOSMXmlFiles() {
         List<File> osms = allDeploymentOSMXmlFiles();
         String dirPath = getOSMDir();
@@ -108,26 +111,27 @@ public class ExternalStorage {
         Collections.addAll(osms, otherOsms);
         return osms.toArray(new File[osms.size()]);
     }
-    
+
     public static String[] fetchOSMXmlFileNames() {
         File[] files = fetchOSMXmlFiles();
         int len = files.length;
-        String [] names = new String[len];
-        for (int i=0; i < len; ++i) {
+        String[] names = new String[len];
+        for (int i = 0; i < len; ++i) {
             names[i] = files[i].getName();
         }
         return names;
     }
-    
+
     public static File[] fetchMBTilesFiles() {
         List<File> mbtiles = allDeploymentMBTilesFiles();
         String dirPath = getMBTilesDir();
         File dir = new File(dirPath);
-        File[] otherMBTiles =  dir.listFiles();
-        Collections.addAll(mbtiles, otherMBTiles);
+        File[] otherMBTiles = dir.listFiles();
+        if (otherMBTiles != null)
+            Collections.addAll(mbtiles, otherMBTiles);
         return mbtiles.toArray(new File[mbtiles.size()]);
     }
-    
+
     /**
      * Checking if external storage is available for read and write
      */
@@ -140,7 +144,7 @@ public class ExternalStorage {
     }
 
     /**
-     *  Checking if external storage is available to read.
+     * Checking if external storage is available to read.
      */
     public static boolean isReadable() {
         String state = Environment.getExternalStorageState();
@@ -210,15 +214,16 @@ public class ExternalStorage {
         File storageDir = Environment.getExternalStorageDirectory();
         File deploymentsDir = new File(storageDir, APP_DIR + "/" + DEPLOYMENTS_DIR);
         File[] deployments = deploymentsDir.listFiles();
-        for (File deploymentDir : deployments) {
-            File[] files = deploymentDir.listFiles();
-            for (File f : files) {
-                String ext = FilenameUtils.getExtension(f.getPath());
-                if (ext.equals("mbtiles")) {
-                    deploymentMBTilesFiles.add(f);
+        if (deployments != null)
+            for (File deploymentDir : deployments) {
+                File[] files = deploymentDir.listFiles();
+                for (File f : files) {
+                    String ext = FilenameUtils.getExtension(f.getPath());
+                    if (ext.equals("mbtiles")) {
+                        deploymentMBTilesFiles.add(f);
+                    }
                 }
             }
-        }
         return deploymentMBTilesFiles;
     }
 
@@ -271,7 +276,7 @@ public class ExternalStorage {
         if (files == null || files.length == 0) return deploymentFiles;
         for (File f : files) {
             String ext = FilenameUtils.getExtension(f.getPath());
-            if ( ext.equals("mbtiles") || ext.equals("osm") || ext.equals("geojson") ) {
+            if (ext.equals("mbtiles") || ext.equals("osm") || ext.equals("geojson")) {
                 deploymentFiles.put(f.getName(), f);
             }
         }
@@ -379,18 +384,18 @@ public class ExternalStorage {
      * form. If the constraints file is found on ODK's media directory for the form, its contents
      * will overwrite whatever is in OMK's constraints file for the form
      *
-     * @param formFileName  The name of the ODK form
+     * @param formFileName The name of the ODK form
      * @return TRUE if there was a successful copy
      */
     public static boolean copyFormConstraintsFromOdk(String formFileName) {
         String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        if(formFileName != null) {
+        if (formFileName != null) {
             String mediaDirPath = sdCardPath + "/odk/forms/" + formFileName + "-media";
             File mediaDirectory = new File(mediaDirPath);
-            if(mediaDirectory.exists() && mediaDirectory.isDirectory()) {
+            if (mediaDirectory.exists() && mediaDirectory.isDirectory()) {
                 String constraintsFilePath = mediaDirPath + "/" + CONSTRAINTS_FILE_NAME_ON_ODK;
                 File odkConstraintsFile = new File(constraintsFilePath);
-                if(odkConstraintsFile.exists() && !odkConstraintsFile.isDirectory()) {
+                if (odkConstraintsFile.exists() && !odkConstraintsFile.isDirectory()) {
                     File omkConstraintsFile = fetchConstraintsFile(formFileName);
                     try {
                         Files.copy(odkConstraintsFile, omkConstraintsFile);
@@ -419,7 +424,7 @@ public class ExternalStorage {
 
         List<String> typeWL = Arrays.asList("vfat", "exfat", "sdcardfs", "fuse");
         List<String> typeBL = Arrays.asList("tmpfs");
-        String[] mountWL = { "/mnt", "/Removable" };
+        String[] mountWL = {"/mnt", "/Removable"};
         String[] mountBL = {
                 "/mnt/secure",
                 "/mnt/shell",
@@ -427,16 +432,16 @@ public class ExternalStorage {
                 "/mnt/obb",
                 "/mnt/media_rw/extSdCard",
                 "/mnt/media_rw/sdcard",
-                "/storage/emulated" };
+                "/storage/emulated"};
         String[] deviceWL = {
                 "/dev/block/vold",
                 "/dev/fuse",
-                "/mnt/media_rw/extSdCard" };
+                "/mnt/media_rw/extSdCard"};
 
         try {
             bufReader = new BufferedReader(new FileReader("/proc/mounts"));
             String line;
-            while((line = bufReader.readLine()) != null) {
+            while ((line = bufReader.readLine()) != null) {
 
                 StringTokenizer tokens = new StringTokenizer(line, " ");
                 String device = tokens.nextToken();
@@ -456,15 +461,14 @@ public class ExternalStorage {
             for (int i = 0; i < list.size(); i++) {
                 dirs[i] = list.get(i);
             }
-        }
-        catch (FileNotFoundException e) {}
-        catch (IOException e) {}
-        finally {
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        } finally {
             if (bufReader != null) {
                 try {
                     bufReader.close();
+                } catch (IOException e) {
                 }
-                catch (IOException e) {}
             }
         }
         return dirs;
@@ -478,7 +482,7 @@ public class ExternalStorage {
      */
     public static File getSDCardDirWithExternalFallback() {
         String[] dirs = getStorageDirectories();
-        return new File(dirs[dirs.length-1]);
+        return new File(dirs[dirs.length - 1]);
     }
 }
 
