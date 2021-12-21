@@ -1,5 +1,6 @@
 package org.redcross.openmapkit.tagswipe;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -40,7 +41,7 @@ public class TagEdit {
     private static List<TagEdit> tagEditsOrder;
     private static OSMElement osmElement;
     private static TagSwipeActivity tagSwipeActivity;
-    
+
     private final String tagKey; // a given TagEdit always associates to an immutable key
     private String tagVal;
     private String prevTagVal;
@@ -70,7 +71,7 @@ public class TagEdit {
         osmElement = OSMElement.getSelectedElements().getFirst();
 
         Map<String, String> tags = osmElement.getTags();
-        
+
         // Tag Edits for ODK Collect Mode
         if (ODKCollectHandler.isODKCollectMode()) {
             Map<String, String> readOnlyTags = new HashMap<>(tags);
@@ -102,7 +103,7 @@ public class TagEdit {
                 tagEditsOrder.add(tagEdit);
             }
         }
-        
+
         // Tag Edits for Standalone Mode
         else {
             Set<String> keys = tags.keySet();
@@ -114,11 +115,11 @@ public class TagEdit {
                 tagEditsOrder.add(tagEdit);
             }
         }
-        
+
         return tagEdits;
     }
 
-    private static String tagValueOrDefaultValue(Map<String,String> tags, String tagKey) {
+    private static String tagValueOrDefaultValue(Map<String, String> tags, String tagKey) {
         String tagVal = tags.get(tagKey);
         if (tagVal == null) {
             // null if there is no default
@@ -133,13 +134,13 @@ public class TagEdit {
     public static void setTagSwipeActivity(TagSwipeActivity tagSwipeActivity) {
         TagEdit.tagSwipeActivity = tagSwipeActivity;
     }
-    
+
     public static TagEdit getTag(int idx) {
         return tagEdits.get(idx);
     }
-    
+
     public static TagEdit getTag(String key) {
-        return tagEditHash.get(key);        
+        return tagEditHash.get(key);
     }
 
     public static Set<String> hiddenTagKeys() {
@@ -179,10 +180,9 @@ public class TagEdit {
         // If its not there, just go to the first TagEdit
         return 0;
     }
-    
+
     public static boolean saveToODKCollect(String osmUserName) {
         updateTagsInOSMElement();
-
         Set<String> missingTags = Constraints.singleton().requiredTagsNotMet(osmElement);
         if (missingTags.size() > 0) {
             tagSwipeActivity.notifyMissingTags(missingTags);
@@ -214,20 +214,22 @@ public class TagEdit {
             tagSwipeActivity.updateUI(activeTagKey);
         }
     }
-    
+
     private static void updateTagsInOSMElement() {
-        for (TagEdit tagEdit : tagEdits) {
-            tagEdit.updateTagInOSMElement();
+        for (int i = 0; i < tagEdits.size(); i++) {
+//        for (TagEdit tagEdit : tagEdits) {
+            Log.d("apple", "saveToODKCollect:sushma " + i + " other " + tagEdits.get(i).tagKey + tagEdits.get(i).tagVal);
+            tagEdits.get(i).updateTagInOSMElement();
         }
     }
-    
+
     private TagEdit(String tagKey, String tagVal, ODKTag odkTag, boolean readOnly) {
         this.tagKey = tagKey;
         setTagVal(tagVal);
         this.odkTag = odkTag;
         this.readOnly = readOnly;
     }
-    
+
     private TagEdit(String tagKey, String tagVal, boolean readOnly) {
         this.tagKey = tagKey;
         setTagVal(tagVal);
@@ -238,12 +240,13 @@ public class TagEdit {
      * The EditText widget from StringTagValueFragment gets passed into here
      * so that the value can be retrieved on save.
      * * * *
+     *
      * @param editText
      */
     public void setEditText(EditText editText) {
         this.editText = editText;
     }
-    
+
     public void setRadioGroup(RadioGroup radioGroup) {
         this.radioGroup = radioGroup;
     }
@@ -253,11 +256,11 @@ public class TagEdit {
         editTextCheckBox = cb;
         checkBoxEditText = et;
     }
-    
+
     public ODKTag getODKTag() {
         return odkTag;
     }
-    
+
     public void updateTagInOSMElement() {
         // check boxes
         if (odkTag != null && checkBoxMode) {
@@ -280,10 +283,10 @@ public class TagEdit {
             int checkedId = radioGroup.getCheckedRadioButtonId();
             // has custom value input
             if (v instanceof LinearLayout) {
-                LinearLayout customLL = (LinearLayout)v;
-                RadioButton customRadio = (RadioButton)customLL.getChildAt(0);
+                LinearLayout customLL = (LinearLayout) v;
+                RadioButton customRadio = (RadioButton) customLL.getChildAt(0);
                 if (customRadio.isChecked()) {
-                    EditText et = (EditText)customLL.getChildAt(1);
+                    EditText et = (EditText) customLL.getChildAt(1);
                     setTagVal(et.getText().toString());
                     addOrEditTag(tagKey, tagVal);
                 } else if (checkedId != -1) {
@@ -314,6 +317,7 @@ public class TagEdit {
         osmElement.addOrEditTag(tagKey, tagVal);
         Constraints.TagAction tagAction = Constraints.singleton().tagAddedOrEdited(tagKey, tagVal);
         executeTagAction(tagAction);
+
     }
 
     private void deleteTag(String tagKey) {
@@ -324,7 +328,6 @@ public class TagEdit {
     }
 
     private void executeTagAction(Constraints.TagAction tagAction) {
-
         // Reset tags shown and hidden from previous value
         if (prevTagVal != null) {
             Set<String> prevHiddenTags = Constraints.singleton().findTagsToBeHiddenFromUpdate(tagKey, prevTagVal);
@@ -346,11 +349,11 @@ public class TagEdit {
             addTag(tag, tagKey);
         }
     }
-    
+
     public String getTitle() {
         return tagKey;
     }
-    
+
     public String getTagKeyLabel() {
         if (odkTag != null) {
             return odkTag.getLabel();
@@ -361,7 +364,7 @@ public class TagEdit {
     public String getTagKey() {
         return tagKey;
     }
-    
+
     public String getTagValLabel() {
         if (odkTag == null) return null;
         ODKTagItem item = odkTag.getItem(tagVal);
@@ -370,7 +373,7 @@ public class TagEdit {
         }
         return null;
     }
-    
+
     public String getTagVal() {
         return tagVal;
     }
@@ -393,23 +396,23 @@ public class TagEdit {
         }
         return tagVals;
     }
-    
+
     public boolean isReadOnly() {
         return readOnly;
     }
-    
+
     public boolean isSelectOne() {
-        return  !readOnly &&
+        return !readOnly &&
                 odkTag != null &&
                 odkTag.getItems().size() > 0 &&
                 !Constraints.singleton().tagIsSelectMultiple(odkTag.getKey());
     }
 
     public boolean isSelectMultiple() {
-        return  !readOnly &&
+        return !readOnly &&
                 odkTag != null &&
                 odkTag.getItems().size() > 0 &&
                 Constraints.singleton().tagIsSelectMultiple(odkTag.getKey());
     }
-    
+
 }
