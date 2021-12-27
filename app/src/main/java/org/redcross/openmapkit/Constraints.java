@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 import org.redcross.openmapkit.odkcollect.tag.ODKTag;
-import org.redcross.openmapkit.tagswipe.TagEdit;
 
 import java.io.File;
 import java.util.Collection;
@@ -27,7 +26,7 @@ public class Constraints {
     /**
      * Contains a map of constraint keys with the key value pairs of the
      * OSM Element conditions in which a tag view should be hidden.
-     *
+     * <p>
      * The key of the outer map is to the tag in question
      */
     private Map<String, Map<String, String>> hideMap = new HashMap<>();
@@ -41,7 +40,7 @@ public class Constraints {
     /**
      * Contains a map of constraint keys with the key value pairs of the
      * OSM Element conditions in which a tag view should be shown.
-     *
+     * <p>
      * The key of the outer map is to the tag in question.
      */
     private Map<String, Map<String, String>> showMap = new HashMap<>();
@@ -99,7 +98,7 @@ public class Constraints {
 
         if (ODKCollectHandler.isODKCollectMode()) {
             Map<String, String> tags = osmElement.getTags();
-            Collection<ODKTag> odkTags =  ODKCollectHandler.getODKCollectData().getRequiredTags();
+            Collection<ODKTag> odkTags = ODKCollectHandler.getODKCollectData().getRequiredTags();
             for (ODKTag odkTag : odkTags) {
                 String odkTagKey = odkTag.getKey();
                 if (cascadeBooleanTagConstraint(odkTagKey, "required", false)) {
@@ -174,7 +173,7 @@ public class Constraints {
     /**
      * If the tag has an implicit value, it returns it.
      * Otherwise, it returns null.
-     *
+     * <p>
      * This is how to test if the tag should be considered implicit.
      *
      * @param tagKey

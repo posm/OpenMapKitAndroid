@@ -21,14 +21,14 @@ repositories {
 }
 
 dependencies {
-    compile 'com.vividsolutions:jts:1.13'
-    compile 'com.android.support:support-v4:23.1.1'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.jakewharton:disklrucache:2.0.2'
-    compile 'commons-codec:commons-codec:1.10'
-    compile 'commons-io:commons-io:2.4'
+    implementation 'com.vividsolutions:jts:1.13'
+    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation 'com.squareup.okhttp:okhttp:2.4.0'
+    implementation 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.jakewharton:disklrucache:2.0.2'
+    implementation 'commons-codec:commons-codec:1.10'
+    implementation 'commons-io:commons-io:2.4'
 }
 
 android {
@@ -85,7 +85,7 @@ android.libraryVariants.all { variant ->
         destinationDir = new File(destinationDir, variant.baseName)
         source = files(variant.javaCompile.source)
         ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+        doFirst { classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar) }
         options.links("http://docs.oracle.com/javase/7/docs/api/")
         options.links("http://d.android.com/reference/")
         exclude '**/R.html', '**/R.*.html'

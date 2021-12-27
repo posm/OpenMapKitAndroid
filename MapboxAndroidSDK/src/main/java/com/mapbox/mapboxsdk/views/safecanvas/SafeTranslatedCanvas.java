@@ -119,13 +119,13 @@ public class SafeTranslatedCanvas extends Canvas implements ISafeCanvas {
     @Override
     public boolean clipRegion(final Region region, final Op op) {
         region.translate(xOffset, yOffset);
-        return getWrappedCanvas().clipRegion(region, op);
+        return true;
     }
 
     @Override
     public boolean clipRegion(final Region region) {
         region.translate(xOffset, yOffset);
-        return getWrappedCanvas().clipRegion(region);
+        return true;
     }
 
     @Override
@@ -478,7 +478,7 @@ public class SafeTranslatedCanvas extends Canvas implements ISafeCanvas {
     @Override
     public int save(int saveFlags) {
 
-        return getWrappedCanvas().save(saveFlags);
+        return getWrappedCanvas().save();
     }
 
     @Override

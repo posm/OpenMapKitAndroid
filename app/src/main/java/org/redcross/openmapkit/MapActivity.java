@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -63,7 +64,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     protected static final String PREVIOUS_LAT = "org.redcross.openmapkit.PREVIOUS_LAT";
     protected static final String PREVIOUS_LNG = "org.redcross.openmapkit.PREVIOUS_LNG";
     protected static final String PREVIOUS_ZOOM = "org.redcross.openmapkit.PREVIOUS_ZOOM";
-    
+
     private static String version = "";
 
     protected MapView mapView;
@@ -102,11 +103,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
-        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        android.Manifest.permission.READ_EXTERNAL_STORAGE,
-        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-        android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.CAMERA
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.CAMERA
     };
 
     @Override
@@ -120,8 +121,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 //        initializeMBTilesServer();
 
         determineVersion();
-        
-        if(android.os.Build.VERSION.SDK_INT >= 21) {
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -136,17 +137,10 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
         // App crashes without some permissions.
         // TODO We can be more refined about where and when we ask for permissions
-        if(!hasPermissions(this, PERMISSIONS)){
+        if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
-
-        // create directory structure for app if needed
-        ExternalStorage.checkOrCreateAppDirs();
-
-        // Move constraints assets to ExternalStorage if necessary
-        ExternalStorage.copyConstraintsToExternalStorageIfNeeded(this);
-        
         // Register the intent to the ODKCollect handler
         // This will determine if we are in ODK Collect Mode or not.
         ODKCollectHandler.registerIntent(getIntent());
@@ -159,23 +153,23 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         setContentView(R.layout.activity_map);
 
         //get the layout the ListView is nested in
-        mBottomLinearLayout = (LinearLayout)findViewById(R.id.bottomLinearLayout);
+        mBottomLinearLayout = (LinearLayout) findViewById(R.id.bottomLinearLayout);
 
         //the ListView from layout
-        mTagListView = (ListView)findViewById(R.id.tagListView);
+        mTagListView = (ListView) findViewById(R.id.tagListView);
 
         //the ListView close image button
-        mCloseListViewButton = (ImageButton)findViewById(R.id.imageViewCloseList);
+        mCloseListViewButton = (ImageButton) findViewById(R.id.imageViewCloseList);
 
         //get the layout the Map is nested in
-        mTopLinearLayout = (LinearLayout)findViewById(R.id.topLinearLayout);
+        mTopLinearLayout = (LinearLayout) findViewById(R.id.topLinearLayout);
 
         //get map from layout
-        mapView = (MapView)findViewById(R.id.mapView);
+        mapView = (MapView) findViewById(R.id.mapView);
 
         // get Field Papers Message
-        fieldPapersMsg = (TextView)findViewById(R.id.fieldPapersMsg);
-        
+        fieldPapersMsg = (TextView) findViewById(R.id.fieldPapersMsg);
+
         // initialize basemap object
         basemap = new Basemap(this);
 
@@ -197,11 +191,26 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
         initializeListView();
     }
-    
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_ALL && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // create directory structure for app if needed
+                ExternalStorage.checkOrCreateAppDirs();
+
+                // Move constraints assets to ExternalStorage if necessary
+                ExternalStorage.copyConstraintsToExternalStorageIfNeeded(this);
+            } else {
+            }
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
-        saveMapPosition();        
+        saveMapPosition();
     }
 
     protected void saveMapPosition() {
@@ -222,12 +231,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         double lat = (double) pref.getFloat(PREVIOUS_LAT, -999);
         double lng = (double) pref.getFloat(PREVIOUS_LNG, -999);
         float z = pref.getFloat(PREVIOUS_ZOOM, -999);
-        
+
         // no shared pref
         if (lat == -999 || lng == -999 || z == -999) {
             mapView.setUserLocationEnabled(true);
             mapView.goToUserLocation(true);
-        } 
+        }
         // there is a shared pref
         else {
             LatLng c = new LatLng(lat, lng);
@@ -235,14 +244,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             mapView.setZoom(z);
         }
     }
-    
+
     /**
      * For initializing the ListView of tags
      */
     protected void initializeListView() {
 
         //the ListView title
-        mTagTextView = (TextView)findViewById(R.id.tagTextView);
+        mTagTextView = (TextView) findViewById(R.id.tagTextView);
         mTagTextView.setText(R.string.tagListViewTitle);
 
         //hide the ListView by default
@@ -290,11 +299,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             }
         };
         // tag button
-        tagButton = (ImageButton)findViewById(R.id.tagButton);
+        tagButton = (ImageButton) findViewById(R.id.tagButton);
         tagButton.setOnClickListener(tagSwipeLaunchListener);
 
         // add tags button
-        addTagsButton = (Button)findViewById(R.id.addTagsBtn);
+        addTagsButton = (Button) findViewById(R.id.addTagsBtn);
         addTagsButton.setOnClickListener(tagSwipeLaunchListener);
 
         //handle list view item taps
@@ -315,6 +324,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     /**
      * For identifying an OSM element and presenting it's tags in the ListView
+     *
      * @param osmElement The target OSMElement.
      */
     protected void identifyOSMFeature(OSMElement osmElement) {
@@ -352,7 +362,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
         //pass the tags to the list adapter
         tagListAdapter = new TagListAdapter(this, osmElement);
-        
+
         //set the ListView's adapter
         mTagListView.setAdapter(tagListAdapter);
 
@@ -362,13 +372,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     /**
      * For setting the proportions of the Map weight and the ListView weight for dual display
-     * @param topWeight Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
+     *
+     * @param topWeight    Refers to the layout weight.  Note, topWeight + bottomWeight must equal the weight sum of 100
      * @param bottomWeight Referes to the layotu height.  Note, bottomWeight + topWeight must equal the weight sum of 100
      */
     protected void proportionMapAndList(int topWeight, int bottomWeight) {
 
-        LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams)mTopLinearLayout.getLayoutParams();
-        LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams)mBottomLinearLayout.getLayoutParams();
+        LinearLayout.LayoutParams topLayoutParams = (LinearLayout.LayoutParams) mTopLinearLayout.getLayoutParams();
+        LinearLayout.LayoutParams bottomLayoutParams = (LinearLayout.LayoutParams) mBottomLinearLayout.getLayoutParams();
 
         //update weight of top and bottom linear layouts
         mTopLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(topLayoutParams.width, topLayoutParams.height, topWeight));
@@ -398,12 +409,12 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             e.printStackTrace();
         }
     }
-    
+
     /**
      * For instantiating the location button and setting up its tap event handler
      */
     protected void initializeLocationButton() {
-        final ImageButton locationButton = (ImageButton)findViewById(R.id.locationButton);
+        final ImageButton locationButton = (ImageButton) findViewById(R.id.locationButton);
 
         //set tap event
         locationButton.setOnClickListener(new View.OnClickListener() {
@@ -423,7 +434,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     protected void initializeMoveButton() {
-        moveButton = (ImageButton)findViewById(R.id.moveNodeModeBtn);
+        moveButton = (ImageButton) findViewById(R.id.moveNodeModeBtn);
         moveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -431,9 +442,9 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             }
         });
     }
-    
+
     protected void initializeNodeModeButton() {
-        nodeModeButton = (Button)findViewById(R.id.nodeModeButton);
+        nodeModeButton = (Button) findViewById(R.id.nodeModeButton);
         nodeModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -443,8 +454,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     protected void initializeAddNodeButtons() {
-        final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
-        final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+        final Button addNodeBtn = (Button) findViewById(R.id.addNodeBtn);
+        final ImageButton addNodeMarkerBtn = (ImageButton) findViewById(R.id.addNodeMarkerBtn);
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -459,8 +470,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     protected void initializeMoveNodeButtons() {
-        final Button moveNodeBtn = (Button)findViewById(R.id.moveNodeBtn);
-        final ImageButton moveNodeMarkerBtn = (ImageButton)findViewById(R.id.moveNodeMarkerBtn);
+        final Button moveNodeBtn = (Button) findViewById(R.id.moveNodeBtn);
+        final ImageButton moveNodeMarkerBtn = (ImageButton) findViewById(R.id.moveNodeMarkerBtn);
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -473,8 +484,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     }
 
     private void toggleNodeMode() {
-        final Button addNodeBtn = (Button)findViewById(R.id.addNodeBtn);
-        final ImageButton addNodeMarkerBtn = (ImageButton)findViewById(R.id.addNodeMarkerBtn);
+        final Button addNodeBtn = (Button) findViewById(R.id.addNodeBtn);
+        final ImageButton addNodeMarkerBtn = (ImageButton) findViewById(R.id.addNodeMarkerBtn);
         if (nodeMode) {
             addNodeBtn.setVisibility(View.GONE);
             addNodeMarkerBtn.setVisibility(View.GONE);
@@ -502,14 +513,14 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
                         osmMap.addNode(deletedNode);
                     }
                 })
-                .setActionTextColor(Color.rgb(126,188,111))
+                .setActionTextColor(Color.rgb(126, 188, 111))
                 .show();
     }
 
     private void toggleMoveNodeMode() {
-        final ImageButton moveNodeModeBtn = (ImageButton)findViewById(R.id.moveNodeModeBtn);
-        final ImageButton moveNodeMarkerBtn = (ImageButton)findViewById(R.id.moveNodeMarkerBtn);
-        final Button moveNodeBtn = (Button)findViewById(R.id.moveNodeBtn);
+        final ImageButton moveNodeModeBtn = (ImageButton) findViewById(R.id.moveNodeModeBtn);
+        final ImageButton moveNodeMarkerBtn = (ImageButton) findViewById(R.id.moveNodeMarkerBtn);
+        final Button moveNodeBtn = (Button) findViewById(R.id.moveNodeBtn);
         if (moveNodeMode) {
             moveNodeMarkerBtn.setVisibility(View.GONE);
             moveNodeBtn.setVisibility(View.GONE);
@@ -528,7 +539,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     private void hideSelectedMarker() {
         LinkedList<OSMElement> selectedElements = OSMElement.getSelectedElements();
         if (selectedElements.size() < 1) return;
-        OSMNode node = (OSMNode)selectedElements.getFirst();
+        OSMNode node = (OSMNode) selectedElements.getFirst();
         Marker marker = node.getMarker();
         if (marker != null) {
             node.getMarker().setVisibility(false);
@@ -539,7 +550,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     private void showSelectedMarker() {
         LinkedList<OSMElement> selectedElements = OSMElement.getSelectedElements();
         if (selectedElements.size() < 1) return;
-        OSMNode node = (OSMNode)selectedElements.getFirst();
+        OSMNode node = (OSMNode) selectedElements.getFirst();
         Marker marker = node.getMarker();
         if (marker != null) {
             node.getMarker().setVisibility(true);
@@ -603,7 +614,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
                         }
                     })
-                    .setActionTextColor(Color.rgb(126,188,111))
+                    .setActionTextColor(Color.rgb(126, 188, 111))
                     .show();
         }
     }
@@ -705,7 +716,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         super.onOptionsItemSelected(item);
-                
+
         int id = item.getItemId();
 
         if (id == R.id.deployments) {
@@ -754,8 +765,8 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ( requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE ) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == ODK_COLLECT_TAG_ACTIVITY_CODE) {
+            if (resultCode == RESULT_OK) {
                 saveToODKCollectAndExit();
             }
         }
@@ -770,11 +781,11 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
-    
+
     public MapView getMapView() {
         return mapView;
     }
-    
+
     private void determineVersion() {
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -783,7 +794,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
             e.printStackTrace();
         }
     }
-    
+
     public static String getVersion() {
         return version;
     }
@@ -791,7 +802,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
     private void initializeMBTilesServer() {
         try {
             MBTilesServer.singleton().start();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             Log.w("Httpd", "MBTiles HTTP server could not start.");
         }
         Log.w("MBTilesServer", "MBTiles HTTP server initialized.");
@@ -841,8 +852,7 @@ public class MapActivity extends AppCompatActivity implements OSMSelectionListen
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
-        }
-        catch (PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException e) {
             app_installed = false;
         }
         return app_installed;

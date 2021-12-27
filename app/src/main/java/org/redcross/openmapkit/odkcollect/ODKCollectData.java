@@ -1,6 +1,7 @@
 package org.redcross.openmapkit.odkcollect;
 
 import android.os.Environment;
+import android.util.Log;
 
 import com.spatialdev.osm.OSMUtil;
 import com.spatialdev.osm.model.OSMElement;
@@ -23,12 +24,12 @@ import java.util.List;
 /**
  * Created by Nicholas Hallahan on 2/9/15.
  * nhallahan@spatialdev.com
- * * * 
+ * * *
  */
 public class ODKCollectData {
-    
+
     public static final String APP_NAME = "OpenMapKit Android";
-            
+
     private String formId;
     private String formFileName;
     private String instanceId;
@@ -36,17 +37,17 @@ public class ODKCollectData {
     private String previousOSMEditFileName;
     private LinkedHashMap<String, ODKTag> requiredTags;
     private List<File> editedOSM = new ArrayList<>();
-    
+
     private String editedXml;
     private String checksum;
     private String appVersion;
 
-    public ODKCollectData ( String formId, 
-                            String formFileName,
-                            String instanceId, 
-                            String instanceDir,
-                            String previousOSMEditFileName,
-                            LinkedHashMap<String, ODKTag> requiredTags ) {
+    public ODKCollectData(String formId,
+                          String formFileName,
+                          String instanceId,
+                          String instanceDir,
+                          String previousOSMEditFileName,
+                          LinkedHashMap<String, ODKTag> requiredTags) {
         this.formId = formId;
         this.formFileName = formFileName;
         this.instanceId = instanceId;
@@ -63,28 +64,29 @@ public class ODKCollectData {
         }
         String instances = new File(instanceDir).getParent();
         File[] instancesDirs = new File(instances).listFiles();
-        for (int i = 0; i < instancesDirs.length; ++i) {
-            File dir = instancesDirs[i];
-            if (!dir.isDirectory()) {
-                continue;
-            }
-            // check if the instance dir is for the form we are dealing with
-            // it is 0 if the form file name is the first substring of the dirname
-            if (dir.getName().indexOf(formFileName) != 0) {
-                continue;
-            }
-            
-            String[] files = dir.list();
-            for (int j = 0; j < files.length; ++j) {
-                String fname = files[j];
-                if (fname.lastIndexOf(".osm") > -1) {
-                    File osmFile = new File(dir, fname);
-                    editedOSM.add(osmFile);
+        if (instancesDirs != null)
+            for (int i = 0; i < instancesDirs.length; ++i) {
+                File dir = instancesDirs[i];
+                if (!dir.isDirectory()) {
+                    continue;
+                }
+                // check if the instance dir is for the form we are dealing with
+                // it is 0 if the form file name is the first substring of the dirname
+                if (dir.getName().indexOf(formFileName) != 0) {
+                    continue;
+                }
+
+                String[] files = dir.list();
+                for (int j = 0; j < files.length; ++j) {
+                    String fname = files[j];
+                    if (fname.lastIndexOf(".osm") > -1) {
+                        File osmFile = new File(dir, fname);
+                        editedOSM.add(osmFile);
+                    }
                 }
             }
-        }
     }
-    
+
     public List<File> getEditedOSM() {
         return editedOSM;
     }
@@ -111,7 +113,8 @@ public class ODKCollectData {
 
     /**
      * Returns the ODK defined label for a OSM tag key if exists
-     * * * 
+     * * *
+     *
      * @param key
      * @return
      */
@@ -125,7 +128,8 @@ public class ODKCollectData {
 
     /**
      * Returns the ODK defined label for an OSM tag value if exists
-     * * * 
+     * * *
+     *
      * @param key
      * @param value
      * @return
@@ -138,12 +142,12 @@ public class ODKCollectData {
         }
         return null;
     }
-    
+
     public void consumeOSMElement(OSMElement el, String osmUserName) throws IOException {
         checksum = el.checksum();
         editedXml = OSMXmlWriter.elementToString(el, osmUserName, APP_NAME + " " + appVersion);
     }
-    
+
     public void deleteOldOSMEdit() {
         if (previousOSMEditFileName == null) {
             return;
@@ -154,12 +158,12 @@ public class ODKCollectData {
             f.delete();
         }
     }
-    
+
     public void writeXmlToOdkCollectInstanceDir() throws IOException {
-        if ( ! isODKCollectInstanceDirectoryAvailable() ) {
+        if (!isODKCollectInstanceDirectoryAvailable()) {
             throw new IOException("The ODK Collect Instance Directory cannot be accessed!");
         }
-        File f = new File( getOSMFileFullPath() );
+        File f = new File(getOSMFileFullPath());
         f.createNewFile();
         FileOutputStream fos = new FileOutputStream(f);
         OutputStreamWriter writer = new OutputStreamWriter(fos);
@@ -171,14 +175,15 @@ public class ODKCollectData {
     public String getOSMFileName() {
         return checksum + ".osm";
     }
-    
+
     public String getOSMFileFullPath() {
         return instanceDir + "/" + getOSMFileName();
     }
 
-    
+
     private boolean isODKCollectInstanceDirectoryAvailable() {
-        if ( ! ExternalStorage.isWritable() ) {
+        Log.d("apple", "isODKCollectInstanceDirectoryAvailable: "+ExternalStorage.isWritable());
+        if (!ExternalStorage.isWritable()) {
             return false;
         }
         File dir = new File(instanceDir);
@@ -187,5 +192,5 @@ public class ODKCollectData {
         }
         return false;
     }
-    
+
 }

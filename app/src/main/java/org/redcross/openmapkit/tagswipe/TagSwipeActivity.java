@@ -13,13 +13,14 @@ import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,12 +30,12 @@ import android.widget.EditText;
 import org.redcross.openmapkit.R;
 import org.redcross.openmapkit.odkcollect.ODKCollectHandler;
 
-public class TagSwipeActivity extends ActionBarActivity {
+public class TagSwipeActivity extends AppCompatActivity {
 
     private List<TagEdit> tagEdits;
     private SharedPreferences userNamePref;
 
-    
+
     private void setupModel() {
         tagEdits = TagEdit.buildTagEdits();
         TagEdit.setTagSwipeActivity(this);
@@ -55,7 +56,7 @@ public class TagSwipeActivity extends ActionBarActivity {
         setContentView(R.layout.activity_tag_swipe);
 
         setupModel();
-        
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -63,7 +64,7 @@ public class TagSwipeActivity extends ActionBarActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.tagSwipeActivity);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-    
+
         pageToCorrectTag();
     }
 
@@ -106,13 +107,17 @@ public class TagSwipeActivity extends ActionBarActivity {
         if (userName == null) {
             askForOSMUsername();
         } else {
-            if (TagEdit.saveToODKCollect(userName)) {
-                setResult(Activity.RESULT_OK);
-                finish();
+            try {
+                if (TagEdit.saveToODKCollect(userName)) {
+                    setResult(Activity.RESULT_OK);
+                    finish();
+                }
+            } catch (Exception e) {
+                Log.d("apple", "saveToODKCollect:sushma error " + e.toString());
             }
         }
     }
-    
+
     public void cancel() {
         setResult(Activity.RESULT_CANCELED);
         finish();
@@ -176,7 +181,7 @@ public class TagSwipeActivity extends ActionBarActivity {
     private String missingTagsText(Set<String> missingTags) {
         String str = "";
         boolean first = true;
-        for (String tag: missingTags) {
+        for (String tag : missingTags) {
             if (first) {
                 str += tag;
             } else {
@@ -188,7 +193,7 @@ public class TagSwipeActivity extends ActionBarActivity {
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
-        
+
         private Fragment fragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -200,18 +205,18 @@ public class TagSwipeActivity extends ActionBarActivity {
                 StringTagValueFragment stvf = (StringTagValueFragment) fragment;
                 EditText et = stvf.getEditText();
                 if (et != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
                 }
             }
         }
-        
+
         @Override
         public Fragment getItem(int position) {
-            
+
             // hide keyboard if last fragment had a user edit text
             hideKeyboard();
-            
+
             if (position < tagEdits.size()) {
                 TagEdit tagEdit = tagEdits.get(position);
                 if (tagEdit != null) {
@@ -221,8 +226,7 @@ public class TagSwipeActivity extends ActionBarActivity {
                     } else if (tagEdit.isSelectOne()) {
                         fragment = SelectOneTagValueFragment.newInstance(position);
                         return fragment;
-                    }
-                    else if (tagEdit.isSelectMultiple()) {
+                    } else if (tagEdit.isSelectMultiple()) {
                         fragment = SelectMultipleTagValueFragment.newInstance(position);
                         return fragment;
                     } else {
@@ -231,9 +235,9 @@ public class TagSwipeActivity extends ActionBarActivity {
                     }
                 }
             }
-            
+
             if (ODKCollectHandler.isODKCollectMode()) {
-                return ODKCollectFragment.newInstance();    
+                return ODKCollectFragment.newInstance();
             } else {
                 return StandaloneFragment.newInstance("one", "two");
             }
