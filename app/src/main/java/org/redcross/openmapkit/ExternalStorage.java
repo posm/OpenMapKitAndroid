@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.common.io.Files;
 
 import org.apache.commons.io.FilenameUtils;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,6 +47,7 @@ public class ExternalStorage {
      * The name of the form specific constraints file if it were to be delivered as an ODK media file
      */
     public static final String CONSTRAINTS_FILE_NAME_ON_ODK = "omk-constraints.json";
+    public static final String TAG = "apple";
 
     /**
      * Creating the application directory structure.
@@ -59,7 +59,6 @@ public class ExternalStorage {
 
         File storageDir = Environment.getExternalStorageDirectory();
         File appDir = new File(storageDir, APP_DIR);
-        Log.d("apple", "checkOrCreateAppDirs: "+appDir);
         if (!appDir.exists()) {
             appDir.mkdirs(); // mkdirs is mkdir -p
         }
@@ -68,10 +67,8 @@ public class ExternalStorage {
             mbtilesDir.mkdirs();
         }
         File osmDir = new File(appDir, OSM_DIR);
-        Log.d("apple", "checkOrCreateAppDirs: "+osmDir.exists());
         if (!osmDir.exists()) {
             osmDir.mkdirs();
-            Log.d("apple", "checkOrCreateAppDirs: "+osmDir.exists());
         }
         File deploymentsDir = new File(appDir, DEPLOYMENTS_DIR);
         if (!deploymentsDir.exists()) {
@@ -379,6 +376,19 @@ public class ExternalStorage {
         return new File(constraintsDir, formName + ".json");
     }
 
+    public static File fetchConstraintsFileFromODKNew(String formName) {
+        File storageDir = Environment.getExternalStorageDirectory();
+        File appDir = new File(storageDir, "Android");
+        File appDir1 = new File(appDir, "data");
+        File constraintsDir = new File(appDir1, "org.odk.collect.android");
+        File appDir2 = new File(constraintsDir, constraintsDir.list()[0]);
+        File appDir3 = new File(appDir2, appDir2.list()[0]);
+        File appDir4 = new File(appDir3, appDir3.list()[0]);
+        File appDir5 = new File(appDir4, "forms");
+        File appDir6 = new File(appDir5, formName + "-media");
+        return new File(appDir6, appDir6.list()[0]);
+    }
+
     /**
      * This method attempts to fetch the form's constraints file from ODK's media directory for the
      * form. If the constraints file is found on ODK's media directory for the form, its contents
@@ -390,6 +400,15 @@ public class ExternalStorage {
     public static boolean copyFormConstraintsFromOdk(String formFileName) {
         String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         if (formFileName != null) {
+            //new method to support moving constraints from odk inside Android/Data/org.odk.collect.android for Android 10 and below devices
+            //this doesn't apply to android 11 due to folder not made by odk app itself
+            try {
+                File formConstraintsFileTesting = ExternalStorage.fetchConstraintsFileFromODKNew(formFileName);
+                File omkConstraintsFile = fetchConstraintsFile(formFileName);
+                Files.copy(formConstraintsFileTesting, omkConstraintsFile);
+                return true;
+            } catch (Exception e) {
+            }
             String mediaDirPath = sdCardPath + "/odk/forms/" + formFileName + "-media";
             File mediaDirectory = new File(mediaDirPath);
             if (mediaDirectory.exists() && mediaDirectory.isDirectory()) {
@@ -406,7 +425,6 @@ public class ExternalStorage {
                 }
             }
         }
-
         return false;
     }
 

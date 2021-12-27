@@ -1,13 +1,298 @@
 {
+  "amenity": {
+    "required": true
+  },
+  "office": {
+    "required": true
+  },
+  "tourism": {
+    "required": true
+  },
+  "natural": {
+    "required": true,
+    "default": "water"
+  },
+  "manmade": {
+    "required": true
+  },
+  "landuse": {
+    "required": true
+  },
+  "place": {
+    "required": true
+  },
+  "plant:source": {
+    "required": true,
+    "default": "solar"
+  },
+
 
   "name": {
+    "custom_value": true
+  },
+  "addr:place": {
+    "custom_value": true
+  },
+  "isin": {
+    "numeric": true,
+    "custom_value": true
+  },
+  "operator:type": {
+    "show_if": {
+      "amenity": "social_facility"
+    },
+    "hide_if": {
+      "manmade": "bridge"
+    }
+  },
+  "operator:type:kindergarten": {
+    "show_if": {
+      "amenity": "kindergarten"
+    }
+  },
+  "student:count:kindergarten": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "kindergarten"
+    }
+  },
+  "teacher:count:kindergarten": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "kindergarten"
+    }
+  },
+  "operator:type:school": {
+    "show_if": {
+      "amenity": "school"
+    }
+  },
+  "student:count:school": {
+    "numeric": true,
     "custom_value": true,
     "show_if": {
       "amenity": "school"
     }
   },
+  "teacher:count:school": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "school"
+    }
+  },
+  "operator:type:college": {
+    "show_if": {
+      "amenity": "college"
+    }
+  },
+  "student:count:college": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "college"
+    }
+  },
+  "teacher:count:college": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "college"
+    }
+  },
+  "operator:type:university": {
+    "show_if": {
+      "amenity": "university"
+    }
+  },
+  "student:count:university": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "university"
+    }
+  },
+  "teacher:count:university": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "university"
+    }
+  },
+  "operator:type:hospital": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "beds:hospital": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "staffs:count:hospital": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "operator:type:health_post": {
+    "show_if": {
+      "amenity": "health_post"
+    }
+  },
+  "beds:health_post": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "health_post"
+    }
+  },
+  "staffs:count:health_post": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "amenity": "health_post"
+    }
+  },
+  "ambulance": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "operation": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "emergency": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "icu": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "nicu": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "ventilator": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "x-ray": {
+    "show_if": {
+      "amenity": "hospital"
+    }
+  },
+  "religion": {
+    "show_if": {
+      "amenity": "place_of_worship"
+    }
+  },
+  "drinking_water": {
+    "show_if": {
+      "amenity": "place_of_worship"
+    }
+  },
+  "toilet": {
+    "show_if": {
+      "amenity": "place_of_worship"
+    }
+  },
+  "nrb_class": {
+    "show_if": {
+      "amenity": "bank"
+    }
+  },
+  "atm": {
+    "show_if": {
+      "amenity": "bank"
+    }
+  },
+  "opening_hours": {
+    "hide_if": {
+      "custom_value": true,
+      "manmade": "bridge"
+    }
+  },
+  "phone": {
+    "custom_value": true,
+    "hide_if": {
+      "amenity": "place_of_worship",
+      "manmade": "bridge"
+    }
+  },
+  "email": {
+    "custom_value": true,
+    "hide_if": {
+      "amenity": "place_of_worship"
+    }
+  },
+  "website": {
+    "custom_value": true,
+    "hide_if": {
+      "amenity": "place_of_worship"
+    }
+  },
 
-
+  "rooms:hotel": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "tourism": "hotel"
+    }
+  },
+  "beds:hotel": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "tourism": "hotel"
+    }
+  },
+  "rooms:guest_house": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "tourism": "guest_house"
+    }
+  },
+  "beds:guest_house": {
+    "numeric": true,
+    "custom_value": true,
+    "show_if": {
+      "tourism": "guest_house"
+    }
+  },
+  "entry_fee:viewpoint": {
+    "custom_value": true,
+    "show_if": {
+      "tourism": "viewpoint"
+    }
+  },
+  "entry_fee:museum": {
+    "custom_value": true,
+    "show_if": {
+      "tourism": "museum"
+    }
+  },
+  "bridge:structure": {
+    "show_if": {
+      "manmade": "bridge"
+    }
+  },
+  "capacity:solar": {
+    "custom_value": true
+  },
   "source": {
     "implicit": "TECHCAMP_Namobuddha_2021"
   }
